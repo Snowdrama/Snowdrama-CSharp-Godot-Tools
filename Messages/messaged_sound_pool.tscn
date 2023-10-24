@@ -1,0 +1,132 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfpjpm2ir7njs"]
+
+[ext_resource type="Script" path="res://Tools/Messages/MessagedSoundPool.cs" id="1_uxkwu"]
+
+[node name="SoundPool" type="Node"]
+script = ExtResource("1_uxkwu")
+
+[node name="AudioStreamPlayer2D2" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D3" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D4" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D5" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D6" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D7" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D8" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D9" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D10" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D11" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D12" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D13" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D14" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D15" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D16" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D17" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D18" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D19" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D20" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D21" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D22" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D23" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D24" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D25" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D26" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D27" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D28" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D29" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D30" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D31" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D32" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D33" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D34" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D35" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D36" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D37" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D38" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D39" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D40" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D41" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D42" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D43" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D44" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D45" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D46" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D47" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D48" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D49" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D50" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D51" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D52" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D53" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D54" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D55" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D56" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D57" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D58" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D59" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D60" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D61" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D62" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D63" type="AudioStreamPlayer2D" parent="."]
+
+[node name="AudioStreamPlayer2D64" type="AudioStreamPlayer2D" parent="."]

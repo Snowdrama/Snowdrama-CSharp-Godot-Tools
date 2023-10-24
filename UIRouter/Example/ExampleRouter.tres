@@ -1,0 +1,6 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://dyt8v3casgx6o"]
+
+[ext_resource type="Script" path="res://Tools/UIRouter/UIRouter.cs" id="1_wuurh"]
+
+[resource]
+script = ExtResource("1_wuurh")
