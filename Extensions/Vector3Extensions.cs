@@ -47,4 +47,16 @@ public static class Vector3Extensions
         return new Vector3(Mathf.Clamp(val.X, min.X, max.X), Mathf.Clamp(val.Y, min.Y, max.Y), Mathf.Clamp(val.Z, min.Z, max.Z));
     }
 
+
+    //
+    public static Vector3 MoveTowards(this Vector3 from, Vector3 to, float delta)
+    {
+        Vector3 translation = (to - from) ;
+
+        float scale = Mathf.Min(translation.Length(), delta);
+
+        Vector3 newVector = from + (translation.Normalized() * scale);
+
+        return newVector;
+    }
 }

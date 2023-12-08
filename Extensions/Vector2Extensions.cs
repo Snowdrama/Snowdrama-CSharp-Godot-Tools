@@ -133,4 +133,16 @@ public static class Vector2Extensions{
         if (angle < 0f) angle += 360f;
         return angle;
     }
+
+
+    public static Vector2 MoveTowards(this Vector2 from, Vector2 to, float delta)
+    {
+        Vector2 translation = (to - from);
+
+        float scale = Mathf.Min(translation.Length(), delta);
+
+        Vector2 newVector = from + (translation.Normalized() * scale);
+
+        return newVector;
+    }
 }
