@@ -1,7 +1,14 @@
+using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-public interface IMessage { }
+public interface IMessage
+{
+    void AddUser();
+    void RemoveUser();
+    int GetUserCount();
+}
 
 public class Messages
 {
@@ -11,6 +18,10 @@ public class Messages
     public static SType Get<SType>() where SType : IMessage, new()
     {
         return globalHub.Get<SType>();
+    }
+    public static void Return<SType>() where SType : IMessage, new()
+    {
+        globalHub.Return<SType>();
     }
     public static MessageHub GetHub(string hubName)
     {
@@ -24,10 +35,22 @@ public class Messages
         messageHubs.Add(hubName, newHub);
         return newHub;
     }
+    public static void ReturnHub(string hubName)
+    {
+        if (messageHubs.ContainsKey(hubName))
+        {
+            messageHubs[hubName].RemoveUser();
+            if (messageHubs[hubName].UserCount == 0)
+            {
+                messageHubs.Remove(hubName);
+            }
+        }
+    }
 }
 
 public class MessageHub
 {
+    public int UserCount { get; private set; }
     private Dictionary<Type, IMessage> messages = new Dictionary<Type, IMessage>();
 
     public SType Get<SType>() where SType : IMessage, new()
@@ -40,6 +63,20 @@ public class MessageHub
             return (SType)message;
         }
         return (SType)Bind(messageType);
+    }
+    public void Return<SType>() where SType : IMessage, new()
+    {
+        Type signalType = typeof(SType);
+        IMessage signal;
+
+        if (messages.TryGetValue(signalType, out signal))
+        {
+            signal.RemoveUser();
+            if (signal.GetUserCount() == 0)
+            {
+                messages.Remove(signalType);
+            }
+        }
     }
 
     public IMessage Bind(Type messageType)
@@ -55,9 +92,37 @@ public class MessageHub
         messages.Add(messageType, message);
         return message;
     }
+    public void AddUser()
+    {
+        ++UserCount;
+    }
+    public int GetUserCount()
+    {
+        return UserCount;
+    }
+    public void RemoveUser()
+    {
+        --UserCount;
+    }
+}
+public abstract class ABaseSignal : IMessage
+{
+    public int UserCount { get; private set; }
+    public void AddUser()
+    {
+        ++UserCount;
+    }
+    public int GetUserCount()
+    {
+        return UserCount;
+    }
+    public void RemoveUser()
+    {
+        --UserCount;
+    }
 }
 
-public abstract class AMessage : IMessage
+public abstract class AMessage : ABaseSignal
 {
     private Action callback;
 
@@ -76,7 +141,7 @@ public abstract class AMessage : IMessage
         callback?.Invoke();
     }
 }
-public abstract class AMessage<T> : IMessage
+public abstract class AMessage<T> : ABaseSignal
 {
     private Action<T> callback;
 
@@ -95,7 +160,7 @@ public abstract class AMessage<T> : IMessage
         callback?.Invoke(arg1);
     }
 }
-public abstract class AMessage<T, U> : IMessage
+public abstract class AMessage<T, U> : ABaseSignal
 {
     private Action<T, U> callback;
 
@@ -114,7 +179,7 @@ public abstract class AMessage<T, U> : IMessage
         callback?.Invoke(arg1, arg2);
     }
 }
-public abstract class AMessage<T, U, V> : IMessage
+public abstract class AMessage<T, U, V> : ABaseSignal
 {
     private Action<T, U, V> callback;
 

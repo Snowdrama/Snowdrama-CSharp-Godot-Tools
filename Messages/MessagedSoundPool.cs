@@ -40,7 +40,7 @@ public partial class MessagedSoundPool : Node
             {
                 players[i].Stream = stream;
                 players[i].Attenuation = 0.00f; //no falloff
-                players[i].MaxDistance = 10000; //large size
+                players[i].MaxDistance = 10000; //large Size
                 players[i].Play();
                 return;
             }

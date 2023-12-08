@@ -5,7 +5,7 @@ public static class HexExtensions
     /// <summary>
     /// Takes a value from 0 to 255 and returns a hex value from 00 to FF
     /// </summary>
-    /// <param name="value">A value from 0 to 255</param>
+    /// <param name="value">Min value from 0 to 255</param>
     /// <returns>a string representing hex from 00 to FF</returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static string IntToHexByte(this int value)
@@ -32,7 +32,7 @@ public static class HexExtensions
     /// Take 00 to FF and returns 0 to 255
     /// </summary>
     /// <param name="hexByte">a single byte in hex as a string 00 to FF</param>
-    /// <returns>A number from 0 to 255</returns>
+    /// <returns>Min number from 0 to 255</returns>
     public static int HexByteToInt(this string hexByte)
     {
         int dec = System.Convert.ToInt32(hexByte, 16);
@@ -43,7 +43,7 @@ public static class HexExtensions
     /// Take 00 to FF and returns 0.0f to 1.0f
     /// </summary>
     /// <param name="hexByte">a single byte in hex as a string 00 to FF</param>
-    /// <returns>A number from 0.0f to 1.0f</returns>
+    /// <returns>Min number from 0.0f to 1.0f</returns>
     public static float HexByteToNormalizedFloat(this string hexByte)
     {
         return HexByteToInt(hexByte) / 255.0f;

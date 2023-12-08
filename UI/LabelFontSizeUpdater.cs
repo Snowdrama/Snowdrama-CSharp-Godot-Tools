@@ -45,23 +45,23 @@ public partial class LabelFontSizeUpdater : Label
     public int CalculateFontSize(Vector2 localMaxSize, Font localFont)
     {
         //GD.Print($"_____________________________________________________________________________");
-        //we size it down just to make sure we get an accurate max size for the parent size.
+        //we Size it down just to make sure we get an accurate max Size for the parent Size.
         this.Set("theme_override_font_sizes/font_size", 1);
         //GD.Print($"maxSize: {localMaxSize}");
         var fontSize = 1;
         Vector2 size = localFont.GetMultilineStringSize(text: this.Text, width: localMaxSize.X, fontSize: fontSize);
-        //GD.Print($"Size at {fontSize}: {size}");
+        //GD.Print($"Size at {fontSize}: {Size}");
         for (int i = 0; i < 3; i++)
         {
             fontSize = fontSize.Clamp(1, 100_000);
             size = localFont.GetMultilineStringSize(text: this.Text, width: localMaxSize.X, fontSize: fontSize);
-            //GD.Print($"Size at {fontSize}: {size}");
+            //GD.Print($"Size at {fontSize}: {Size}");
             
             float testRatioX = Mathf.FloorToInt(localMaxSize.X / size.X);
             
-            //GD.Print($"The ratio of the: {localMaxSize.X} / {size.X} = {testRatioX}");
+            //GD.Print($"The ratio of the: {localMaxSize.X} / {Size.X} = {testRatioX}");
             float testRatioY = Mathf.FloorToInt(localMaxSize.Y / size.Y);
-            //GD.Print($"The ratio of the: {localMaxSize.Y} / {size.Y} = {testRatioY}");
+            //GD.Print($"The ratio of the: {localMaxSize.Y} / {Size.Y} = {testRatioY}");
             
             Vector2 targetSizeUsingXRatio = size * testRatioX;
             Vector2 targetSizeUsingYRatio = size * testRatioY;
@@ -69,7 +69,7 @@ public partial class LabelFontSizeUpdater : Label
             if(size.X > size.Y)
             {
                 //GD.Print($"Since the line of text is wider than tall, we should fit to the X axis");
-                //GD.Print($"Using the {testRatioX} by the X Size {size.X} will make it {size.X * testRatioX}");
+                //GD.Print($"Using the {testRatioX} by the X Size {Size.X} will make it {Size.X * testRatioX}");
                 //GD.Print($"Which should fit inside {localMaxSize.X} pixels wide");
 
                 //GD.Print($"Max Size: {localMaxSize}");
@@ -77,12 +77,12 @@ public partial class LabelFontSizeUpdater : Label
                 //GD.Print($"Test new Size Y Ratio {targetSizeUsingYRatio}");
                 if (targetSizeUsingXRatio.X <= localMaxSize.X && targetSizeUsingXRatio.Y <= localMaxSize.Y)
                 {
-                    //this size is okay we can use it
+                    //this Size is okay we can use it
                     fontSize = Mathf.FloorToInt(fontSize * testRatioX);
                 }
                 else if(targetSizeUsingYRatio.X <= localMaxSize.X && targetSizeUsingYRatio.Y <= localMaxSize.Y){
 
-                    //this size is okay we can use it
+                    //this Size is okay we can use it
                     fontSize = Mathf.FloorToInt(fontSize * testRatioY);
                 }
                 else
@@ -93,7 +93,7 @@ public partial class LabelFontSizeUpdater : Label
             else
             {
                 //GD.Print($"Since the line of text is wider than tall, we should fit to the X axis");
-                //GD.Print($"Using the {testRatioY} by the Y Size {size.Y} will make it {size.Y * testRatioY}");
+                //GD.Print($"Using the {testRatioY} by the Y Size {Size.Y} will make it {Size.Y * testRatioY}");
                 //GD.Print($"will make the text fit in the {localMaxSize.Y} pixels wide");
 
                 //GD.Print($"Max Size: {localMaxSize}");
@@ -102,12 +102,12 @@ public partial class LabelFontSizeUpdater : Label
 
                 if(targetSizeUsingYRatio.X <= localMaxSize.X && targetSizeUsingYRatio.Y <= localMaxSize.Y)
                 {
-                    //this size is okay we can use it
+                    //this Size is okay we can use it
                     fontSize = Mathf.FloorToInt(fontSize * testRatioY);
                 }
                 else if(targetSizeUsingXRatio.X <= localMaxSize.X && targetSizeUsingXRatio.Y <= localMaxSize.Y)
                 {
-                    //this size is okay we can use it
+                    //this Size is okay we can use it
                     fontSize = Mathf.FloorToInt(fontSize * testRatioX);
                 }
                 else

@@ -83,7 +83,7 @@ public static class FloatExtensions
     /// <summary>
     /// Returns the normalized value of the value between min and max unclamped
     /// For example InverseLerpUnclamped(value = 20, min = 0, max = 10); will 
-    /// return 2 since 20 is double the size of the range
+    /// return 2 since 20 is double the Size of the range
     /// </summary>
     /// <param name="value"></param>
     /// <param name="min"></param>

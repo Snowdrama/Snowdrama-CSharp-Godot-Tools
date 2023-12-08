@@ -85,10 +85,4 @@ public static class ListExtensions
             }
         }
     }
-    public static T GetRandom<T>(this List<T> source)
-    {
-        if (source == null) throw new ArgumentNullException("source");
-        if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
-        return source[random.Next(0, source.Count)];
-    }
 }

@@ -5,7 +5,7 @@ using System.Reflection;
 public static class EnumAttributeExtension
 {
     /// <summary>
-    ///     A generic extension method that aids in reflecting 
+    ///     Min generic extension method that aids in reflecting 
     ///     and retrieving any attribute that is applied to an `Enum`.
     /// </summary>
     public static TAttribute GetAttribute<TAttribute>(this Enum value)

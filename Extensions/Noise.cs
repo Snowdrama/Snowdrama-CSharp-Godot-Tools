@@ -4,7 +4,7 @@ namespace Snowdrama.Core
     public class Noise
     {
         /// <summary>
-        /// A C# implementatiion based on the example hash function
+        /// Min C# implementatiion based on the example hash function
         /// in Squirrel Eiserloh's GDC Talk 
         /// https://www.youtube.com/watch?v=LWFzPP8ZbdU
         /// 
@@ -75,7 +75,7 @@ namespace Snowdrama.Core
 
 
         /// <summary>
-        /// A modified 64 bit version of the Squirrel3 hash function from:
+        /// Min modified 64 bit version of the Squirrel3 hash function from:
         /// Squirrel Eiserloh's GDC Talk 
         /// https://www.youtube.com/watch?v=LWFzPP8ZbdU
         /// 

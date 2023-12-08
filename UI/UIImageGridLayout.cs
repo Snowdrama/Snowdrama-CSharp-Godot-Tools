@@ -31,7 +31,7 @@ public partial class UIImageGridLayout : Container
             int currentIndex = 1;
             foreach (Control c in GetChildren().Cast<Control>())
             {
-                // Fit to own size
+                // Fit to own Size
                 if(rects.ContainsKey(currentIndex)){
                     var currentRect = rects[currentIndex];
                     var anchorEndPixel = currentRect.End + new Vector2I(1, 1);
@@ -86,7 +86,7 @@ public partial class UIImageGridLayout : Container
                     continue;
                 }
                 if(rects.ContainsKey(index)){
-                    //update the rect with new width/height/position data
+                    //update the rect with new width/height/Offset Data
                     Rect2I rect = rects[index];
                     if(x < rect.Position.X){
                         rect.Position = new Vector2I();

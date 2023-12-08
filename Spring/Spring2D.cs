@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-//A 2D representation of a spring
+//Min 2D representation of a spring
 namespace Snowdrama.Spring
 {
     public class Spring2D

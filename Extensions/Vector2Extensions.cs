@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Godot;
 public static class Vector2Extensions{
+
+    private static Random rand = new Random();
     private static float PI = 3.14159265358979f;
     private static float Deg2Rad = PI / 180;
     private static float Rad2Deg = 180 / PI;
@@ -56,6 +58,39 @@ public static class Vector2Extensions{
     public static Vector2 Clamp(this Vector2 val, Vector2 min, Vector2 max)
     {
         return new Vector2(Mathf.Clamp(val.X, min.X, max.X), Mathf.Clamp(val.Y, min.Y, max.Y));
+    }
+
+
+    public static Vector2 Random(float minX, float maxX, float minY, float maxY)
+    {
+        return new Vector2((float)Mathf.Lerp(minX, maxX, rand.NextDouble()), (float)Mathf.Lerp(minY, maxY, rand.NextDouble()));
+    }
+
+    /// <summary>
+    /// Gets a point that is the combination of the smallest value of both points 
+    /// 
+    /// For example if you have the points (3,5) and (2,9) the result would be (2, 5)
+    /// </summary>
+    /// <param name="A"></param>
+    /// <param name="B"></param>
+    /// <returns>a new vector that has the smallest value of both points</returns>
+    public static Vector2 Min(Vector2 A, Vector2 B)
+    {
+        return new Vector2(Mathf.Min(A.X, B.X), Mathf.Min(A.Y, B.Y));
+    }
+
+
+    /// <summary>
+    /// Gets a point that is the combination of the largest value of both points 
+    /// 
+    /// For example if you have the points (3,5) and (2,9) the result would be (3, 9)
+    /// </summary>
+    /// <param name="A"></param>
+    /// <param name="B"></param>
+    /// <returns>a new vector that has the largest value of both points</returns>
+    public static Vector2 Max(Vector2 A, Vector2 B)
+    {
+        return new Vector2(Mathf.Max(A.X, B.X), Mathf.Max(A.Y, B.Y));
     }
 
     public static float AngleFromVector(this Vector2 dir)
