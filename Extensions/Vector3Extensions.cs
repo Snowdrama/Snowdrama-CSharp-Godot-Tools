@@ -51,11 +51,22 @@ public static class Vector3Extensions
     //
     public static Vector3 MoveTowards(this Vector3 from, Vector3 to, float delta)
     {
-        Vector3 translation = (to - from) ;
+        Vector3 translation = (to - from);
 
         float scale = Mathf.Min(translation.Length(), delta);
 
         Vector3 newVector = from + (translation.Normalized() * scale);
+
+        return newVector;
+    }
+    public static Vector3 MoveTowardsAngle(this Vector3 from, Vector3 to, float delta)
+    {
+        Vector3 newVector = new Vector3();
+
+        GD.Print(from.Y);
+        newVector.X = Mathf.LerpAngle(from.X, to.X, delta);
+        newVector.Y = Mathf.LerpAngle(from.Y, to.Y, delta);
+        newVector.Z = Mathf.LerpAngle(from.Z, to.Z, delta);
 
         return newVector;
     }
