@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public partial class WFCSpawnNodePrefabs : Node
 {
+    [Export(PropertyHint.File)]
+    string tileFilePath;
     [Export]
     WFCDungeonGenerator generator;
 
@@ -29,7 +31,7 @@ public partial class WFCSpawnNodePrefabs : Node
 
     public Dictionary<Vector2I, WFCNode> GenerateMap()
     {
-        generatedNodes = generator.GenerateMap(mapWidth, mapHeight);
+        generatedNodes = generator.GenerateMap(tileFilePath, mapWidth, mapHeight);
         SpawnPrefabs(mapWidth, mapHeight, generatedNodes);
 
         return generatedNodes;
@@ -60,7 +62,7 @@ public partial class WFCSpawnNodePrefabs : Node
                     }
 
                     //HMMMMMM
-                    GD.Print(prefabLocation);
+                    //GD.Print(prefabLocation);
                     var instantiatedPrefab = loadedScenePrefabs[prefabLocation].Instantiate();
                     if(instantiatedPrefab is Node3D)
                     {
@@ -89,7 +91,7 @@ public partial class WFCSpawnNodePrefabs : Node
             outputString += "\n";
         }
 
-        GD.Print(outputString);
+        //GD.Print(outputString);
 
     }
 }

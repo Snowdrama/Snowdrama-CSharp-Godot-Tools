@@ -1,0 +1,246 @@
+{
+	"JsonTiles": [
+		{
+			"TileName": "Empty",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_None_1.png",
+			"TileType":0, 
+			"Connections": [0,0,0,0],
+			"RotationCount":0,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "1_Exit",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_1_Exit_1.png",
+			"TileType":0, 
+			"Connections": [1,0,0,0],
+			"RotationCount":3,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "Cross_Exit",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Cross_Exit_1.png",
+			"TileType":0, 
+			"Connections": [1,1,1,1],
+			"RotationCount":0,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "I_Exit",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_I_Exit_1.png",
+			"TileType":0, 
+			"Connections": [0,0,1,1],
+			"RotationCount":1,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "L_Exit",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_L_Exit_1.png",
+			"TileType":0, 
+			"Connections": [1,0,1,0],
+			"RotationCount":3,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "T_Exit",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_T_Exit_1.png",
+			"TileType":0, 
+			"Connections": [0,1,1,1],
+			"RotationCount":3,
+			"ChiralFlip":false
+		},
+
+
+
+
+
+
+
+
+		{
+			"TileName": "Long_End_3Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_End_3Doors_1.png",
+			"TileType":0, 
+			"Connections": [1,2,1,1],
+			"RotationCount":3,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "Long_End_EndDoor",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_End_EndDoor_1.png",
+			"TileType":0, 
+			"Connections": [1,2,0,0],
+			"RotationCount":3,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "Long_End_SideDoor",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_End_SideDoor_1.png",
+			"TileType":0, 
+			"Connections": [0,2,1,0],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "Long_End_2Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_End_2Doors_1.png",
+			"TileType":0, 
+			"Connections": [1,2,1,0],
+			"RotationCount":1,
+			"ChiralFlip":true
+		},
+
+
+		
+
+
+
+		{
+			"TileName": "Long_Middle_Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_Middle_Doors_1.png",
+			"TileType":0, 
+			"Connections": [2,2,1,1],
+			"RotationCount":1,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "Long_Middle_NoDoors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_Middle_NoDoors_1.png",
+			"TileType":0, 
+			"Connections": [2,2,0,0],
+			"RotationCount":1,
+			"ChiralFlip":false
+		},
+		{
+			"TileName": "Long_Middle_SideDoor",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_Long_Middle_SideDoor_1.png",
+			"TileType":0, 
+			"Connections": [2,2,1,0],
+			"RotationCount":1,
+			"ChiralFlip":false
+		},
+
+
+
+
+
+
+
+		{
+			"TileName": "LargeRoom_Corner_Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeRoom_Corner_Doors_1.png",
+			"TileType":0, 
+			"Connections": [1,3,1,3],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeRoom_Corner_NoDoors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeRoom_Corner_NoDoors_1.png",
+			"TileType":0, 
+			"Connections": [0,3,0,3],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeRoom_Edge_NoDoor",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeRoom_Edge_NoDoor_1.png",
+			"TileType":0, 
+			"Connections": [3,3,0,3],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeRoom_Edge_Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeRoom_Edge_Doors_1.png",
+			"TileType":0, 
+			"Connections": [3,3,1,3],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeRoom_Center",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeRoom_Center_1.png",
+			"TileType":0, 
+			"Connections": [3,3,3,3],
+			"RotationCount":0,
+			"ChiralFlip":false
+		},
+
+
+
+
+
+		{
+			"TileName": "LargeZone_Corner_Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_Corner_Doors_1.png",
+			"TileType":0, 
+			"Connections": [1,9,1,9],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeZone_Corner_NoDoors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_Corner_NoDoors_1.png",
+			"TileType":0, 
+			"Connections": [0,9,0,9],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeZone_Edge_NoDoor",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_Edge_NoDoors_1.png",
+			"TileType":0, 
+			"Connections": [9,9,0,9],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeZone_Edge_Doors",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_Edge_Doors_1.png",
+			"TileType":0, 
+			"Connections": [9,9,1,9],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeZone_DeadEnd",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_DeadEnd_1.png",
+			"TileType":0, 
+			"Connections": [0,0,9,0],
+			"RotationCount":3,
+			"ChiralFlip":true
+		},
+		{
+			"TileName": "LargeZone_Middle",
+			"SpawnResource": "",
+			"DebugTextureResource": "res://Tools/WFC/DemoAssets/Sprites/DebugWFCTiles_LargeZone_Middle_1.png",
+			"TileType":0, 
+			"Connections": [9,9,9,9],
+			"RotationCount":3,
+			"ChiralFlip":false
+		}
+	]
+}

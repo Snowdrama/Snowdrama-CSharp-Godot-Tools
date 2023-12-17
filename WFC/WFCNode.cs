@@ -6,8 +6,24 @@ using System.Linq;
 public class WFCNode
 {
     public Vector2I Position;
-	public List<WFCTile> tiles = new List<WFCTile>();
-	public int entropy
+    public List<WFCTile> _tiles = new List<WFCTile>();
+    public List<WFCTile> tiles
+    {
+        get
+        {
+            return _tiles;
+        }
+
+        set
+        {
+            _tiles = value;
+            _allowedTiles_N = tiles.Select(x => x.ConnectionType_N).ToList();
+            _allowedTiles_S = tiles.Select(x => x.ConnectionType_S).ToList();
+            _allowedTiles_E = tiles.Select(x => x.ConnectionType_E).ToList();
+            _allowedTiles_W = tiles.Select(x => x.ConnectionType_W).ToList();
+        }
+    }
+    public int entropy
 	{
 		get { 
             if(tiles.Count == 1)
@@ -36,43 +52,46 @@ public class WFCNode
 
     public void AddRange(List<WFCTile> tileList)
     {
-        tiles.AddRange(tileList);
-
-        //TODO: update cached connections for allowed Tiles
+        List<WFCTile> newTileList = new List<WFCTile>(tiles);
+        newTileList.AddRange(tileList);
+        tiles = newTileList;
     }
     //the allowed Tiles to the south of this, are all the ones with
     //a north connection that matches...? I think... I'm tired.
 
     //I could cache this... <.< lol
     //TODO: Cache this when the tile list changes
+
+    private List<int> _allowedTiles_N;
+    private List<int> _allowedTiles_S;
+    private List<int> _allowedTiles_E;
+    private List<int> _allowedTiles_W;
     public List<int> allowedTiles_N
     {
         get
         {
-            // TODO: Idea: This could in theory return different
-            // arrays depending on the rotation... <.< 
-            return tiles.Select(x => x.ConnectionType_N).ToList();
+            return _allowedTiles_N;
         }
     }
     public List<int> allowedTiles_S
     {
         get
         {
-            return tiles.Select(x => x.ConnectionType_S).ToList();
+            return _allowedTiles_S;
         }
     }
     public List<int> allowedTiles_E
     {
         get
         {
-            return tiles.Select(x => x.ConnectionType_E).ToList();
+            return _allowedTiles_E;
         }
     }
     public List<int> allowedTiles_W
     {
         get
         {
-            return tiles.Select(x => x.ConnectionType_W).ToList();
+            return _allowedTiles_W;
         }
     }
 
@@ -97,45 +116,26 @@ public class WFCNode
 
         List<WFCTile> tempTileList = new List<WFCTile>(tiles);
 
-        if (!nodes.ContainsKey(positionN))
-        {
-            tempTileList = tempTileList.Where(x => x.ConnectionType_N == 0).ToList();
-        }
-        else
-        {
-            tempTileList = tempTileList.Where(x => nodes[positionN].allowedTiles_S.Contains(x.ConnectionType_N)).ToList();
-        }
+        var TileN_allowedTiles_S = (nodes.ContainsKey(positionN)) ? nodes[positionN].allowedTiles_S : new List<int>() { 0 };
+        var TileS_allowedTiles_N = (nodes.ContainsKey(positionS)) ? nodes[positionS].allowedTiles_N : new List<int>() { 0 };
+        var TileE_allowedTiles_W = (nodes.ContainsKey(positionE)) ? nodes[positionE].allowedTiles_W : new List<int>() { 0 };
+        var TileW_allowedTiles_E = (nodes.ContainsKey(positionW)) ? nodes[positionW].allowedTiles_E : new List<int>() { 0 };
 
-        if (!nodes.ContainsKey(positionS))
-        {
-            tempTileList = tempTileList.Where(x => x.ConnectionType_S == 0).ToList();
-        }
-        else
-        {
-            tempTileList = tempTileList.Where(x => nodes[positionS].allowedTiles_N.Contains(x.ConnectionType_S)).ToList();
-        }
 
-        if (!nodes.ContainsKey(positionE))
-        {
-            tempTileList = tempTileList.Where(x => x.ConnectionType_E == 0).ToList();
-        }
-        else
-        {
-            tempTileList = tempTileList.Where(x => nodes[positionE].allowedTiles_W.Contains(x.ConnectionType_E)).ToList();
-        }
-
-        if (!nodes.ContainsKey(positionW))
-        {
-            tempTileList = tempTileList.Where(x => x.ConnectionType_W == 0).ToList();
-        }
-        else
-        {
-            tempTileList = tempTileList.Where(x => nodes[positionW].allowedTiles_E.Contains(x.ConnectionType_W)).ToList();
-        }
+        //filter
+        tempTileList = tempTileList.Where(x =>
+            TileN_allowedTiles_S.Contains(x.ConnectionType_N) &&
+            TileS_allowedTiles_N.Contains(x.ConnectionType_S) &&
+            TileE_allowedTiles_W.Contains(x.ConnectionType_E) &&
+            TileW_allowedTiles_E.Contains(x.ConnectionType_W)
+        ).ToList();
 
         int tileDifference = tiles.Count - tempTileList.Count;
+        if(tileDifference > 0)
+        {
+            tiles = tempTileList;
+        }
 
-        tiles = tempTileList;
         return tileDifference;
     }
 
@@ -161,7 +161,11 @@ public class WFCNode
 
     public void Collapse(Random rand)
     {
-        int randomTile = rand.Next(0, tiles.Count);
-        tiles = new List<WFCTile> { tiles[randomTile] };
+        if(tiles.Count != 0)
+        {
+            int randomTile = rand.Next(0, tiles.Count);
+            //GD.Print($"Random Tile{randomTile} > {tiles.Count}");
+            tiles = new List<WFCTile> { tiles[randomTile] };
+        }
     }
 }

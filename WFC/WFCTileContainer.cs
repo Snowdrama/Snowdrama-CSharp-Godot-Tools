@@ -3,5 +3,5 @@
 [System.Serializable]
 public struct WFCTileContainer
 {
-    public List<WFCTile> Tiles;
+    public List<WFCTileJsonData> JsonTiles;
 }

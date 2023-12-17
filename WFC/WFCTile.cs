@@ -1,52 +1,54 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 public class WFCTile
 {
     //class so we can use as ref, readonly so we can't accidenally modify it
-    [JsonProperty] public readonly string TileName;
+    public readonly string TileName;
     //the thing to load and spawn
-    [JsonProperty] public readonly string SpawnResource;//can be a prefab tscn
-    [JsonProperty] public readonly string DebugTextureResource;//must be a texture
+    public readonly string SpawnResource;//can be a prefab tscn
+    public readonly string DebugTextureResource;//must be a texture
 
     //this is an int to describe
     //a unique connection
+    private readonly int[] Connections;
+    public int ConnectionType_N { get { return Connections[0]; } }
+    public int ConnectionType_S { get { return Connections[1]; } }
+    public int ConnectionType_E { get { return Connections[2]; } }
+    public int ConnectionType_W { get { return Connections[3]; } }
 
+    //these are readonly but are NOT JSON PROPS
+    public readonly int Rotation;
+    public readonly bool Flip;
 
-    // public readonly int Rotation;
-    // TODO: Idea: This could in theory return different
-    // values depending on the rotation... <.<
-    // maybe use a prop getter here? 
-    [JsonProperty] public readonly int ConnectionType_N;
-    [JsonProperty] public readonly int ConnectionType_S;
-    [JsonProperty] public readonly int ConnectionType_E;
-    [JsonProperty] public readonly int ConnectionType_W;
-
-
-
-    [JsonConstructor]
-    public WFCTile(string TileName, string SpawnResource, int ConnectionType_N, int ConnectionType_S, int ConnectionType_E, int ConnectionType_W)
+    public WFCTile(string TileName,
+        string SpawnResource,
+        string DebugTextureResource,
+        int[] Connections,
+        int Rotation = 0, 
+        bool Flip = false
+    )
     {
         this.TileName = TileName;
         this.SpawnResource = SpawnResource;
-        this.ConnectionType_N = ConnectionType_N;
-        this.ConnectionType_S = ConnectionType_S;
-        this.ConnectionType_E = ConnectionType_E;
-        this.ConnectionType_W = ConnectionType_W;
-        // this.Rotation = Rotation;
+        this.DebugTextureResource = DebugTextureResource;
+        this.Connections = Connections;
+        this.Rotation = Rotation;
+        this.Flip = Flip;
     }
 
-    // public WFCTile(WFCTile copyTile)
-    // {
-    //     TileName = copyTile.TileName;
-    //     SpawnResource = copyTile.SpawnResource;
-    //     ConnectionType_N = copyTile.ConnectionType_N;
-    //     ConnectionType_S = copyTile.ConnectionType_S;
-    //     ConnectionType_E = copyTile.ConnectionType_E;
-    //     ConnectionType_W = copyTile.ConnectionType_W;
-    // }
+    public WFCTile(WFCTile copyTile)
+    {
+        TileName = copyTile.TileName;
+        TileName = copyTile.TileName;
+        SpawnResource = copyTile.SpawnResource;
+        Connections = copyTile.Connections;
+        Rotation = copyTile.Rotation;
+        Flip = copyTile.Flip;
+    }
 
     public override string ToString()
     {
-        return $"Tile:{TileName} N:{ConnectionType_N} | S:{ConnectionType_S} | E:{ConnectionType_E} | W:{ConnectionType_W}";
+        return $"Tile:{TileName} N:{ConnectionType_N} | S:{ConnectionType_S} | E:{ConnectionType_E} | W:{ConnectionType_W} | Rotation: {Rotation} | Flip: {Flip}";
     }
 }
