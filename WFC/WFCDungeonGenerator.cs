@@ -2,235 +2,301 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Data.Common;
 using System.Linq;
 using System.Diagnostics;
-using static Godot.OpenXRInterface;
+using System.Reflection.Emit;
 
 public partial class WFCDungeonGenerator : Node
 {
     Stopwatch Stopwatch = new Stopwatch();
     Stopwatch Stopwatch2 = new Stopwatch();
-    List<WFCTile> loadedTiles = new List<WFCTile>();
-    Random rand = new Random();
-    public static List<WFCTile> LoadPieces(string pieceFilePath)
-    {
-        using var dungeonGenPieces = FileAccess.Open(pieceFilePath, FileAccess.ModeFlags.Read);
-        string dungeonGenPieceText = dungeonGenPieces.GetAsText(true);
-        var data = JsonConvert.DeserializeObject<WFCTileContainer>(dungeonGenPieceText);
 
-        List<WFCTile> uniqueTiles = new List<WFCTile>();
-        foreach (var tile in data.JsonTiles)
+    List<WFCTile> loadedTiles = new List<WFCTile>();
+    
+    Random rand = new Random();
+
+    Dictionary<Vector2I, WFCNode> nodes;
+    int mapWidth;
+    int mapHeight;
+    bool RemoveUnusedRegions = true;
+    Stack<Vector2I> CompletedTiles = new Stack<Vector2I>();
+    const int UNDO_COUNT = 16;
+    public Dictionary<Vector2I, WFCNode> GenerateMap(string pieceFilePath, int mapWidth, int mapHeight, bool RemoveUnusedRegions = true, int seed = -1)
+    {
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        this.RemoveUnusedRegions = RemoveUnusedRegions;
+        this.nodes = StartGenerator(pieceFilePath, RemoveUnusedRegions, seed);
+
+        CompletedTiles = new Stack<Vector2I>();
+        GD.Print("Entrropy Before START ***********************************************************");
+        OutputEntropyDebug();
+        GD.Print("Entrropy Before END ***********************************************************");
+        Stopwatch.Restart();
+        int breakCount = 0;
+        do
         {
-            //check the rotations and flip...
-            //GD.Print($"Generating {tile.TileName} tiles:");
-            for (int i = 0; i <= tile.RotationCount; i++)
+            //update the Entropy until the Entropy is stable
+            bool updateSuccess = UpdateGeneratorEntropy();
+            //bool mapValid = CheckMapValidity();
+            if (updateSuccess)
             {
-                //GD.Print($"Generating {tile.TileName} Rotation {i}");
-                if (tile.ChiralFlip)
+                bool successful = ColapseLowestEntropy();
+                if (!successful)
                 {
-                    //GD.Print($"Generating {tile.TileName} Rotation {i} Flipped");
-                    var newTileFlipped = tile.CreateTile(i, true);
-                    uniqueTiles.Add(newTileFlipped);
                 }
-                var newTileNorm = tile.CreateTile(i, false);
-                uniqueTiles.Add(newTileNorm);
+                breakCount++;
+                if (CompletedTiles.Count == nodes.Values.Count)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                GD.PrintErr("SCREW IT start over!");
+                GD.PrintErr("Entrropy Bad START ***********************************************************");
+                OutputEntropyDebug();
+                GD.PrintErr("Entrropy Bad END ***********************************************************");
+                //SCREW IT start over!
+                this.nodes = StartGenerator(pieceFilePath, RemoveUnusedRegions, seed + breakCount);
+                CompletedTiles = new Stack<Vector2I>();
+
+                // Reset the top X elements to have every tile again
+                // Hoping that the tile that makes the map impossible is
+                // one of the last UNDO_COUNT tiles.
+                //List<Vector2I> elementsToUndo = new List<Vector2I>();
+                //for (int i = 0; i < UNDO_COUNT; i++)
+                //{
+                //    if (CompletedTiles.Count > 0)
+                //    {
+                //        elementsToUndo.Add(CompletedTiles.Pop());
+                //    }
+                //}
+                //UndoTiles(elementsToUndo);
+            }
+
+
+        } while (breakCount < 10000);
+        Stopwatch.Stop();
+        GD.Print($"Stopwatch Time: {Stopwatch.ElapsedMilliseconds}");
+        GD.Print($"Loop Count: {breakCount}");
+
+        GD.Print("Entropy After START ***********************************************************");
+        OutputEntropyDebug();
+        GD.Print("Entropy After END ***********************************************************");
+
+
+        MarkRegionsAndRemoveSmallRegions(mapWidth, mapHeight, nodes);
+
+
+        return nodes;
+    }
+
+    public void UndoTiles(List<Vector2I> listOfTilesToReset)
+    {
+        //we just reset these to have all possible Tiles again
+        foreach (var position in listOfTilesToReset)
+        {
+            var node = new WFCNode(position);
+            node.AddRange(loadedTiles);
+            nodes[position] = node;
+        }
+    }
+
+    private Dictionary<Vector2I, WFCNode> StartGenerator(string pieceFilePath, bool RemoveUnusedRegions = true, int seed = -1)
+    {
+        nodes = new Dictionary<Vector2I, WFCNode>();
+        loadedTiles = LoadPieces(pieceFilePath);
+
+        if (seed != -1)
+        {
+            rand = new Random(seed);
+        }
+        else
+        {
+            rand = new Random();
+        }
+
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                var node = new WFCNode(new Vector2I(x, y));
+                node.AddRange(loadedTiles);
+                nodes.Add(node.Position, node);
             }
         }
-        return uniqueTiles;
+        return nodes;
     }
+
+
+    private bool UpdateGeneratorEntropy()
+    {
+        int innerBreak = 0;
+        List<WFCNode> needsUpdating;
+        bool updateSuccess;
+        (needsUpdating, updateSuccess) = UpdateEntropy();
+
+        if (!updateSuccess)
+        {
+            return false;
+        }
+
+        while (needsUpdating.Count > 0 && innerBreak < 10000)
+        {
+            (needsUpdating, updateSuccess) = UpdateEntropy(needsUpdating);
+
+            if (!updateSuccess)
+            {
+                return false;
+            }
+            innerBreak++;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Check if any of the tiles have 0 entropy, which means the
+    /// map can't be completed.
+    /// </summary>
+    /// <returns>False if the map can't be completed</returns>
+    private bool CheckMapValidity()
+    {
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                var position = new Vector2I(x, y);
+                if (nodes.ContainsKey(position))
+                {
+                    var node = nodes[position];
+                    if (node.Entropy == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private bool ColapseLowestEntropy()
+    {
+        int minEntropy = nodes.Values.Min(x => x.Entropy);
+        List<WFCNode> nodesToUpdate = nodes.Values.Where(x => x.Entropy == minEntropy && !x.Colapsed).ToList();
+
+        //we can't collapse if the node has no Tiles...
+        if (nodesToUpdate.Count > 0)
+        {
+            //collapse the node
+            var randomNode = nodesToUpdate[rand.Next(0, nodesToUpdate.Count)];
+            randomNode.Colapse(rand);
+            if (!CompletedTiles.Contains(randomNode.Position))
+            {
+                CompletedTiles.Push(randomNode.Position);
+            }
+            //return that the node Colapsed correctly.
+            return true;
+        }
+        else
+        {
+            //the node failed to collapse correctly... <.< the whole map failed?
+            //or we're done <.<
+            return false;
+        }
+    }
+
+    private (List<WFCNode>, bool) UpdateEntropy(List<WFCNode> nodesToUpdate = null)
+    {
+        if(nodesToUpdate == null)
+        {
+            nodesToUpdate = nodes.Values.Where(x => !x.Colapsed).OrderBy(x => x.Entropy).ToList();
+        }
+
+        List<WFCNode> newNodesToUpdate = new List<WFCNode>();
+        foreach (var node in nodesToUpdate)
+        {
+            var changeInEntropy = node.UpdateEntropy(nodes);
+
+            if (node.Entropy == 0)
+            {
+                return (null, false);
+            }
+
+            //addd this to a list of tiles to undo if we get stuck
+            if (node.Colapsed && !CompletedTiles.Contains(node.Position))
+            {
+                CompletedTiles.Push(node.Position);
+            }
+
+            if (changeInEntropy > 0)
+            {
+                //since we updated the Entropy we need to add the neighbor nodes to the next update list
+                if (nodes.ContainsKey(node.Position + new Vector2I(0, -1)))
+                    newNodesToUpdate.Add(nodes[node.Position + new Vector2I(0, -1)]);
+                if (nodes.ContainsKey(node.Position + new Vector2I(0, 1)))
+                    newNodesToUpdate.Add(nodes[node.Position + new Vector2I(0, 1)]);
+                if (nodes.ContainsKey(node.Position + new Vector2I(1, 0)))
+                    newNodesToUpdate.Add(nodes[node.Position + new Vector2I(1, 0)]);
+                if (nodes.ContainsKey(node.Position + new Vector2I(-1, 0)))
+                    newNodesToUpdate.Add(nodes[node.Position + new Vector2I(-1, 0)]);
+            }
+        };
+
+        return (newNodesToUpdate, true);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public WFCTile GetTile(int index)
     {
         return loadedTiles[index];
     }
 
-    public Dictionary<Vector2I, WFCNode> GenerateMap(string pieceFilePath, int mapWidth, int mapHeight, bool RemoveUnusedRegions = true, int seed = -1)
-    {
-
-        List<WFCTile> loadedTileData = new List<WFCTile>();
-        Dictionary<Vector2I, WFCNode> nodes = new Dictionary<Vector2I, WFCNode>();
-        //create a new random
-
-        loadedTileData = LoadPieces(pieceFilePath);
-        loadedTiles = loadedTileData;
-
-        if (seed != -1)
-        {
-            rand = new Random(seed);
-        }
-        else
-        {
-            rand = new Random();
-        }
-
-        //clear any previous map
-        nodes.Clear();
 
 
 
-        //initialize the nodes in the new map;
-        for (int y = 0; y < mapHeight; y++)
-        {
-            for (int x = 0; x < mapWidth; x++)
-            {
-                var node = new WFCNode(new Vector2I(x, y));
-                node.AddRange(loadedTileData);
-
-                nodes.Add(node.Position, node);
-            }
-        }
-        //OutputEntropyDebug(mapWidth, mapHeight, nodes);
-        //generate the map
-        int unfinishedTiles = int.MaxValue;
-        int breakCount = 0;
-        do
-        {
-            int innerBreak = 0;
-            List<WFCNode> needsUpdating = UpdateEntropyFirstTime(nodes);
-            while (needsUpdating.Count > 0 && innerBreak < 1000)
-            {
-                //Stopwatch2.Restart();
-                needsUpdating = UpdateEntropy(needsUpdating, nodes);
-                innerBreak++;
-            }
-
-            CollapseLowestEntropy(rand, nodes);
-            breakCount++;
-            unfinishedTiles = nodes.Values.Where(x => x.entropy != int.MaxValue).Count();
-        } while (unfinishedTiles > 0 && breakCount <= 1000);
-
-        //finally we need to clean up the level and prune any sections
-        //that aren't contiguous with the main section
-        //if (RemoveUnusedRegions)
-        //{
-        //    MarkRegionsAndRemoveSmallRegions(mapWidth, mapHeight, nodes);
-        //}
-
-        return nodes;
-    }
-
-    public Dictionary<Vector2I, WFCNode> StartGenerator(string pieceFilePath, int mapWidth, int mapHeight, bool RemoveUnusedRegions = true, int seed = -1)
-    {
-        Dictionary<Vector2I, WFCNode> nodes = new Dictionary<Vector2I, WFCNode>();
-        //create a new random
-
-        List<WFCTile> loadedTileData = LoadPieces(pieceFilePath);
-        loadedTiles = loadedTileData;
-
-        if (seed != -1)
-        {
-            rand = new Random(seed);
-        }
-        else
-        {
-            rand = new Random();
-        }
-        //clear any previous map
-        nodes.Clear();
-        //initialize the nodes in the new map;
-        for (int y = 0; y < mapHeight; y++)
-        {
-            for (int x = 0; x < mapWidth; x++)
-            {
-                var node = new WFCNode(new Vector2I(x, y));
-                node.AddRange(loadedTileData);
-
-                nodes.Add(node.Position, node);
-            }
-        }
-        //OutputEntropyDebug(mapWidth, mapHeight, nodes);
-
-        return nodes;
-    }
-
-    public Dictionary<Vector2I, WFCNode> UpdateGenerator(Dictionary<Vector2I, WFCNode> nodes, int mapWidth, int mapHeight)
-    {
-        int innerBreak = 0;
-        List<WFCNode> needsUpdating = UpdateEntropyFirstTime(nodes);
-        while (needsUpdating.Count > 0 && innerBreak < 1000)
-        {
-            //Stopwatch2.Restart();
-            needsUpdating = UpdateEntropy(needsUpdating, nodes);
-            innerBreak++;
-        }
-        //OutputEntropyDebug(mapWidth, mapHeight, nodes);
-        return nodes;
-    }
-
-    public (Dictionary<Vector2I, WFCNode>, bool) CollapseNode(Dictionary<Vector2I, WFCNode> nodes, int mapWidth, int mapHeight)
-    {
-        bool didCollapse = CollapseLowestEntropy(rand, nodes);
-        //OutputEntropyDebug(mapWidth, mapHeight, nodes);
-        return (nodes, didCollapse);
-    }
 
 
 
-    public bool CollapseLowestEntropy(Random localRand, Dictionary<Vector2I, WFCNode> nodes)
-    {
-        int minEntropy = nodes.Values.Min(x => x.entropy);
-        List<WFCNode> nodesToUpdate = nodes.Values.Where(x => x.entropy == minEntropy && x.entropy != int.MaxValue).ToList();
-        if (nodesToUpdate.Count > 0)
-        {
-            var randomNode = nodesToUpdate[localRand.Next(0, nodesToUpdate.Count)];
-            randomNode.Collapse(localRand);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
-    public List<WFCNode> UpdateEntropy(List<WFCNode> nodeList, Dictionary<Vector2I, WFCNode> nodeMap)
-    {
-        List<WFCNode> nodesToUpdate = nodeList.OrderBy(x => x.entropy).ToList();
 
-        List<WFCNode> newNodesToUpdate = new List<WFCNode>();
-        foreach (var node in nodesToUpdate)
-        {
-            if (node.UpdateEntropy(nodeMap) > 0)
-            {
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(0, -1)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(0, -1)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(0, 1)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(0, 1)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(1, 0)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(1, 0)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(-1, 0)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(-1, 0)]);
-            }
-        };
 
-        return newNodesToUpdate;
-    }
 
-    public List<WFCNode> UpdateEntropyFirstTime(Dictionary<Vector2I, WFCNode> nodeMap)
-    {
-        List<WFCNode> nodesToUpdate = nodeMap.Values.Where(x => x.entropy != int.MaxValue).OrderBy(x => x.entropy).ToList();
 
-        List<WFCNode> newNodesToUpdate = new List<WFCNode>();
-        foreach (var node in nodesToUpdate)
-        {
-            //if we updated this node add the children to update
-            if (node.UpdateEntropy(nodeMap) > 0)
-            {
-                if(nodeMap.ContainsKey(node.Position + new Vector2I(0, -1)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(0, -1)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(0, 1)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(0, 1)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(1, 0)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(1, 0)]);
-                if (nodeMap.ContainsKey(node.Position + new Vector2I(-1, 0)))
-                    newNodesToUpdate.Add(nodeMap[node.Position + new Vector2I(-1, 0)]);
-            }
-        };
 
-        return newNodesToUpdate;
-    }
 
-    public void MarkRegionsAndRemoveSmallRegions(int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
+
+
+
+    private void MarkRegionsAndRemoveSmallRegions(int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
     {
         int regionId = 0;
 
@@ -241,7 +307,7 @@ public partial class WFCDungeonGenerator : Node
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                if (nodes[new Vector2I(x, y)].regionID == int.MaxValue)
+                if (nodes[new Vector2I(x, y)].RegionID == int.MaxValue)
                 {
                     int regionSize = TraverseNodesAndMarkRegions(regionId, new Vector2I(x, y), 0, mapWidth, mapHeight, nodes);
                     if (regionSize > largestRegionCount)
@@ -258,7 +324,7 @@ public partial class WFCDungeonGenerator : Node
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                if (nodes[new Vector2I(x, y)].regionID != largestRegionId)
+                if (nodes[new Vector2I(x, y)].RegionID != largestRegionId)
                 {
                     nodes[new Vector2I(x, y)] = null;
                 }
@@ -266,7 +332,7 @@ public partial class WFCDungeonGenerator : Node
         }
     }
 
-    public int TraverseNodesAndMarkRegions(int regionId, Vector2I position, int count, int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
+    private int TraverseNodesAndMarkRegions(int regionId, Vector2I position, int count, int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
     {
         if(position.X < 0 || position.Y < 0 || position.X >= mapWidth || position.Y >= mapHeight)
         {
@@ -274,34 +340,34 @@ public partial class WFCDungeonGenerator : Node
         }
 
 
-        if (nodes[position].regionID != int.MaxValue)
+        if (nodes[position].RegionID != int.MaxValue)
         {
             return count;
         }
 
-        nodes[position].regionID = regionId;
+        nodes[position].RegionID = regionId;
         count++;
         //look at node tile, see what directions we go in and then traverse to that node
 
-        if (nodes[position].tiles[0].ConnectionType_N != 0)
+        if (nodes[position].Tiles[0].ConnectionType_N != 0)
         {
             //walk up
             count = TraverseNodesAndMarkRegions(regionId, position + new Vector2I(0, -1), count, mapWidth, mapHeight, nodes);
         }
 
-        if (nodes[position].tiles[0].ConnectionType_S != 0)
+        if (nodes[position].Tiles[0].ConnectionType_S != 0)
         {
             //walk up
             count = TraverseNodesAndMarkRegions(regionId, position + new Vector2I(0, 1), count, mapWidth, mapHeight, nodes);
         }
 
-        if (nodes[position].tiles[0].ConnectionType_E != 0)
+        if (nodes[position].Tiles[0].ConnectionType_E != 0)
         {
             //walk up
             count = TraverseNodesAndMarkRegions(regionId, position + new Vector2I(1, 0), count, mapWidth, mapHeight, nodes);
         }
 
-        if (nodes[position].tiles[0].ConnectionType_W != 0)
+        if (nodes[position].Tiles[0].ConnectionType_W != 0)
         {
             //walk up
             count = TraverseNodesAndMarkRegions(regionId, position + new Vector2I(-1, 0), count, mapWidth, mapHeight, nodes);
@@ -324,14 +390,66 @@ public partial class WFCDungeonGenerator : Node
 
 
 
-    public void OutputEntropyDebug(int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
+
+
+    public static List<WFCTile> LoadPieces(string pieceFilePath)
+    {
+        using var dungeonGenPieces = FileAccess.Open(pieceFilePath, FileAccess.ModeFlags.Read);
+        string dungeonGenPieceText = dungeonGenPieces.GetAsText(true);
+        var data = JsonConvert.DeserializeObject<WFCTileContainer>(dungeonGenPieceText);
+
+        List<WFCTile> uniqueTiles = new List<WFCTile>();
+        foreach (var tile in data.JsonTiles)
+        {
+            //check the rotations and flip...
+            //GD.Print($"Generating {tile.TileName} Tiles:");
+            for (int i = 0; i <= tile.RotationCount; i++)
+            {
+                //GD.Print($"Generating {tile.TileName} Rotation {i}");
+                if (tile.ChiralFlip)
+                {
+                    //GD.Print($"Generating {tile.TileName} Rotation {i} Flipped");
+                    var newTileFlipped = tile.CreateTile(i, true);
+                    uniqueTiles.Add(newTileFlipped);
+                }
+                var newTileNorm = tile.CreateTile(i, false);
+                uniqueTiles.Add(newTileNorm);
+            }
+        }
+        return uniqueTiles;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void OutputEntropyDebug()
     {
         string outputString = "";
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                var en = nodes[new Vector2I(x, y)].entropy;
+                var en = nodes[new Vector2I(x, y)].Entropy;
                 if (en == int.MaxValue)
                 {
                     outputString += "XX | ";
@@ -347,7 +465,7 @@ public partial class WFCDungeonGenerator : Node
         GD.Print(outputString);
     }
 
-    public void OutputRegionIdDebug(int mapWidth, int mapHeight, Dictionary<Vector2I, WFCNode> nodes)
+    public void OutputRegionIdDebug()
     {
         string outputString = "";
         for (int y = 0; y < mapHeight; y++)
@@ -357,13 +475,13 @@ public partial class WFCDungeonGenerator : Node
                 var node = nodes[new Vector2I(x, y)];
                 if (node != null)
                 {
-                    if (node.regionID == int.MaxValue)
+                    if (node.RegionID == int.MaxValue)
                     {
                         outputString += "XX | ";
                     }
                     else
                     {
-                        outputString += $"{node.regionID:00} | ";
+                        outputString += $"{node.RegionID:00} | ";
                     }
                 }
                 else

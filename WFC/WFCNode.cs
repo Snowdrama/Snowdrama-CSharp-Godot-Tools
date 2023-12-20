@@ -6,55 +6,69 @@ using System.Linq;
 public class WFCNode
 {
     public Vector2I Position;
-    public List<WFCTile> _tiles = new List<WFCTile>();
-    public List<WFCTile> tiles
+
+    private LootTable<WFCTile> _chanceTiles = new LootTable<WFCTile>();
+    private List<WFCTile> _tiles = new List<WFCTile>();
+    public List<WFCTile> Tiles
     {
         get
         {
             return _tiles;
         }
 
-        set
+        private set
         {
             _tiles = value;
-            _allowedTiles_N = tiles.Select(x => x.ConnectionType_N).ToList();
-            _allowedTiles_S = tiles.Select(x => x.ConnectionType_S).ToList();
-            _allowedTiles_E = tiles.Select(x => x.ConnectionType_E).ToList();
-            _allowedTiles_W = tiles.Select(x => x.ConnectionType_W).ToList();
+            _allowedTiles_N = _tiles.Select(x => x.ConnectionType_N).ToList();
+            _allowedTiles_S = _tiles.Select(x => x.ConnectionType_S).ToList();
+            _allowedTiles_E = _tiles.Select(x => x.ConnectionType_E).ToList();
+            _allowedTiles_W = _tiles.Select(x => x.ConnectionType_W).ToList();
         }
     }
-    public int entropy
+    public int Entropy
 	{
-		get { 
-            if(tiles.Count == 1)
+		get {
+
+            if(Tiles.Count == 1)
             {
                 return int.MaxValue;
             }
 
-            return tiles.Count; 
+            return Tiles.Count; 
         }
 	}
+    public bool Colapsed
+    {
+        get
+        {
+            if (Tiles.Count == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
     
-    public int regionID = int.MaxValue;
+    public int RegionID = int.MaxValue;
 
 
     public WFCNode(Vector2I pos)
     {
         Position = pos;
-        tiles = new List<WFCTile>();
+        Tiles = new List<WFCTile>();
     }
 
 
     public void Add(WFCTile tile)
     {
-        tiles.Add(tile);
+        Tiles.Add(tile);
     }
 
     public void AddRange(List<WFCTile> tileList)
     {
-        List<WFCTile> newTileList = new List<WFCTile>(tiles);
+        List<WFCTile> newTileList = new List<WFCTile>(Tiles);
         newTileList.AddRange(tileList);
-        tiles = newTileList;
+        Tiles = newTileList;
     }
     //the allowed Tiles to the south of this, are all the ones with
     //a north connection that matches...? I think... I'm tired.
@@ -100,11 +114,11 @@ public class WFCNode
     /// 
     /// </summary>
     /// <param name="nodes"></param>
-    /// <returns>The number of tiles changed by the entropy update</returns>
+    /// <returns>The number of Tiles changed by the Entropy update</returns>
     public int UpdateEntropy(Dictionary<Vector2I, WFCNode> nodes)
     {
         //filter NSEW nodes, if the dictionary doesn't contain a node for that direction, it's outside the map. 
-        if(entropy == 1)
+        if(Entropy == 1)
         {
             return 0;
         }
@@ -114,7 +128,7 @@ public class WFCNode
         var positionE = Position + new Vector2I( 1,  0);
         var positionW = Position + new Vector2I(-1,  0);
 
-        List<WFCTile> tempTileList = new List<WFCTile>(tiles);
+        List<WFCTile> tempTileList = new List<WFCTile>(Tiles);
 
         var TileN_allowedTiles_S = (nodes.ContainsKey(positionN)) ? nodes[positionN].allowedTiles_S : new List<int>() { 0 };
         var TileS_allowedTiles_N = (nodes.ContainsKey(positionS)) ? nodes[positionS].allowedTiles_N : new List<int>() { 0 };
@@ -130,10 +144,10 @@ public class WFCNode
             TileW_allowedTiles_E.Contains(x.ConnectionType_W)
         ).ToList();
 
-        int tileDifference = tiles.Count - tempTileList.Count;
+        int tileDifference = Tiles.Count - tempTileList.Count;
         if(tileDifference > 0)
         {
-            tiles = tempTileList;
+            Tiles = tempTileList;
         }
 
         return tileDifference;
@@ -151,7 +165,7 @@ public class WFCNode
         output += $"S Pos: {positionS}\n";
         output += $"E Pos: {positionE}\n";
         output += $"W Pos: {positionW}\n";
-        foreach (var tile in tiles)
+        foreach (var tile in Tiles)
         {
             output += $"{tile}\n";
         }
@@ -159,13 +173,13 @@ public class WFCNode
     }
 
 
-    public void Collapse(Random rand)
+    public void Colapse(Random rand)
     {
-        if(tiles.Count != 0)
+        if(Tiles.Count != 0)
         {
-            int randomTile = rand.Next(0, tiles.Count);
-            //GD.Print($"Random Tile{randomTile} > {tiles.Count}");
-            tiles = new List<WFCTile> { tiles[randomTile] };
+            int randomTile = rand.Next(0, Tiles.Count);
+            //GD.Print($"Random Tile{randomTile} > {Tiles.Count}");
+            Tiles = new List<WFCTile> { Tiles[randomTile] };
         }
     }
 }
