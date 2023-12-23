@@ -37,19 +37,8 @@ public partial class Debug3DCharacterController : CharacterBody3D
     [Export] float mouseSensitivity = 0.1f;
     [Export] float mouseAcceleration = 1;
 
-    PlayerPositionMessage positionMessage;
-
     public override void _Ready()
     {
-    }
-    public override void _EnterTree()
-    {
-        positionMessage = Messages.Get<PlayerPositionMessage>();
-    }
-
-    public override void _ExitTree()
-    {
-        Messages.Return<PlayerPositionMessage>();
     }
 
     int jumpCount = 2;

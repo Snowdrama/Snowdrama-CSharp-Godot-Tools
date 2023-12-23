@@ -30,9 +30,6 @@ public partial class WFC2DDebugGenerator : Node
 	{
         //generatedNodes = generator.GenerateMap(tileFilePath, mapWidth, mapHeight);
         //OutputDebugTextures(mapWidth, mapHeight, generatedNodes);
-        CommandConsole.AddCommand("DetailNode", DetailNode);
-
-        CommandConsole.AddCommand("OutputEntropy", OutputEntropy);
 
         GD.Print("Generating Map!");
         generatedNodes = generator.GenerateMap(tileFilePath, mapWidth, mapHeight, false, seed);
@@ -49,14 +46,6 @@ public partial class WFC2DDebugGenerator : Node
             generatedNodes = generator.GenerateMap(tileFilePath, mapWidth, mapHeight, false, seed);
             OutputDebugTextures(mapWidth, mapHeight, generatedNodes);
         }
-    }
-    public override void _EnterTree()
-    {
-    }
-    public override void _ExitTree()
-    {
-        CommandConsole.AddCommand("DetailNode", DetailNode);
-        CommandConsole.AddCommand("OutputEntropy", OutputEntropy);
     }
 
     List<Sprite2D> debugSpriteNodes = new List<Sprite2D>();

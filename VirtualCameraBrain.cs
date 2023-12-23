@@ -2,41 +2,60 @@ using Godot;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using static Godot.HttpRequest;
 
 //asks to be the primary camera
-public class CameraPriorityMessage : AMessage<VirtualCamera> { }
-
 public partial class VirtualCameraBrain : Camera2D
 {
+    public static List<VirtualCamera> cameras;
+
     VirtualCamera currentCamera;
     [Export] bool smoothScale;
 
-
-    CameraPriorityMessage CameraPriorityMessage;
+    
     public override void _EnterTree()
     {
         base._EnterTree();
-        CameraPriorityMessage = Messages.Get<CameraPriorityMessage>();
-        CameraPriorityMessage.AddListener(SetCurrentCamera);
     }
 
     public override void _ExitTree()
     {
+
         base._ExitTree();
-        CameraPriorityMessage.RemoveListener(SetCurrentCamera);
-
     }
 
-    public void SetCurrentCamera(VirtualCamera newCamera)
+    public override void _Process(double delta)
     {
-        currentCamera = newCamera;
-    }
+        //if the list is null...then there's no VCams
+        if(cameras == null)
+        {
+            return;
+        }
 
-	public override void _Process(double delta)
-    {
+        //can't do anything if there's no VCams
+        if(cameras.Count == 0)
+        {
+            return;
+        }
+
+        //sort the cameras by their priority
+        cameras.Sort((x, y) =>
+        {
+            if (x.priority > y.priority)
+            {
+                return 0;
+            }
+            return 1;
+        });
+
+        //current one is the highest priority
+        if(currentCamera != cameras[0])
+        {
+            currentCamera = cameras[0];
+        }
+
         if (currentCamera != null)
         {
-            //GD.Print($"Updating Camera to: {currentCamera.Offset}");
             this.Position = currentCamera.GlobalPosition;
             this.Rotation = currentCamera.Rotation;
             if (smoothScale && currentCamera.calculatedScale.Length() > 0.1f)
@@ -47,6 +66,35 @@ public partial class VirtualCameraBrain : Camera2D
             {
                 this.Zoom = currentCamera.calculatedScale;
             }
+        }
+    }
+
+
+
+
+
+    public static void RegisterCamera(VirtualCamera cam)
+    {
+        ConfigureCameraList();
+        if (cameras != null && !cameras.Contains(cam))
+        {
+            cameras.Add(cam);
+        }
+    }
+    public static void UnregisterCamera(VirtualCamera cam)
+    {
+        ConfigureCameraList();
+        if (cameras != null && cameras.Contains(cam))
+        {
+            cameras.Remove(cam);
+        }
+
+    }
+    private static void ConfigureCameraList()
+    {
+        if (cameras == null)
+        {
+            cameras = new List<VirtualCamera>();
         }
     }
 }
