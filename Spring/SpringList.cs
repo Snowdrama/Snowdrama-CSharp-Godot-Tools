@@ -27,9 +27,6 @@ namespace Snowdrama.Spring
         {
             var id = Count;
             var state = new SpringState(initialValue, initialValue, 0f);
-            GD.Print($"Adding Config Mass: {springConfig.Mass}");
-            GD.Print($"Adding Config Tension: {springConfig.Tension}");
-            GD.Print($"Adding Config Friction: {springConfig.Friction}");
             _springConfigs.Add(springConfig);
             _states.Add(state);
 

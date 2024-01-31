@@ -7,7 +7,11 @@ using static Godot.HttpRequest;
 //asks to be the primary camera
 public partial class VirtualCameraBrain : Camera2D
 {
+    public static VirtualCameraBrain cameraInstance;
     public static List<VirtualCamera> cameras;
+    public Transform2D cameraTransform = Transform2D.Identity;
+    public static Vector2 cameraPosition;
+    public static Vector2 cameraSize;
 
     VirtualCamera currentCamera;
     [Export] bool smoothScale;
@@ -16,18 +20,26 @@ public partial class VirtualCameraBrain : Camera2D
     public override void _EnterTree()
     {
         base._EnterTree();
+        cameraInstance = this;
+
+
+
     }
 
     public override void _ExitTree()
     {
 
         base._ExitTree();
+        cameraInstance = null;
     }
 
     public override void _Process(double delta)
     {
+        VirtualCameraBrain.cameraPosition = this.Position;
+        cameraTransform = GetCanvasTransform();
+
         //if the list is null...then there's no VCams
-        if(cameras == null)
+        if (cameras == null)
         {
             return;
         }
@@ -38,17 +50,17 @@ public partial class VirtualCameraBrain : Camera2D
             return;
         }
 
-        //sort the cameras by their priority
+        //sort the cameras by their virtualCameraPriority
         cameras.Sort((x, y) =>
         {
-            if (x.priority > y.priority)
+            if (x.virtualCameraPriority > y.virtualCameraPriority)
             {
                 return 0;
             }
             return 1;
         });
 
-        //current one is the highest priority
+        //current one is the highest virtualCameraPriority
         if(currentCamera != cameras[0])
         {
             currentCamera = cameras[0];
@@ -68,10 +80,6 @@ public partial class VirtualCameraBrain : Camera2D
             }
         }
     }
-
-
-
-
 
     public static void RegisterCamera(VirtualCamera cam)
     {

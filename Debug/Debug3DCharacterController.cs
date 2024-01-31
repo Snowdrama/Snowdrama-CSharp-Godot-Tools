@@ -78,12 +78,12 @@ public partial class Debug3DCharacterController : CharacterBody3D
 
         if (sprintKeyPressed)
         {
-            //sprint is true if the key is pressed regardles of speed
+            //sprint is true if the Key is pressed regardles of speed
             sprint = true;
         }
         else if (!sprintKeyPressed && moveDirection.LengthSquared() < 0.1f)
         {
-            //if we aren't holding the sprint key AND we are not moving
+            //if we aren't holding the sprint Key AND we are not moving
             sprint = false;
         }
 

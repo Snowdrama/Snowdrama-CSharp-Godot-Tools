@@ -127,7 +127,7 @@ public struct Quad
     }
     public override string ToString()
     {
-        return $"Min:({Min}) Max:({Max}) Position:({Position}) Size({Size})";
+        return $"Min:({Min}) Max:({Max}) Position:({Position}) GRID_SIZE({Size})";
     }
 }
 

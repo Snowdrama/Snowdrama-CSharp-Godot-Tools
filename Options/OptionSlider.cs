@@ -3,14 +3,23 @@ using System;
 
 public partial class OptionSlider : HSlider
 {
-    [Export] Options optionsResource;
     [Export] string optionKey;
+
+    double localValue;
     public override void _Ready()
 	{
-        GD.Print("Option Slider _Ready");
-        GD.Print($"Value from config? {optionsResource.GetDouble(optionKey)}");
-        this.SetValueNoSignal(optionsResource.GetDouble(optionKey));
+        localValue = Options.GetDouble(optionKey);
+        GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");
+        this.SetValueNoSignal(localValue);
 	}
+
+    public override void _Process(double delta)
+    {
+        if (Options.GetDouble(optionKey) != localValue)
+        {
+            this.SetValueNoSignal(Options.GetDouble(optionKey));
+        }
+    }
     public override void _EnterTree()
     {
         GD.Print("Option Slider _EnterTree");
@@ -27,6 +36,7 @@ public partial class OptionSlider : HSlider
 
     public void SliderChanged(double newValue)
     {
-        optionsResource.SetDouble(optionKey, newValue);
+        localValue = newValue;
+        Options.SetDouble(optionKey, newValue);
     }
 }

@@ -84,7 +84,7 @@ public class QuadTree<T>
     /// Insert a new leaf node into the QuadTree.
     /// </summary>
     /// <param name="value">The leaf value.</param>
-    /// <param name="quad">The leaf size.</param>
+    /// <param name="quad">The leaf windowSize.</param>
     public void Insert(T value, ref Quad quad)
     {
         Leaf leaf;

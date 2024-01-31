@@ -16,6 +16,14 @@ public partial class FadePanelTransition : Transition
     }
     public override void SetTransitionValue(float transitionAmount)
     {
+        if(transitionAmount > 0)
+        {
+            this.Visible = true;
+        }
+        else
+        {
+            this.Visible = false;
+        }
         fadeColor.A = transitionAmount;
         styleBox.Set("bg_color", fadeColor);
     }

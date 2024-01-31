@@ -1,53 +1,66 @@
+
 using Godot;
 using Godot.Collections;
-using Microsoft.VisualBasic;
-using System;
-
-[GlobalClass]
-public partial class Options : Resource
+public partial class Options : Node
 {
-    [Export(PropertyHint.File)] string defaultConfigLocation = "res://Tools/Options/DefaultConfig.cfg";
-    [Export(PropertyHint.File)] string userConfigLocation = "user://Config.cfg";
-    ConfigFile defaultConfig;
-    ConfigFile config;
-    public Options()
-    {
-        defaultConfig = new ConfigFile();
-        Error defaultErr = defaultConfig.Load(defaultConfigLocation);
+    public static Options instance;
+    public const string MUSIC_VOLUME_OPTION_KEY = "MusicVolume";
+    public const string SOUND_VOLUME_OPTION_KEY = "SoundVolume";
+    public const string VOICE_VOLUME_OPTION_KEY = "VoiceVolume";
 
-        if (defaultErr == Error.Ok)
+    public static string defaultConfigLocation = "res://Tools/Options/DefaultConfig.cfg";
+    public static string userConfigLocation = "user://Config.cfg";
+
+    public static ConfigFile config;
+
+    private static void ValidateLoadConfig()
+    {
+        if(config == null)
         {
             config = new ConfigFile();
             Error configErr = config.Load(userConfigLocation);
-            if(configErr == Error.Ok)
+            GD.Print($"Loading Config From {userConfigLocation}");
+            if (configErr != Error.Ok)
             {
-                foreach (var section in defaultConfig.GetSections())
+                GD.Print($"Loading Failed, Loading Default From {defaultConfigLocation}");
+                //load from the default cfg
+                var defaultConfig = new ConfigFile();
+                Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
+
+
+                if (defaultConfigErr == Error.Ok)
                 {
-                    foreach (var sectionKey in defaultConfig.GetSectionKeys(section))
-                    {
-                        //go through defaults if the user config doesn't contain the default add it
-                        var defaultConfigValue = defaultConfig.GetValue(section, sectionKey);
-                        var userConfigValue = config.GetValue(section, sectionKey, defaultConfigValue);
-                        GD.Print($"Section: {section} Key: {sectionKey} DefaultValue: {defaultConfigValue} UserConfigValue: {userConfigValue}");
-                        config.SetValue(section, sectionKey, userConfigValue);
-                    }
+                    GD.Print("Loading Success!");
+                    config = defaultConfig;
+                    GD.Print($"Saving To {userConfigLocation}");
+                    config.Save(userConfigLocation);
+                }
+                else
+                {
+                    GD.PrintErr($"Loading Default Failed Somehow...");
                 }
             }
-            GD.Print("Saving User Config");
+        }
+    }
+    private static void SaveConfig()
+    {
+        if(config != null)
+        {
             config.Save(userConfigLocation);
         }
         else
         {
-            GD.PrintErr($"Failed to load defaults, default file is REQUIRED, please add a config file to {defaultConfigLocation} even if it's empty");
+            GD.PrintErr("Couldn't save config because config is null");
         }
     }
 
-    public double GetDouble(string key, double defaultValue = 0.0f)
+    public static double GetDouble(string key, double defaultValue = 0.0f)
     {
+        ValidateLoadConfig();
         var value = config.GetValue("Options", key, defaultValue);
         var hasSection = config.HasSection("Options");
         var hasSectionKey = config.HasSectionKey("Options", key);
-        
+
         if (value.VariantType == Variant.Type.Float)
         {
             return (double)value.AsDouble();
@@ -55,13 +68,16 @@ public partial class Options : Resource
         return defaultValue;
     }
 
-    public void SetDouble(string key, double value)
+    public static void SetDouble(string key, double value)
     {
+        ValidateLoadConfig();
         config.SetValue("Options", key, value);
         var err = config.Save(userConfigLocation);
+        SaveConfig();
     }
-    public float GetFloat(string key, float defaultValue = 0.0f)
+    public static float GetFloat(string key, float defaultValue = 0.0f)
     {
+        ValidateLoadConfig();
         var value = config.GetValue("Options", key, defaultValue);
 
         if (value.VariantType == Variant.Type.Float)
@@ -71,15 +87,18 @@ public partial class Options : Resource
         return defaultValue;
     }
 
-    public void SetFloat(string key, float value)
+    public static void SetFloat(string key, float value)
     {
+        ValidateLoadConfig();
         config.SetValue("Options", key, value);
         config.Save(userConfigLocation);
+        SaveConfig();
     }
 
 
-    public bool GetBool(string key, bool defaultValue = false)
+    public static bool GetBool(string key, bool defaultValue = false)
     {
+        ValidateLoadConfig();
         var value = config.GetValue("Options", key, defaultValue);
 
         if (value.VariantType == Variant.Type.Bool)
@@ -89,14 +108,17 @@ public partial class Options : Resource
         return defaultValue;
     }
 
-    public void SetBool(string key, bool value)
+    public static void SetBool(string key, bool value)
     {
+        ValidateLoadConfig();
         config.SetValue("Options", key, value);
         config.Save(userConfigLocation);
+        SaveConfig();
     }
 
-    public string GetString(string key, string defaultValue = "")
+    public static string GetString(string key, string defaultValue = "")
     {
+        ValidateLoadConfig();
         var value = config.GetValue("Options", key, defaultValue);
 
         if (value.VariantType == Variant.Type.String)
@@ -106,13 +128,11 @@ public partial class Options : Resource
         return defaultValue;
     }
 
-    public void SetString(string key, string value)
+    public static void SetString(string key, string value)
     {
+        ValidateLoadConfig();
         config.SetValue("Options", key, value);
         config.Save(userConfigLocation);
-    }
-
-    public void ValidateConfig()
-    {
+        SaveConfig();
     }
 }
