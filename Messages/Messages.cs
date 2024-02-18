@@ -60,21 +60,24 @@ public class MessageHub
 
         if(messages.TryGetValue(messageType, out message))
         {
+            message.AddUser();
             return (SType)message;
         }
-        return (SType)Bind(messageType);
+        var newMessage = (SType)Bind(messageType);
+        newMessage.AddUser();
+        return newMessage;
     }
     public void Return<SType>() where SType : IMessage, new()
     {
-        Type signalType = typeof(SType);
-        IMessage signal;
+        Type messageType = typeof(SType);
+        IMessage message;
 
-        if (messages.TryGetValue(signalType, out signal))
+        if (messages.TryGetValue(messageType, out message))
         {
-            signal.RemoveUser();
-            if (signal.GetUserCount() == 0)
+            message.RemoveUser();
+            if (message.GetUserCount() == 0)
             {
-                messages.Remove(signalType);
+                messages.Remove(messageType);
             }
         }
     }
