@@ -4,7 +4,7 @@ public partial class UIRoute : Node
     [Export] private UIRouter _router;
     [Export] private string routeSegment;
     [Export] private CanvasLayer mainContent;
-    [Export] private Control selectOnRouteOpen;
+    [Export] private Control focusOnVisible;
     [Export] private bool startEnabled = false;
     public override void _Ready()
     {
@@ -33,14 +33,26 @@ public partial class UIRoute : Node
         mainContent.Show();
 
         // TODO: Force the selection to this for gamepads.
-        // if (selectOnRouteOpen)
-        // {
-        //     selectOnRouteOpen.Select();
-        // }
+        if (focusOnVisible != null)
+        {
+            focusOnVisible.GrabFocus();
+        }
     }
 
     public void CloseRoute()
     {
         mainContent.Hide();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (mainContent.Visible)
+        {
+            //check if we have a focus, if somehow we lose that focus grab it again
+            if(GetViewport().GuiGetFocusOwner() == null)
+            {
+                focusOnVisible.GrabFocus();
+            }
+        }
     }
 }

@@ -14,47 +14,62 @@ public partial class UIImageGridLayout : Container
     private Vector2 pixelRatio = new Vector2();
 
     [Export] bool update;
+
+
+    public override void _Ready()
+    {
+        base._Ready();
+        UpdateContainer();
+    }
+
     public override void _Process(double delta)
     {
-        if(paletteImage == null || layoutImage == null)
-        {
-            return;
-        }
-
         if (Engine.IsEditorHint())
         {
-            if (update)
+            if (paletteImage == null || layoutImage == null)
             {
-                GD.Print("Updating");
-                update = false;
-                ParsePalette(paletteImage.GetImage());
-                ParseLayout(layoutImage.GetImage());
-                pixelRatio = new Vector2(1.0f / layoutImage.GetWidth(), 1.0f / layoutImage.GetHeight());
-                // Must re-sort the children
-                int currentIndex = 1;
-                foreach (Control c in GetChildren().Cast<Control>())
-                {
-                    // Fit to own GRID_SIZE
-                    if (rects.ContainsKey(currentIndex))
-                    {
-                        var currentRect = rects[currentIndex];
-                        var anchorEndPixel = currentRect.End + new Vector2I(1, 1);
-                        var anchorEnd = anchorEndPixel * pixelRatio;
-                        var anchorPositionPixel = currentRect.Position;
-                        var anchorPosition = anchorPositionPixel * pixelRatio;
+                return;
+            }
+            UpdateContainer();
+        }
+    }
+    public override void _Notification(int what)
+    {
+        if (what == NotificationSortChildren)
+        {
+            UpdateContainer();
+        }
+    }
 
-                        c.SetAnchorAndOffset(Side.Left, anchorPosition.X, 0);
-                        c.SetAnchorAndOffset(Side.Right, anchorEnd.X, 0);
-                        c.SetAnchorAndOffset(Side.Top, anchorPosition.Y, 0);
-                        c.SetAnchorAndOffset(Side.Bottom, anchorEnd.Y, 0);
-                        currentIndex++;
-                    }
-                    else
-                    {
-                        Debug.LogError("Layout doesn't have enough rects to cover all children."
-                        + "Please update the layout image or remove children");
-                    }
-                }
+    public void UpdateContainer()
+    {
+        update = false;
+        ParsePalette(paletteImage.GetImage());
+        ParseLayout(layoutImage.GetImage());
+        pixelRatio = new Vector2(1.0f / layoutImage.GetWidth(), 1.0f / layoutImage.GetHeight());
+        // Must re-sort the children
+        int currentIndex = 1;
+        foreach (Control c in GetChildren().Cast<Control>())
+        {
+            // Fit to own GRID_SIZE
+            if (rects.ContainsKey(currentIndex))
+            {
+                c.Show();
+                var currentRect = rects[currentIndex];
+                var anchorEndPixel = currentRect.End + new Vector2I(1, 1);
+                var anchorEnd = anchorEndPixel * pixelRatio;
+                var anchorPositionPixel = currentRect.Position;
+                var anchorPosition = anchorPositionPixel * pixelRatio;
+
+                c.SetAnchorAndOffset(Side.Left, anchorPosition.X, 0);
+                c.SetAnchorAndOffset(Side.Right, anchorEnd.X, 0);
+                c.SetAnchorAndOffset(Side.Top, anchorPosition.Y, 0);
+                c.SetAnchorAndOffset(Side.Bottom, anchorEnd.Y, 0);
+                currentIndex++;
+            }
+            else
+            {
+                c.Hide();
             }
         }
     }
