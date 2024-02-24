@@ -134,7 +134,7 @@ public abstract class AMessage : ABaseSignal
         callback += handler;
     }
 
-    public void RemnoveListener(Action handler)
+    public void RemoveListener(Action handler)
     {
         callback -= handler;
     }
