@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0sop8iwb7cbd"]
+
+[ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioManager.cs" id="1_q6p5k"]
+
+[node name="AudioManager" type="Node"]
+script = ExtResource("1_q6p5k")
+VolumeKeys = Array[String](["Master", "Music", "Sound", "Announcer"])

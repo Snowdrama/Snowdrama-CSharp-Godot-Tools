@@ -15,13 +15,35 @@ public class Messages
     private static Dictionary<string, MessageHub> messageHubs = new Dictionary<string, MessageHub>();
     private static readonly MessageHub globalHub = new MessageHub();
 
+    /// <summary>
+    /// Gets a message object of the type passed and adds a user count
+    /// This gets it from a global hub, if you need to differentiate it
+    /// consider using GetHub("Identifier").Get<SType>() instead
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
     public static SType Get<SType>() where SType : IMessage, new()
     {
         return globalHub.Get<SType>();
     }
+    /// <summary>
+    /// Returns a copy of the message, by returning it we can 
+    /// manage the memory of used messages, if there's no,
+    /// users actively holding a reference. 
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
     public static void Return<SType>() where SType : IMessage, new()
     {
         globalHub.Return<SType>();
+    }
+    /// <summary>
+    /// get's a message without changing user count
+    /// used for intentionally only getting it to dispatch once
+    /// </summary>
+    /// <typeparam name="SType">The Type of the message</typeparam>
+    /// <returns>The message object</returns>
+    public static SType GetOnce<SType>() where SType : IMessage, new()
+    {
+        return globalHub.GetOnce<SType>();
     }
     public static MessageHub GetHub(string hubName)
     {
@@ -80,6 +102,24 @@ public class MessageHub
                 messages.Remove(messageType);
             }
         }
+    }
+    /// <summary>
+    /// get's a message without changing user count
+    /// used for intentionally only getting it to dispatch once
+    /// </summary>
+    /// <typeparam name="SType">The Type of the message</typeparam>
+    /// <returns>The message object</returns>
+    public SType GetOnce<SType>() where SType : IMessage, new()
+    {
+        Type messageType = typeof(SType);
+        IMessage message;
+
+        if (messages.TryGetValue(messageType, out message))
+        {
+            return (SType)message;
+        }
+        var newMessage = (SType)Bind(messageType);
+        return newMessage;
     }
 
     public IMessage Bind(Type messageType)
