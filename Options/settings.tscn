@@ -6,8 +6,6 @@
 [ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioSlider.cs" id="4_0a1m6"]
 [ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioOutputDeviceSelection.cs" id="5_r0fq2"]
 [ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioInputDeviceSelection.cs" id="6_ea457"]
-[ext_resource type="Script" path="res://CountdownTimer.cs" id="7_yexxk"]
-
 [node name="Settings" type="TabContainer"]
 anchors_preset = 15
 anchor_right = 1.0
@@ -212,49 +210,3 @@ item_count = 1
 popup/item_0/text = ""
 popup/item_0/id = 0
 script = ExtResource("6_ea457")
-
-[node name="Countdown" type="Panel" parent="." node_paths=PackedStringArray("dateTarget", "countdownString")]
-visible = false
-layout_mode = 2
-script = ExtResource("7_yexxk")
-dateTarget = NodePath("VBoxContainer/HBoxContainer/VBoxContainer/DateTarget")
-countdownString = NodePath("VBoxContainer/HBoxContainer/VBoxContainer/CountdownFormat")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Countdown"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Countdown/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Countdown Date" type="Label" parent="Countdown/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-text = "Countdown Date, Format:
-yyyy-MM-dd hh:mm:ss"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Countdown/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DateTarget" type="LineEdit" parent="Countdown/VBoxContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-placeholder_text = "yyyy-MM-dd hh:mm:ss"
-clear_button_enabled = true
-
-[node name="CountdownFormat" type="LineEdit" parent="Countdown/VBoxContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-placeholder_text = "Time Remaining: [DATETIME]"
-clear_button_enabled = true
