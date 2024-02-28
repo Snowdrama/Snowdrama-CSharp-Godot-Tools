@@ -3,6 +3,8 @@ using System;
 
 public partial class UIRouterPause : Node
 {
+
+    [Export] string pauseKey = "Pause_0";
     [Export] UIRouter router;
 
     bool _paused = false;
@@ -52,7 +54,7 @@ public partial class UIRouterPause : Node
     {
         base._Input(@event);
 
-        if (@event.IsActionPressed("Pause"))
+        if (@event.IsActionPressed(pauseKey))
         {
             Paused = !Paused;
         }
