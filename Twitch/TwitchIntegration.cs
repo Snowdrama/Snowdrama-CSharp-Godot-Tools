@@ -78,9 +78,6 @@ public partial class TwitchIntegration : Node
                 }
         });
 
-        GD.Print($"ClientID: {TwitchLoginResource.APP_CLIENT_ID}");
-        GD.Print($"APP_CLIENT_SECRET: {TwitchLoginResource.APP_CLIENT_SECRET}");
-
         GD.Print("Starting Chat Client");
         ConnectionCredentials credentials = new ConnectionCredentials(TwitchLoginResource.ChannelName, TwitchLoginResource.APP_CLIENT_SECRET);
         var clientOptions = new ClientOptions
