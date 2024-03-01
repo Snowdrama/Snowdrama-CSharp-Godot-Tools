@@ -25,24 +25,58 @@ using System;
 
 public partial class InputManager : Node
 {
+    public static InputManager instance;
 	[Export] Godot.Collections.Dictionary<int, Resource> inputResourcesByDevice = new Godot.Collections.Dictionary<int, Resource>();
-
 
     public override void _Ready()
     {
+        if(instance != null)
+        {
+            return;
+        }
+
+
+
         for (int i = 0; i < 8; i++)
         {
-            InputMap.AddAction($"MoveUp_{i}");
-            InputMap.AddAction($"MoveDown_{i}");
-            InputMap.AddAction($"MoveLeft_{i}");
-            InputMap.AddAction($"MoveRight_{i}");
+            if (!InputMap.HasAction($"MoveUp_{i}"))
+            {
+                InputMap.AddAction($"MoveUp_{i}");
+            }
+            if (!InputMap.HasAction($"MoveDown_{i}"))
+            {
+                InputMap.AddAction($"MoveDown_{i}");
+            }
+            if (!InputMap.HasAction($"MoveLeft_{i}"))
+            {
+                InputMap.AddAction($"MoveLeft_{i}");
+            }
+            if (!InputMap.HasAction($"MoveRight_{i}"))
+            {
+                InputMap.AddAction($"MoveRight_{i}");
+            }
 
-            InputMap.AddAction($"LookUp_{i}");
-            InputMap.AddAction($"LookDown_{i}");
-            InputMap.AddAction($"LookLeft_{i}");
-            InputMap.AddAction($"LookRight_{i}");
+            if (!InputMap.HasAction($"LookUp_{i}"))
+            {
+                InputMap.AddAction($"LookUp_{i}");
+            }
+            if (!InputMap.HasAction($"LookDown_{i}"))
+            {
+                InputMap.AddAction($"LookDown_{i}");
+            }
+            if (!InputMap.HasAction($"LookLeft_{i}"))
+            {
+                InputMap.AddAction($"LookLeft_{i}");
+            }
+            if (!InputMap.HasAction($"LookRight_{i}"))
+            {
+                InputMap.AddAction($"LookRight_{i}");
+            }
 
-            InputMap.AddAction($"Pause_{i}");
+            if (!InputMap.HasAction($"Pause_{i}"))
+            {
+                InputMap.AddAction($"Pause_{i}");
+            }
 
             //Move Key
             InputEventKey moveEvent_key_Up = new InputEventKey();
@@ -95,47 +129,47 @@ public partial class InputManager : Node
             InputEventKey lookEvent_key_Up = new InputEventKey();
             lookEvent_key_Up.Keycode = Key.Up;
             lookEvent_key_Up.Device = i;
-            InputMap.ActionAddEvent($"MoveUp_{i}", lookEvent_key_Up);
+            InputMap.ActionAddEvent($"LookUp_{i}", lookEvent_key_Up);
 
             InputEventKey lookEvent_key_down = new InputEventKey();
             lookEvent_key_down.Keycode = Key.Down;
             lookEvent_key_down.Device = i;
-            InputMap.ActionAddEvent($"MoveDown_{i}", lookEvent_key_down);
+            InputMap.ActionAddEvent($"LookDown_{i}", lookEvent_key_down);
 
             InputEventKey lookEvent_key_left = new InputEventKey();
             lookEvent_key_left.Keycode = Key.Left;
             lookEvent_key_left.Device = i;
-            InputMap.ActionAddEvent($"MoveLeft_{i}", lookEvent_key_left);
+            InputMap.ActionAddEvent($"LookLeft_{i}", lookEvent_key_left);
 
             InputEventKey lookEvent_key_right = new InputEventKey();
             lookEvent_key_right.Keycode = Key.Right;
             lookEvent_key_right.Device = i;
-            InputMap.ActionAddEvent($"MoveRight_{i}", moveEvent_key_right);
+            InputMap.ActionAddEvent($"LookRight_{i}", lookEvent_key_right);
 
             //Look Joy
             InputEventJoypadMotion lookEvent_joy_Up = new InputEventJoypadMotion();
             lookEvent_joy_Up.Axis = JoyAxis.RightY;
             lookEvent_joy_Up.AxisValue = -1;
             lookEvent_joy_Up.Device = i;
-            InputMap.ActionAddEvent($"MoveUp_{i}", lookEvent_joy_Up);
+            InputMap.ActionAddEvent($"LookUp_{i}", lookEvent_joy_Up);
 
             InputEventJoypadMotion lookEvent_joy_down = new InputEventJoypadMotion();
             lookEvent_joy_down.Axis = JoyAxis.RightY;
             lookEvent_joy_down.AxisValue = 1;
             lookEvent_joy_down.Device = i;
-            InputMap.ActionAddEvent($"MoveDown_{i}", lookEvent_joy_down);
+            InputMap.ActionAddEvent($"LookDown_{i}", lookEvent_joy_down);
 
             InputEventJoypadMotion lookEvent_joy_left = new InputEventJoypadMotion();
             lookEvent_joy_left.Axis = JoyAxis.RightX;
             lookEvent_joy_left.AxisValue = -1;
             lookEvent_joy_left.Device = i;
-            InputMap.ActionAddEvent($"MoveLeft_{i}", lookEvent_joy_left);
+            InputMap.ActionAddEvent($"LookLeft_{i}", lookEvent_joy_left);
 
             InputEventJoypadMotion lookEvent_joy_right = new InputEventJoypadMotion();
             lookEvent_joy_right.Axis = JoyAxis.RightX;
             lookEvent_joy_right.AxisValue = 1;
             lookEvent_joy_right.Device = i;
-            InputMap.ActionAddEvent($"MoveRight_{i}", lookEvent_joy_right);
+            InputMap.ActionAddEvent($"LookRight_{i}", lookEvent_joy_right);
 
 
 
