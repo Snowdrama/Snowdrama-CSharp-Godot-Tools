@@ -10,6 +10,7 @@ public partial class SceneManager : Node
 
     [Export] PackedScene[] packedScenes;
 
+    static string previousSceneName;
     [Export] public Node currentScene;
     [Export] string sceneTarget;
     [Export] bool run;
@@ -33,6 +34,10 @@ public partial class SceneManager : Node
         instance = this;
         this.ProcessMode = ProcessModeEnum.Always;
 
+        if(currentScene != null)
+        {
+            previousSceneName = currentScene.Name;
+        }
         //GDConsole.AddCommand<string>("GoToScene", InstanceLoadScene);
     }
 
@@ -57,6 +62,7 @@ public partial class SceneManager : Node
         {
             if (sceneToRemove != null)
             {
+                previousSceneName = sceneToRemove.Name;
                 sceneToRemove.QueueFree();
             }
             var instantiatedScene = _scenes[newSceneName].Instantiate();
@@ -83,10 +89,18 @@ public partial class SceneManager : Node
         if(sceneTarget == null)
         {
             Debug.LogError($"Scene name in null, need to pass a scene name!");
+            foreach (var item in _scenes)
+            {
+                GD.PrintErr($"Scene Name Keys: {item.Key}");
+            }
         }
         if (!_scenes.ContainsKey(sceneTarget))
         {
             Debug.LogError($"Scene name {sceneTarget} not found in list");
+            foreach (var item in _scenes)
+            {
+                GD.PrintErr($"Scene Name Keys: {item.Key}");
+            }
         }
         GD.Print($"Loading: {sceneTarget}");
         TransitionManager.AddBlackoutCallback(OnTransitionBlackout);
@@ -107,7 +121,13 @@ public partial class SceneManager : Node
 
     private void OnTransitionBlackout()
     {
+        previousSceneName = currentScene.Name;
         currentScene = SwapScenes(currentScene, sceneTarget);
         TransitionManager.FakeLoadTransition();
+    }
+
+    public static string GetPreviousSceneName()
+    {
+        return previousSceneName;
     }
 }
