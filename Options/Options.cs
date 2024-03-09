@@ -1,12 +1,14 @@
 
 using Godot;
 using Godot.Collections;
+using Newtonsoft.Json.Linq;
 
 
 //Make this an auto load in the settings! 
 public partial class Options : Node
 {
     public static Options instance;
+    public const string MASTER_VOLUME_OPTION_KEY = "Master";
     public const string MUSIC_VOLUME_OPTION_KEY = "MusicVolume";
     public const string SOUND_VOLUME_OPTION_KEY = "SoundVolume";
     public const string VOICE_VOLUME_OPTION_KEY = "VoiceVolume";
@@ -105,6 +107,21 @@ public partial class Options : Node
         var err = config.Save(userConfigLocation);
         SaveConfig();
     }
+
+
+    public static bool HasInt(string key)
+    {
+        ValidateLoadConfig();
+        if (config.HasSectionKey("Options", key))
+        {
+            var value = config.GetValue("Options", key);
+            if (value.VariantType == Variant.Type.Int)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static int GetInt(string key, int defaultValue = 0)
     {
         ValidateLoadConfig();
@@ -127,6 +144,19 @@ public partial class Options : Node
         SaveConfig();
     }
 
+    public static bool HasDouble(string key)
+    {
+        ValidateLoadConfig();
+        if (config.HasSectionKey("Options", key))
+        {
+            var value = config.GetValue("Options", key);
+            if (value.VariantType == Variant.Type.Float)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static double GetDouble(string key, double defaultValue = 0.0f)
     {
         ValidateLoadConfig();
@@ -148,6 +178,20 @@ public partial class Options : Node
         var err = config.Save(userConfigLocation);
         SaveConfig();
     }
+
+    public static bool HasFloat(string key)
+    {
+        ValidateLoadConfig();
+        if (config.HasSectionKey("Options", key))
+        {
+            var value = config.GetValue("Options", key);
+            if (value.VariantType == Variant.Type.Float)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static float GetFloat(string key, float defaultValue = 0.0f)
     {
         ValidateLoadConfig();
@@ -168,6 +212,19 @@ public partial class Options : Node
         SaveConfig();
     }
 
+    public static bool HasBool(string key)
+    {
+        ValidateLoadConfig();
+        if(config.HasSectionKey("Options", key))
+        {
+            var value = config.GetValue("Options", key);
+            if (value.VariantType == Variant.Type.Bool)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static bool GetBool(string key, bool defaultValue = false)
     {
@@ -189,6 +246,20 @@ public partial class Options : Node
         SaveConfig();
     }
 
+
+    public static bool HasString(string key)
+    {
+        ValidateLoadConfig();
+        if (config.HasSectionKey("Options", key))
+        {
+            var value = config.GetValue("Options", key);
+            if (value.VariantType == Variant.Type.String)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static string GetString(string key, string defaultValue = "")
     {
         ValidateLoadConfig();

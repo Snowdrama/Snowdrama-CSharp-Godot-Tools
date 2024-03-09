@@ -78,7 +78,7 @@ public partial class Debug3DCharacterController : CharacterBody3D
 
         if (sprintKeyPressed)
         {
-            //sprint is true if the Key is pressed regardles of speed
+            //sprint is true if the Key is pressed regardles of maxFlyingSpeed
             sprint = true;
         }
         else if (!sprintKeyPressed && moveDirection.LengthSquared() < 0.1f)

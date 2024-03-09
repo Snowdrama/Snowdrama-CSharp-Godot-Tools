@@ -1,3 +1,4 @@
+using Godot;
 using System;
 public static class FloatExtensions
 {
@@ -66,6 +67,14 @@ public static class FloatExtensions
     public static float Round(this float val)
     {
         return (float)Math.Round(val);
+    }
+
+    public static float MoveTowards(this float from, float to, float delta)
+    {
+        float difference = (to - from);
+        float change = Mathf.Min(Mathf.Abs(difference), delta);
+        float newValue = from + Mathf.Sign(difference) * change;
+        return newValue;
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 
-public partial class MusicManager : Node
+public partial class MusicManager2D : Node
 {
     [Export]
     Options options;
@@ -12,8 +12,8 @@ public partial class MusicManager : Node
 	}
 	MusicManagerChannel channel = MusicManagerChannel.Music1;
     float musicChannelLerp = 0;
-	AudioStreamPlayer2D music1;
-	AudioStreamPlayer2D music2;
+	[Export] AudioStreamPlayer2D music1;
+    [Export] AudioStreamPlayer2D music2;
 
 	[Export] Array<AudioStream> songs = new Array<AudioStream>();
     [Export] float targetFadeTime = 5;
@@ -37,16 +37,8 @@ public partial class MusicManager : Node
     public override void _EnterTree()
     {
         base._EnterTree();
-        music1 = new AudioStreamPlayer2D();
-        music1.ProcessMode = Node.ProcessModeEnum.Always;
-        music2 = new AudioStreamPlayer2D();
-        music2.ProcessMode = Node.ProcessModeEnum.Always;
-
         music1.Name = "Music1";
         music2.Name = "Music2";
-
-        music1.Bus = "Music";
-        music2.Bus = "Music";
 
         music1LoopCount = musicLoopCountMax;
         music2LoopCount = musicLoopCountMax;

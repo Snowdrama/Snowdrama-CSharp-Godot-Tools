@@ -7,10 +7,18 @@ public partial class OptionSlider : HSlider
 
     double localValue;
     public override void _Ready()
-	{
-        localValue = Options.GetDouble(optionKey);
-        GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");
-        this.SetValueNoSignal(localValue);
+    {
+        if (Options.HasBool(optionKey))
+        {
+            localValue = Options.GetDouble(optionKey);
+            GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");
+            this.SetValueNoSignal(localValue);
+        }
+        else
+        {
+            localValue = this.Value;
+            Options.SetDouble(optionKey, localValue);
+        }
 	}
 
     public override void _Process(double delta)
