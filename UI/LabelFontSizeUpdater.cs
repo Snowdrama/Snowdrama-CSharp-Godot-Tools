@@ -5,44 +5,75 @@ using System;
 [Tool]
 public partial class LabelFontSizeUpdater : Label
 {
-    public override void _Ready()
-    {
-        parent = GetParent<Control>();
-    }
+    [Export] private Vector2 oldSize;
+    [Export] private Vector2 currentSize;
+    private int oldCharacterCount;
+    private int currentCharacterCount;
 
-    private Vector2 oldParentSize;
-    private int oldTextCharCount;
-
-
-    private Control parent;
     private Font font;
-    private int fontSize;
+    
+    private int oldFontSize;
+    private int currentFontSize;
 
+    private bool needsUpdating;
     public override void _Process(double delta)
     {
-        parent ??= this.GetParent<Control>();
-        font ??= this.GetThemeFont("font");
-        if (oldTextCharCount != Text.Length || oldParentSize != parent.Size)
+        if(font == null)
         {
-            this.Set("theme_override_font_sizes/font_size", 1);
-            UpdateFontSize();
-            oldParentSize = parent.Size;
-            oldTextCharCount = Text.Length;
+            font ??= this.GetThemeFont("font");
         }
-    }
 
-    public void OnResize()
-    {
-        UpdateFontSize();
+        currentSize = this.Size;
+        if(oldSize != currentSize)
+        {
+            oldSize = currentSize;
+            needsUpdating = true;
+        }
+
+
+        currentFontSize = this.Get("theme_override_font_sizes/font_size").AsInt32();
+        if (currentFontSize != oldFontSize)
+        {
+            oldFontSize = currentFontSize;
+            needsUpdating = true;
+        }
+
+        if (oldCharacterCount != this.Text.Length)
+        {
+            oldCharacterCount = this.Text.Length;
+            needsUpdating = true;
+        }
+
+
+        if (needsUpdating)
+        {
+            UpdateFontSize();
+        }
     }
 
 
     public void UpdateFontSize()
     {
-        fontSize = CalculateFontSize(parent.Size, font);
-        this.Set("theme_override_font_sizes/font_size", fontSize);
+        oldFontSize = CalculateFontSize(currentSize, currentFontSize, font);
+        this.Set("theme_override_font_sizes/font_size", oldFontSize);
     }
-    public int CalculateFontSize(Vector2 localMaxSize, Font localFont)
+
+    public int CalculateFontSize(Vector2 localMaxSize, int oldFontSize, Font localFont)
+    {
+        this.Set("theme_override_font_sizes/font_size", 1);
+        for (int i = 1; i < 10_000; i++)
+        {
+            Vector2 size = localFont.GetMultilineStringSize(text: this.Text, width: localMaxSize.X, fontSize: i);
+
+            if(size.Y > localMaxSize.Y)
+            {
+                return i - 3;
+            }
+        }
+        return oldFontSize;
+    }
+
+    public int CalculateFontSizeOld(Vector2 localMaxSize, Font localFont)
     {
         //GD.Print($"_____________________________________________________________________________");
         //we GRID_SIZE it down just to make sure we get an accurate max GRID_SIZE for the parent GRID_SIZE.
@@ -50,12 +81,12 @@ public partial class LabelFontSizeUpdater : Label
         //GD.Print($"maxSize: {localMaxSize}");
         var fontSize = 1;
         Vector2 size = localFont.GetMultilineStringSize(text: this.Text, width: localMaxSize.X, fontSize: fontSize);
-        //GD.Print($"GRID_SIZE at {fontSize}: {GRID_SIZE}");
+        //GD.Print($"GRID_SIZE at {oldFontSize}: {GRID_SIZE}");
         for (int i = 0; i < 3; i++)
         {
             fontSize = fontSize.Clamp(1, 100_000);
             size = localFont.GetMultilineStringSize(text: this.Text, width: localMaxSize.X, fontSize: fontSize);
-            //GD.Print($"GRID_SIZE at {fontSize}: {GRID_SIZE}");
+            //GD.Print($"GRID_SIZE at {oldFontSize}: {GRID_SIZE}");
             
             float testRatioX = Mathf.FloorToInt(localMaxSize.X / size.X);
             

@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using System;
 
 public class RaycastHelperHit2D
@@ -8,7 +9,6 @@ public class RaycastHelperHit2D
     public int collider_id;
     public Vector2 normal;
     public Vector2 position;
-    public int face_index;
     public int rid;
     public int shape;
 
@@ -21,20 +21,47 @@ public partial class RaycastHelper2D
         this.space = space;
     }
 
-    public RaycastHelperHit2D Raycast(Vector2 start, Vector2 direction, float distance)
+    public RaycastHelperHit2D Raycast(
+        Vector2 start, 
+        Vector2 direction, 
+        float distance, 
+        uint mask = uint.MaxValue, 
+        Array<Rid> exclusions = null,
+        bool collideWithBodies = true,
+        bool collideWithAreas = true,
+        bool hitFromInside = true
+    )
     {
-        return Linecast(start, start + (direction.Normalized() * distance));
+        return Linecast(
+            start, 
+            start + (direction.Normalized() * distance), 
+            mask, 
+            exclusions,
+            collideWithBodies,
+            collideWithAreas,
+            hitFromInside
+            );
     }
 
-    public RaycastHelperHit2D Linecast(Vector2 start, Vector2 end)
+    public RaycastHelperHit2D Linecast(
+        Vector2 from, 
+        Vector2 to, 
+        uint mask = uint.MaxValue, 
+        Array<Rid> exclusions = null, 
+        bool collideWithBodies = true, 
+        bool collideWithAreas = true, 
+        bool hitFromInside = true
+    )
     {
         var hitDetails = space.IntersectRay(new PhysicsRayQueryParameters2D()
         {
-            CollideWithBodies = true,
-            CollideWithAreas = true,
-            HitFromInside = false,
-            From = start,
-            To = end,
+            CollideWithBodies = collideWithBodies,
+            CollideWithAreas = collideWithAreas,
+            HitFromInside = hitFromInside,
+            From = from,
+            To = to,
+            Exclude = exclusions,
+            CollisionMask = mask,
         });
 
         RaycastHelperHit2D hit = new RaycastHelperHit2D();
@@ -46,7 +73,6 @@ public partial class RaycastHelper2D
             hit.collider_id = (int)hitDetails["collider_id"];
             hit.normal = (Vector2)hitDetails["normal"];
             hit.position = (Vector2)hitDetails["position"];
-            hit.face_index = (int)hitDetails["face_index"];
             hit.rid = (int)hitDetails["rid"];
             hit.shape = (int)hitDetails["shape"];
         }
