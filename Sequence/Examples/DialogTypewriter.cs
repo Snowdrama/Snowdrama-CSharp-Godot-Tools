@@ -5,6 +5,7 @@ public partial class DialogTypewriter : SequenceNode
 {
     [Export] string character;
     [Export(PropertyHint.MultilineText)] string description;
+    [Export] TextureRect portraitImage;
     [Export] Label nameLabel;
     [Export] RichTextLabel descriptionLabel;
     [Export] Panel dialogPanel;    
