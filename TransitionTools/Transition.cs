@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-public abstract partial class Transition : Control
+public abstract partial class Transition : Node
 {
     public abstract void SetTransitionValue(float transitionValue);
 }

@@ -24,7 +24,7 @@ public partial class TransitionManager : Node
     private Action startShow;
     private Action ended;
 
-    [Export] Transition[] transitions = new Transition[0];
+    [Export(PropertyHint.NodeType, "Transition")] Transition[] transitions = new Transition[0];
 
     Transition currentTransition;
 

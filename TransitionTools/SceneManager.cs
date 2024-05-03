@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class SceneManager : Node
 {
@@ -38,7 +39,6 @@ public partial class SceneManager : Node
         {
             previousSceneName = currentScene.Name;
         }
-        //GDConsole.AddCommand<string>("GoToScene", InstanceLoadScene);
     }
 
     public override void _ExitTree()
@@ -129,5 +129,10 @@ public partial class SceneManager : Node
     public static string GetPreviousSceneName()
     {
         return previousSceneName;
+    }
+
+    public static void SetCurrentScene(Node currentNode)
+    {
+        instance.currentScene = currentNode;
     }
 }

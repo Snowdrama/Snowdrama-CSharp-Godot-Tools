@@ -17,11 +17,33 @@ public class Messages
 
     /// <summary>
     /// Gets a message object of the type passed and adds a user count
+    /// 
+    /// If you use it imediately and don't store a reference use Messages.GetNoCount
+    /// Ex: Messages.GetNoCount<SType>().Dispatch(); <- No reference is stored.
+    /// 
     /// This gets it from a global hub, if you need to differentiate it
-    /// consider using GetHub("Identifier").Get<SType>() instead
+    /// consider using GetHub("SomeIdentifier").Get<SType>() instead
+    /// 
+    /// Make sure to return the reference so memory can be freed if no references exist using:
+    /// Messages.Return<SType>();
     /// </summary>
     /// <typeparam name="SType"></typeparam>
     public static SType Get<SType>() where SType : IMessage, new()
+    {
+        return globalHub.Get<SType>();
+    }
+    /// <summary>
+    /// Gets a message object of the type passed DOES NOT add a reference count
+    /// 
+    /// If you are holding onto a reference use Messages.Get to ensure the memory it isn't freed
+    /// Ex: Messages.Get<SType>(); <- Reference is counted.
+    /// 
+    /// This gets it from a global hub, if you need to differentiate it
+    /// consider using GetHub("SomeIdentifier").Get<SType>() instead
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
+    /// <returns></returns>
+    public static SType GetNoCount<SType>() where SType : IMessage, new()
     {
         return globalHub.Get<SType>();
     }
@@ -89,6 +111,20 @@ public class MessageHub
         newMessage.AddUser();
         return newMessage;
     }
+
+    public SType GetNoCount<SType>() where SType : IMessage, new()
+    {
+        Type messageType = typeof(SType);
+        IMessage message;
+
+        if (messages.TryGetValue(messageType, out message))
+        {
+            return (SType)message;
+        }
+        var newMessage = (SType)Bind(messageType);
+        return newMessage;
+    }
+
     public void Return<SType>() where SType : IMessage, new()
     {
         Type messageType = typeof(SType);
