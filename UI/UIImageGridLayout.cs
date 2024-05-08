@@ -16,6 +16,7 @@ public partial class UIImageGridLayout : Container
     [Export] bool update;
 
 
+
     public override void _Ready()
     {
         base._Ready();
@@ -43,6 +44,10 @@ public partial class UIImageGridLayout : Container
 
     public void UpdateContainer()
     {
+        if (paletteImage == null || layoutImage == null)
+        {
+            return;
+        }
         update = false;
         ParsePalette(paletteImage.GetImage());
         ParseLayout(layoutImage.GetImage());

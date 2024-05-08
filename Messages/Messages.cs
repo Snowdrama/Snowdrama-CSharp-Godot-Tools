@@ -184,7 +184,7 @@ public class MessageHub
         --UserCount;
     }
 }
-public abstract class ABaseSignal : IMessage
+public abstract class ABaseMessage : IMessage
 {
     public int UserCount { get; private set; }
     public void AddUser()
@@ -201,7 +201,7 @@ public abstract class ABaseSignal : IMessage
     }
 }
 
-public abstract class AMessage : ABaseSignal
+public abstract class AMessage : ABaseMessage
 {
     private Action callback;
 
@@ -220,7 +220,7 @@ public abstract class AMessage : ABaseSignal
         callback?.Invoke();
     }
 }
-public abstract class AMessage<T> : ABaseSignal
+public abstract class AMessage<T> : ABaseMessage
 {
     private Action<T> callback;
 
@@ -239,7 +239,7 @@ public abstract class AMessage<T> : ABaseSignal
         callback?.Invoke(arg1);
     }
 }
-public abstract class AMessage<T, U> : ABaseSignal
+public abstract class AMessage<T, U> : ABaseMessage
 {
     private Action<T, U> callback;
 
@@ -258,7 +258,7 @@ public abstract class AMessage<T, U> : ABaseSignal
         callback?.Invoke(arg1, arg2);
     }
 }
-public abstract class AMessage<T, U, V> : ABaseSignal
+public abstract class AMessage<T, U, V> : ABaseMessage
 {
     private Action<T, U, V> callback;
 
