@@ -1,32 +1,74 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
+/// <summary>
+/// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
+/// </summary>
 public partial class SceneManager : Node
 {
-    static SceneManager instance;
-    Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
-
-
+    [ExportCategory("Manual Assignment")]
     [Export] PackedScene[] packedScenes;
 
-    static string previousSceneName;
+    [ExportCategory("Automatic Assignment - res://Path (no final slash)")]
+    [Export] string resourcePath = "res://Scenes";
+
+    [ExportCategory("Runtime Exposed Values")]
     [Export] public Node currentScene;
     [Export] string sceneTarget;
-    [Export] bool run;
+
+
+    [ExportCategory("Note: This uses the first node's name in the file, NOT the file name!")]
+    static SceneManager instance;
+    Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
+    static string previousSceneName;
     public override void _Ready()
     {
+        GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
+        GD.PrintRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
         for (int i = 0; i < packedScenes.Length; i++)
         {
             if (packedScenes[i] != null)
             {
                 //var name = packedScenes[i].ResourcePath.Split("/").GetLastElement().Replace(".tscn", "");
-                var name = packedScenes[i].GetState().GetNodeName(0);
-                GD.Print(name);
-                _scenes.Add(name, packedScenes[i]);
+                string name = packedScenes[i].GetState().GetNodeName(0);
+                name = name.Replace(" ", "_");
+                if (!_scenes.ContainsKey(name))
+                {
+                    GD.Print($"Adding to Scene Manager: {name}");
+                    _scenes.Add(name, packedScenes[i]);
+                }
+                else
+                {
+                    GD.PrintErr($"Scene Already Exiists in List: {name}");
+                }
             }
         }
+
+        var sceneResourcePath = DirAccess.Open(resourcePath);
+        if (sceneResourcePath != null)
+        {
+            var filePaths = sceneResourcePath.GetFiles();
+            for (int i = 0; i < filePaths.Length; i++)
+            {
+                var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
+                string name = possiblyAScene.GetState().GetNodeName(0);
+                name = name.Replace(" ", "_");
+
+                if (!_scenes.ContainsKey(name))
+                {
+                    GD.Print($"Adding to Scene Manager: {name}");
+                    _scenes.Add(name, possiblyAScene);
+                }
+                else
+                {
+                    GD.PrintErr($"Scene Already Exiists in List: {name}");
+                }
+            }
+        }
+
 
         if (instance != null)
         {
@@ -41,20 +83,6 @@ public partial class SceneManager : Node
         }
     }
 
-    public override void _ExitTree()
-    {
-        //GDConsole.RemoveCommand<string>("GoToScene", InstanceLoadScene);
-    }
-
-    public override void _Process(double delta)
-    {
-        if (run)
-        {
-            run = false;
-            SceneManager.LoadScene(sceneTarget);
-
-        }
-    }
 
     private Node SwapScenes(Node sceneToRemove, string newSceneName)
     {
@@ -72,7 +100,7 @@ public partial class SceneManager : Node
         }
         else
         {
-            Debug.LogError($"Scene {sceneTarget} was not found in list of scenes");
+            GD.PrintErr($"Scene {sceneTarget} was not found in list of scenes");
             return null;
         }
     }
@@ -88,19 +116,21 @@ public partial class SceneManager : Node
         GD.Print($"Trying To Load: {sceneTarget}");
         if(sceneTarget == null)
         {
-            Debug.LogError($"Scene name in null, need to pass a scene name!");
+            GD.PrintErr($"Scene name in null, need to pass a scene name! Use one of these:");
             foreach (var item in _scenes)
             {
                 GD.PrintErr($"Scene Name Keys: {item.Key}");
             }
+            return;
         }
         if (!_scenes.ContainsKey(sceneTarget))
         {
-            Debug.LogError($"Scene name {sceneTarget} not found in list");
+            GD.PrintErr($"Scene name {sceneTarget} not found in list. It needs to be in the list! Scenes in List:");
             foreach (var item in _scenes)
             {
                 GD.PrintErr($"Scene Name Keys: {item.Key}");
             }
+            return;
         }
         GD.Print($"Loading: {sceneTarget}");
         TransitionManager.AddBlackoutCallback(OnTransitionBlackout);
