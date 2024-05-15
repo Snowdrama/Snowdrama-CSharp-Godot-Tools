@@ -12,8 +12,9 @@ public partial class TestDebugPrint : SequenceNode
     {
     }
 
-    public override void PlaySequence()
+    public override void PlaySequence(Action setOnCompleted)
     {
+        base.PlaySequence(setOnCompleted);
         GD.Print(DebugPrintText);
         this.State = SequenceState.Completed;
     }

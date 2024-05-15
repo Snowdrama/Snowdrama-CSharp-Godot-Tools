@@ -18,9 +18,6 @@ using System;
 /// 
 /// Each corresponding to a different player
 /// 
-/// 
-/// 
-/// 
 /// </summary>
 
 public partial class InputManager : Node
@@ -34,8 +31,6 @@ public partial class InputManager : Node
         {
             return;
         }
-
-
 
         for (int i = 0; i < 8; i++)
         {
@@ -171,9 +166,6 @@ public partial class InputManager : Node
             lookEvent_joy_right.Device = i;
             InputMap.ActionAddEvent($"LookRight_{i}", lookEvent_joy_right);
 
-
-
-
             //pause Key
             InputEventKey pause_key = new InputEventKey();
             pause_key.Keycode = Key.Escape;
@@ -184,7 +176,6 @@ public partial class InputManager : Node
             pause_joy.ButtonIndex = JoyButton.Start;
             pause_joy.Device = i;
             InputMap.ActionAddEvent($"Pause_{i}", pause_joy);
-
         }
     }
 }

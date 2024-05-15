@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://boecl4vrr7oj8"]
+
+[ext_resource type="Script" path="res://Tools/TransitionTools/SceneManager.cs" id="1_uudhw"]
+[ext_resource type="Script" path="res://Tools/TransitionTools/TransitionManager.cs" id="2_871kh"]
+[ext_resource type="Script" path="res://Tools/TransitionTools/FadeImageTransition.cs" id="3_3o2d0"]
+[ext_resource type="Texture2D" uid="uid://cpe3qt1trhdmg" path="res://Tools/TransitionTools/SolidBlack.png" id="4_y7t6m"]
+
+[node name="SceneManagerExample" type="Node"]
+script = ExtResource("1_uudhw")
+
+[node name="TransitionManager" type="Node" parent="."]
+script = ExtResource("2_871kh")
+
+[node name="TransitionCanvas" type="CanvasLayer" parent="TransitionManager"]
+layer = 128
+
+[node name="BlackFadeTransition" type="Node" parent="TransitionManager/TransitionCanvas" node_paths=PackedStringArray("textureRect")]
+script = ExtResource("3_3o2d0")
+textureRect = NodePath("TextureRect")
+fadeColor = Color(0, 0, 0, 1)
+
+[node name="TextureRect" type="TextureRect" parent="TransitionManager/TransitionCanvas/BlackFadeTransition"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_y7t6m")

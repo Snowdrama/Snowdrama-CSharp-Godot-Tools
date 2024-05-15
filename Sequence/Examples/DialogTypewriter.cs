@@ -50,8 +50,9 @@ public partial class DialogTypewriter : SequenceNode
         }
     }
 
-    public override void PlaySequence()
+    public override void PlaySequence(Action setOnCompleted)
     {
+        base.PlaySequence(setOnCompleted);
         GD.Print($"Playing Sequence: {this.Name}");
         nextArrow.Hide();
 

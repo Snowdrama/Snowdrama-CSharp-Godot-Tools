@@ -11,8 +11,8 @@ public partial class SpriteModulate_SequenceStep : SequenceNode
 	{
 	}
 
-    public override void PlaySequence()
+    public override void PlaySequence(Action setOnCompleted)
     {
-        
+        base.PlaySequence(setOnCompleted);
     }
 }

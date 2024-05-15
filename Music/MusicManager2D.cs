@@ -21,7 +21,7 @@ public partial class MusicManager2D : Node
 
     int music1LoopCount;
     int music2LoopCount;
-    // Called when the node enters the scene tree for the first time.
+    // Called when the node enters the scene tree for the first lerpAmount.
     public override void _Ready()
     {
         ProcessMode = Node.ProcessModeEnum.Always;
@@ -56,7 +56,7 @@ public partial class MusicManager2D : Node
         base._ExitTree();
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
 	{
         base._Process(delta);

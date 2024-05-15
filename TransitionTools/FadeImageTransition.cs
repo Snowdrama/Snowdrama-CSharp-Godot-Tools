@@ -1,10 +1,9 @@
 using Godot;
 using System;
 
-public partial class FadeImageTransition : Transition
+public partial class FadeImageTransition : Transition 
 {
     [Export] TextureRect textureRect;
-
     [Export] Color fadeColor;
     public override void _Ready()
     {

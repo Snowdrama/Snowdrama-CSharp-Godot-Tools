@@ -1,25 +1,26 @@
-﻿public interface ISequence
+﻿public interface ISequenceStep
 {
     /// <summary>
-    /// play the sequence from the beginning
-    /// or resumes the sequence if paused
+    /// Loads the sequence, by setting all the actors to a specific state
+    /// 
+    /// This will do things like enable nodes or creeate nodes
     /// </summary>
-    public void PlaySequence(bool autoAdvance);
+    public void LoadStep();
 
     /// <summary>
-    /// continues the sequence if paused
+    /// does any disposal if needed like if it created something temporary for this step
     /// </summary>
-    public void AdvanceSequence();
+    public void DisposeStep();
 
     /// <summary>
-    /// pauses the sequence
-    /// note it doesn't stop the component only
-    /// prevents the sequence from auto advancing
+    /// Sets all the actors to the final state of the sequence step
     /// </summary>
-    public void PauseSequence();
+    public void ForceComplete();
 
     /// <summary>
-    /// stops the sequence 
+    /// Play the sequence from the beginning
+    /// 
+    /// If autoAdvance is true, the sequence "automatically"
     /// </summary>
-    public void StopSequence();
+    public void PlaySequence();
 }

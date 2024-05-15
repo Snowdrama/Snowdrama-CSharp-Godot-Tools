@@ -47,7 +47,7 @@ public partial class Debug3DCharacterController : CharacterBody3D
     bool jump;
     bool sprint;
     bool sprintKeyPressed;
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _PhysicsProcess(double delta)
     {
         gravity = PhysicsTools.DeriveGravity(jumpHeight, jumpTime / 2);

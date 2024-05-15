@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-public partial class Sequence : Node, ISequence
+public partial class Sequence : Node
 {
     [Export]Godot.Collections.Array<Control> usedContainers = new Godot.Collections.Array<Control>();
     [Export]Godot.Collections.Array<Node2D> usedNode2Ds = new Godot.Collections.Array<Node2D>();
@@ -9,10 +9,11 @@ public partial class Sequence : Node, ISequence
     List<SequenceNode> sequenceNodes = new List<SequenceNode>();
     SequenceNode currentStep;
     int currentStepIndex = 0;
+
+
+
     public SequenceState State { get; private set; }
-
     [Export] bool AutoAdvance = false;
-
     [Export] bool CanPlayMoreThanOnce = false; 
     public override void _Ready()
 	{
@@ -23,32 +24,6 @@ public partial class Sequence : Node, ISequence
 			{
 				sequenceNodes.Add(sn);
 			}
-        }
-
-
-        //var allChildren = new List<Node>();
-        //GetAllChildren(this, ref allChildren);
-        //foreach (var item in allChildren)
-        //{
-        //    GD.Print(item.Name);
-        //    if(item is Control c)
-        //    {
-        //        usedContainers.Add(c);
-        //    }
-        //    else if(item is Node2D n2d)
-        //    {
-        //        usedNode2Ds.Add(n2d);
-        //    }
-        //}
-
-        foreach (var item in usedNode2Ds)
-        {
-            item.Hide();
-        }
-
-        foreach (var item in usedContainers)
-        {
-            item.Hide();
         }
     }
 
@@ -64,21 +39,6 @@ public partial class Sequence : Node, ISequence
         }
     }
 
-	public override void _Process(double delta)
-    {
-        switch (State)
-        {
-            case SequenceState.Stopped:
-                break;
-            case SequenceState.Playing:
-                break;
-            case SequenceState.Paused:
-                break;
-            case SequenceState.Completed:
-                break;
-        }
-    }
-
     public void PlaySequence(bool autoAdvance = false)
     {
         if(State == SequenceState.Stopped)
@@ -89,6 +49,9 @@ public partial class Sequence : Node, ISequence
         }
     }
 
+    /// <summary>
+    /// Go to the next step
+    /// </summary>
     public void AdvanceSequence()
     {
         //we've interacted with the game so we want to advance the sequence
@@ -138,9 +101,14 @@ public partial class Sequence : Node, ISequence
             currentStep.LoadSequence();
 
             //then start playing the sequence
-            currentStep.PlaySequence();
+            currentStep.PlaySequence(() => { });
             State = SequenceState.Playing;
         }
+    }
+
+    public void GoToStep(int stepIndex)
+    {
+
     }
 
     public void PauseSequence()
@@ -149,6 +117,5 @@ public partial class Sequence : Node, ISequence
 
     public void StopSequence()
     {
-
     }
 }

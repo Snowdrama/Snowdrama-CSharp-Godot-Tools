@@ -46,7 +46,7 @@ public partial class VirtualCamera : Node2D
         VirtualCameraBrain.UnregisterCamera(this);
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
     {
         var screenResolution = GetViewportRect().Size;

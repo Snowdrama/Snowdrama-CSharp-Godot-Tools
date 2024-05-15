@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Timers;
 
 /// <summary>
 /// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
@@ -10,20 +12,23 @@ using System.Linq;
 public partial class SceneManager : Node
 {
     [ExportCategory("Manual Assignment")]
-    [Export] PackedScene[] packedScenes;
+    [Export] PackedScene[] packedScenes = new PackedScene[0];
 
-    [ExportCategory("Automatic Assignment - res://Path (no final slash)")]
-    [Export] string resourcePath = "res://Scenes";
+    [ExportCategory("Automatic Assignment (no final slash example: res://Scenes)")]
+    [Export] string[] automaticScenePaths = new string[] { "res://Scenes" };
 
     [ExportCategory("Runtime Exposed Values")]
     [Export] public Node currentScene;
     [Export] string sceneTarget;
 
-
     [ExportCategory("Note: This uses the first node's name in the file, NOT the file name!")]
     static SceneManager instance;
     Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
     static string previousSceneName;
+
+    bool transitioning;
+    bool sceneLoaded;
+    bool fakeLoadComplete;
     public override void _Ready()
     {
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
@@ -47,33 +52,36 @@ public partial class SceneManager : Node
             }
         }
 
-        var sceneResourcePath = DirAccess.Open(resourcePath);
-        if (sceneResourcePath != null)
+        foreach (var resourcePath in automaticScenePaths)
         {
-            var filePaths = sceneResourcePath.GetFiles();
-            for (int i = 0; i < filePaths.Length; i++)
+            var sceneResourcePath = DirAccess.Open(resourcePath);
+            if (sceneResourcePath != null)
             {
-                var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
-                string name = possiblyAScene.GetState().GetNodeName(0);
-                name = name.Replace(" ", "_");
+                var filePaths = sceneResourcePath.GetFiles();
+                for (int i = 0; i < filePaths.Length; i++)
+                {
+                    GD.Print($"Loading Scene from: {resourcePath}/{filePaths[i]}");
+                    var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
+                    string name = possiblyAScene.GetState().GetNodeName(0);
+                    name = name.Replace(" ", "_");
 
-                if (!_scenes.ContainsKey(name))
-                {
-                    GD.Print($"Adding to Scene Manager: {name}");
-                    _scenes.Add(name, possiblyAScene);
-                }
-                else
-                {
-                    GD.PrintErr($"Scene Already Exiists in List: {name}");
+                    if (!_scenes.ContainsKey(name))
+                    {
+                        _scenes.Add(name, possiblyAScene);
+                    }
+                    else
+                    {
+                        GD.PrintErr($"Scene Already Exiists in List: {name}");
+                    }
                 }
             }
         }
-
 
         if (instance != null)
         {
             instance.QueueFree();
         }
+
         instance = this;
         this.ProcessMode = ProcessModeEnum.Always;
 
@@ -83,8 +91,8 @@ public partial class SceneManager : Node
         }
     }
 
-
-    private Node SwapScenes(Node sceneToRemove, string newSceneName)
+    //Thread asyncPackedSceneLoader;
+    private void SwapScenes(Node sceneToRemove, string newSceneName)
     {
         if (_scenes.ContainsKey(newSceneName))
         {
@@ -93,25 +101,39 @@ public partial class SceneManager : Node
                 previousSceneName = sceneToRemove.Name;
                 sceneToRemove.QueueFree();
             }
+
+            //TODO: Figure out how to load the scene async.
+            //asyncPackedSceneLoader = new Thread(() => { LoadSceenAsync(_scenes[newSceneName]); });
+            //asyncPackedSceneLoader.IsBackground = true;
+            //asyncPackedSceneLoader.Start();
+
             var instantiatedScene = _scenes[newSceneName].Instantiate();
             this.AddSibling(instantiatedScene);
-
-            return instantiatedScene;
+            sceneLoaded = true;
+            currentScene = instantiatedScene;
         }
         else
         {
             GD.PrintErr($"Scene {sceneTarget} was not found in list of scenes");
-            return null;
         }
     }
 
-
-    public static void LoadScene(string sceneName)
+    private void LoadSceenAsync(PackedScene sceneToLoad)
     {
-        instance.InstanceLoadScene(sceneName);
     }
-    public void InstanceLoadScene(string sceneName)
+
+
+    public static void LoadScene(string sceneName, string transitionName = null, float fakeLoadTime = 1.0f)
     {
+        instance.InstanceLoadScene(sceneName, transitionName, fakeLoadTime);
+    }
+
+    private void InstanceLoadScene(string sceneName, string transitionName, float fakeLoadTime)
+    {
+        transitioning = true;
+        sceneLoaded = false;
+        fakeLoadComplete = false;
+
         sceneTarget = sceneName;
         GD.Print($"Trying To Load: {sceneTarget}");
         if(sceneTarget == null)
@@ -133,27 +155,36 @@ public partial class SceneManager : Node
             return;
         }
         GD.Print($"Loading: {sceneTarget}");
-        TransitionManager.AddBlackoutCallback(OnTransitionBlackout);
-        TransitionManager.AddEndedCallback(OnTransitionEnded);
-        TransitionManager.AddFakeLoadCallback(OnFakeLoadComplete);
-        TransitionManager.StartHideTransition();
+        TransitionManager.StartTransition(
+            () => { }, 
+            OnTransitionBlackout, 
+            OnFakeLoadComplete, 
+            () => { }, 
+            () => { }, 
+            transitionName, 
+            fakeLoadTime);
     }
 
-    private void OnTransitionEnded()
-    {
-        TransitionManager.RemoveBlackoutCallback(OnTransitionBlackout);
-        TransitionManager.RemoveEndedCallback(OnTransitionEnded);
-    }
     private void OnFakeLoadComplete()
     {
-        TransitionManager.StartShowTransition();
+        fakeLoadComplete = true;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (transitioning  && sceneLoaded && fakeLoadComplete)
+        {
+            transitioning = false;
+            sceneLoaded = false;
+            fakeLoadComplete = false;
+            TransitionManager.StartShowingScreen();
+        }
     }
 
     private void OnTransitionBlackout()
     {
         previousSceneName = currentScene.Name;
-        currentScene = SwapScenes(currentScene, sceneTarget);
-        TransitionManager.FakeLoadTransition();
+        SwapScenes(currentScene, sceneTarget);
     }
 
     public static string GetPreviousSceneName()
