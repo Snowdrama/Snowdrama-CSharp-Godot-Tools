@@ -1,6 +1,12 @@
 using Godot;
 using System;
 
+public enum InputType
+{
+    None,
+    Gamepad,
+    KBM,
+}
 
 public class ChangeInputTypeMessage : AMessage<InputType> { }
 public partial class VirtualCursorSystem : Node
