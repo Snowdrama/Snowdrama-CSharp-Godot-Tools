@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static System.Collections.Specialized.BitVector32;
 
 /// <summary>
@@ -40,6 +41,10 @@ public partial class CommandConsole : Node
     {
         base._Ready();
         consoleCanvas.Hide();
+
+        CommandConsoleTextBox.PrintText("=================");
+        CommandConsoleTextBox.PrintText("'help' for commands");
+        CommandConsoleTextBox.PrintText("=================");
     }
 
     public override void _Input(InputEvent @event)
@@ -63,22 +68,32 @@ public partial class CommandConsole : Node
 	static Dictionary<string, GameCommand> globalCommands = new Dictionary<string, GameCommand>();
 
     //targeted commands can have targets such as "player->addGold" or "npc1->addGold"
-    public static void AddTargetedAction(string targetName, string commandName, GameCommandAction action)
+    public static void AddTargetedAction(string targetName, string commandName, GameCommandAction action, string tooltip = "")
     {
+        //create command dictionary if it isn't initialized
         if (targetedCommands == null)
         {
             targetedCommands = new Dictionary<string, Dictionary<string, GameCommand>>();
         }
+
+
+        //make a command if it dosen't exist
         if (!targetedCommands.ContainsKey(commandName))
         {
             targetedCommands.Add(commandName, new Dictionary<string, GameCommand>());
         }
+
+        //add the target if it doesn't exist.
         if (!targetedCommands[commandName].ContainsKey(targetName))
         {
             targetedCommands[commandName].Add(targetName, new GameCommand());
         }
 
         targetedCommands[commandName][targetName].RegisterCommand(action);
+        if(!string.IsNullOrEmpty(tooltip))
+        {
+            targetedCommands[commandName][targetName].Tooltip = tooltip;
+        }
     }
 
     //   public static void RemoveTargetedAction(string targetName, string actionName, GameCommandAction action)
@@ -96,14 +111,38 @@ public partial class CommandConsole : Node
     /// </summary>
     /// <param name="actionName"></param>
     /// <param name="action"></param>
-    public static void AddGlobalAction(string actionName, GameCommandAction action)
+    public static void AddGlobalCommand(string commandName, GameCommandAction action, string tooltip = "")
     {
-        globalCommands[actionName].RegisterCommand(action);
+        if (!globalCommands.ContainsKey(commandName))
+        {
+            globalCommands[commandName] = new GameCommand();
+        }
+
+        globalCommands[commandName].RegisterCommand(action);
+
+        if (!string.IsNullOrEmpty(tooltip))
+        {
+            globalCommands[commandName].Tooltip = tooltip;
+        }
     }
 
-    public static void RemoveGlobalAction(string actionName, GameCommandAction action)
+    public static void RemoveGlobalCommand(string commandName, GameCommandAction action)
     {
-        globalCommands[actionName].UnrgisterCommand(action);
+        if (!globalCommands.ContainsKey(commandName))
+        {
+            return;
+        }
+
+        globalCommands[commandName].UnrgisterCommand(action);
+    }
+    public static void RemoveTarget(string targetName, string commandName)
+    {
+        if (!targetedCommands.ContainsKey(commandName) && !targetedCommands[commandName].ContainsKey(targetName))
+        {
+            return;
+        }
+
+        targetedCommands[commandName].Remove(targetName);
     }
 
     //public static (bool, string) AutoFill(string attemptText)
@@ -117,7 +156,7 @@ public partial class CommandConsole : Node
     //    return (false, attemptText);
     //}
 
-    public static void RunCommand(string input)
+    public static bool RunCommand(string input)
     {
         //TODO: parse command string
         //check if it's targeted
@@ -142,16 +181,19 @@ public partial class CommandConsole : Node
                 if (targetedCommands[command].ContainsKey(target))
                 {
                     targetedCommands[command][target].Invoke(args);
+                    return true;
                 }
                 else
                 {
                     CommandConsoleTextBox.PrintText($"Command {command} has no target {target} in it's command list.");
+                    return false;
                 }
             }
             else
             {
                 CommandConsoleTextBox.PrintText($"[color=#999]Command [color=#F00]{command}[/color]not found in command list." +
                     $"check to make sure that an entity with the command is loaded.[/color]");
+                return false;
             }
         }
         else
@@ -164,20 +206,32 @@ public partial class CommandConsole : Node
 
             switch (command)
             {
+                case "help":
+                    CommandConsoleTextBox.PrintText("Check what commands are available with:");
+                    CommandConsoleTextBox.PrintText("list_commands");
+                    CommandConsoleTextBox.PrintText("list_command_targets");
+                    return true;
                 case "list_commands":
                     CommandConsoleTextBox.PrintText("=================");
                     CommandConsoleTextBox.PrintText("Listing Commands:");
                     CommandConsoleTextBox.PrintText("=================");
+
+
+
+                    CommandConsoleTextBox.PrintText("[color=#00F]================= Global Commands =================[/color]");
                     foreach (var item in globalCommands)
                     {
-                        CommandConsoleTextBox.PrintText($"Global Command: {item.Key}");
+                        var tt = (!string.IsNullOrEmpty(item.Value.Tooltip)) ? $"- {item.Value.Tooltip}" : "";
+                        CommandConsoleTextBox.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
                     }
+                    CommandConsoleTextBox.PrintText("[color=#00F]================= Targeted Commands =================[/color]");
                     foreach (var item in targetedCommands)
                     {
-                        CommandConsoleTextBox.PrintText($"Targeted Command: {item.Key}");
+                        var tt = (!string.IsNullOrEmpty(item.Value.First().Value.Tooltip)) ? $"- {item.Value.First().Value.Tooltip}" : "";
+                        CommandConsoleTextBox.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
                     }
-                    CommandConsoleTextBox.PrintText("\n\n");
-                    break;
+                    CommandConsoleTextBox.PrintText("");
+                    return true;
                 case "list_command_targets":
 
                     if(args.Length > 0)
@@ -187,16 +241,17 @@ public partial class CommandConsole : Node
                         CommandConsoleTextBox.PrintText("=======================================");
                         foreach (var item in targetedCommands[args[0]])
                         {
-                            CommandConsoleTextBox.PrintText($"Target for {args[0]} Command: {item.Key}");
+                            var tt = (!string.IsNullOrEmpty(item.Value.Tooltip)) ? $"- {item.Value.Tooltip}" : "";
+                            CommandConsoleTextBox.PrintText($"{args[0]} -> {item.Key} [color=#33A]{tt}[/color]");
                         }
-                        CommandConsoleTextBox.PrintText("\n\n");
+                        CommandConsoleTextBox.PrintText("");
                     }
-                    break;
+                    return true;
                 default:
-                    break;
+                    return false;
             }
-
         }
+        return true;
     }
 
     private void ListCommands()
@@ -209,12 +264,8 @@ public delegate void GameCommandAction(params string[] args);
 public class GameCommand
 {
     GameCommandAction command;
-
-    public GameCommand()
-    {
-
-    }
-
+    public string Tooltip;
+    
     public void Invoke(params string[] args)
     {
         command.Invoke(args);
@@ -224,8 +275,8 @@ public class GameCommand
     {
         command += addCommand;
     }
-    public void UnrgisterCommand(GameCommandAction addCommand)
+    public void UnrgisterCommand(GameCommandAction removeCommand)
     {
-        command -= addCommand;
+        command -= removeCommand;
     }
 }

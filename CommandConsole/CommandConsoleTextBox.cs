@@ -15,7 +15,7 @@ public partial class CommandConsoleTextBox : RichTextLabel
     public override void _EnterTree()
     {
         base._EnterTree();
-        this.FitContent = true;
+        this.FitContent = false;
         this.BbcodeEnabled = true;
         this.ScrollFollowing = true;
         vScrollBar = this.GetVScrollBar();
@@ -23,7 +23,7 @@ public partial class CommandConsoleTextBox : RichTextLabel
     }
     public static void PrintText(string lineToPush)
     {
-        instance.AppendText(lineToPush);
+        instance.AppendText(lineToPush + "\n");
         //consoleStrings.Enqueue(lineToPush);
         //needsUpdating = true;
     }

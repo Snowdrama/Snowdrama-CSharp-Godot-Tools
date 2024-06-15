@@ -13,7 +13,10 @@ public partial class CommandConsoleTextInput : LineEdit
 
     private void CommandConsoleTextInput_TextSubmitted(string newText)
     {
-		CommandConsole.RunCommand(newText);
+		if(CommandConsole.RunCommand(newText))
+		{
+			this.Text = "";
+		}
     }
 
     private void CommandConsoleTextInput_VisibilityChanged()
@@ -23,13 +26,4 @@ public partial class CommandConsoleTextInput : LineEdit
 			this.GrabFocus();
 		}
     }
-
-    // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
-    public override void _Process(double delta)
-	{
-	}
-
-
-	
-
 }

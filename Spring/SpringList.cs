@@ -87,7 +87,7 @@ namespace Snowdrama.Spring
             while (deltaTime >= Mathf.Epsilon)
             {
                 // GD.Print($"config.Tension {config.Tension}");
-                // GD.Print($"config.Friction {config.Friction}");
+                // GD.Print($"config.Damping {config.Damping}");
                 // GD.Print($"config.Mass {config.Mass}");
                 var dt = Mathf.Min(deltaTime, 0.016f);
                 var force = -config.Tension * (state.Current - state.Target);

@@ -49,62 +49,24 @@ public partial class VirtualCamera : Node2D
     // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
     {
-        var screenResolution = GetViewportRect().Size;
-
-        calculatedScale = ScaleScreen(screenResolution, this.windowSize);
-        calculatedScaleCurrent = ScaleScreen(screenResolution, this.windowSize);
-
-        targetScreenSize.X = (float)screenResolution.X / calculatedScale.X;
-        targetScreenSize.Y = (float)screenResolution.Y / calculatedScale.Y;
-
-
-        calculatedScaleTest = ScaleScreen(testScreenResolution, this.windowSize);
-        testScreenSize.X = (float)testScreenResolution.X / calculatedScaleTest.X;
-        testScreenSize.Y = (float)testScreenResolution.Y / calculatedScaleTest.Y;
-
         if (Engine.IsEditorHint())
         {
-            // Code to execute when in editor.
-            if (debugVirtualCameraBox == null)
-            {
-                debugVirtualCameraBox = new ReferenceRect();
-                this.AddChild(debugVirtualCameraBox);
-                debugVirtualCameraBox.Position = new Vector2();
-                debugVirtualCameraBox.Size = this.windowSize;
-            }
-            debugVirtualCameraBox.BorderWidth = debugBorderWidth;
-            debugVirtualCameraBox.BorderColor = debugVirtualBorderColor;
-            debugVirtualCameraBox.Size = this.windowSize;
-            debugVirtualCameraBox.Position = -(debugVirtualCameraBox.Size / 2.0f);
-            debugVirtualCameraBox.ZIndex = 1000;
+            QueueRedraw();
+        }
+        else
+        {
+            var screenResolution = GetViewportRect().Size;
+
+            calculatedScale = ScaleScreen(screenResolution, this.windowSize);
+            calculatedScaleCurrent = ScaleScreen(screenResolution, this.windowSize);
+
+            targetScreenSize.X = (float)screenResolution.X / calculatedScale.X;
+            targetScreenSize.Y = (float)screenResolution.Y / calculatedScale.Y;
 
 
-            if (debugCameraBox == null)
-            {
-                debugCameraBox = new ReferenceRect();
-                this.AddChild(debugCameraBox);
-                debugCameraBox.Position = new Vector2();
-                debugCameraBox.Size = this.windowSize;
-            }
-            debugCameraBox.BorderWidth = debugBorderWidth;
-            debugCameraBox.BorderColor = debugBorderColor;
-            debugCameraBox.Size = targetScreenSize;
-            debugCameraBox.Position = -(debugCameraBox.Size / 2.0f);
-            debugCameraBox.ZIndex = 999;
-
-
-            if (debugCameraTestBox == null)
-            {
-                debugCameraTestBox = new ReferenceRect();
-                this.AddChild(debugCameraTestBox);
-                debugCameraTestBox.Position = new Vector2();
-                debugCameraTestBox.Size = this.windowSize;
-            }
-            debugCameraTestBox.BorderWidth = debugBorderWidth;
-            debugCameraTestBox.BorderColor = debugTestBorderColor;
-            debugCameraTestBox.Size = testScreenSize;
-            debugCameraTestBox.Position = -(debugCameraTestBox.Size / 2.0f);
-            debugCameraTestBox.ZIndex = 998;
+            calculatedScaleTest = ScaleScreen(testScreenResolution, this.windowSize);
+            testScreenSize.X = (float)testScreenResolution.X / calculatedScaleTest.X;
+            testScreenSize.Y = (float)testScreenResolution.Y / calculatedScaleTest.Y;
         }
     }
 
@@ -144,4 +106,23 @@ public partial class VirtualCamera : Node2D
         }
         return screenScale;
     }
+    public override void _Draw()
+    {
+        if (Engine.IsEditorHint())
+        {
+            var halfExtentsTarget = targetScreenSize * 0.5f;
+            var halfExtentsTest = testScreenSize * 0.5f;
+            DrawLine(new Vector2(-halfExtentsTarget.X, halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(-halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, -halfExtentsTarget.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(-halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(-halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
+
+
+            DrawLine(new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
+            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), Colors.Orange, 3.0f);
+            DrawLine(new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
+            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
+        }
+    }
 }
+
