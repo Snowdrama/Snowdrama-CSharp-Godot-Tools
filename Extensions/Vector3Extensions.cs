@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Godot;
 
 public static class Vector3Extensions
@@ -45,6 +46,23 @@ public static class Vector3Extensions
     public static Vector3 Clamp(this Vector3 val, Vector3 min, Vector3 max)
     {
         return new Vector3(Mathf.Clamp(val.X, min.X, max.X), Mathf.Clamp(val.Y, min.Y, max.Y), Mathf.Clamp(val.Z, min.Z, max.Z));
+    }
+    public static Vector3 ClampMagnitude(this Vector3 val, float magnitude)
+    {
+        if (val.LengthSquared() > magnitude * magnitude)
+        {
+            return val.Normalized() * magnitude;
+        }
+        return val;
+    }
+
+    public static Vector3 ClampLength(this Vector3 val, float length)
+    {
+        if (val.LengthSquared() > length * length)
+        {
+            return val.Normalized() * length;
+        }
+        return val;
     }
 
 
