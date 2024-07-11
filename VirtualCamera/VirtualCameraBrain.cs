@@ -14,9 +14,23 @@ public partial class VirtualCameraBrain : Camera2D
     public static Vector2 cameraSize;
 
     VirtualCamera currentCamera;
+    [ExportGroup("Zoom")]
     [Export] bool smoothScale;
 
-    
+    [ExportGroup("Position")]
+    [Export] bool LerpPosition;
+    [Export] double LerpPositionLinearSpeed = 10.0;
+    [Export] bool LerpPositionByDistance;
+    [Export] double LerpPositionDistanceSpeed = 10.0;
+
+    [Export] double maxSpeed = 100;
+
+
+    [ExportGroup("Rotation")]
+    [Export] bool LerpRotation;
+    [Export] double LerpRotationSpeed = 10.0;
+
+
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -49,27 +63,60 @@ public partial class VirtualCameraBrain : Camera2D
         {
             return;
         }
-
+        
         //sort the cameras by their virtualCameraPriority
         cameras.Sort((x, y) =>
         {
             if (x.virtualCameraPriority > y.virtualCameraPriority)
             {
-                return 0;
+                return -1;
             }
-            return 1;
+            if (x.virtualCameraPriority < y.virtualCameraPriority)
+            {
+                return 1;
+            }
+            return 0;
         });
+        currentCamera = cameras[0];
 
         //current one is the highest virtualCameraPriority
-        if(currentCamera != cameras[0])
+        if (currentCamera != cameras[0])
         {
             currentCamera = cameras[0];
         }
 
         if (currentCamera != null)
         {
-            this.Position = currentCamera.GlobalPosition;
-            this.Rotation = currentCamera.Rotation;
+            if (LerpPosition)
+            {
+                if (LerpPositionByDistance)
+                {
+                    var distance = this.Position.DistanceTo(currentCamera.GlobalPosition);
+                    var currentDelta = (delta * LerpPositionLinearSpeed) + (delta * LerpPositionDistanceSpeed * distance);
+                    var clampedDelta = Mathf.Clamp(currentDelta, 0, maxSpeed);
+                    this.Position = this.Position.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
+                }
+                else
+                {
+                    var currentDelta = (float)(delta * LerpPositionLinearSpeed);
+                    var clampedDelta = Mathf.Clamp(currentDelta, 0, maxSpeed);
+                    this.Position = this.Position.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
+                }
+            }
+            else
+            {
+                this.Position = currentCamera.GlobalPosition;
+            }
+
+            if (LerpRotation)
+            {
+                this.Rotation = this.Rotation.MoveTowards(currentCamera.GlobalRotation,(float)(delta * LerpRotationSpeed));
+            }
+            else
+            {
+                this.Rotation = currentCamera.GlobalRotation;
+            }
+
             if (smoothScale && currentCamera.calculatedScale.Length() > 0.1f)
             {
                 this.Zoom = Vector2Extensions.Lerp(this.Zoom, currentCamera.calculatedScale, (float)delta);

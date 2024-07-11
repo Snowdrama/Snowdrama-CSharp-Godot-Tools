@@ -1,12 +1,26 @@
 using Godot;
+using Godot.Collections;
 using System;
 using System.Collections.Generic;
 
 [Tool]
 public partial class VirtualCamera : Node2D
 {
+    [Export] int activePriority = 10;
+    [Export] int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
-    [Export] Vector2 windowSize = new Vector2(1920, 1080);
+    
+    Vector2 _windowSize = new Vector2(1920, 1080);
+    [Export]
+    Vector2 WindowSize
+    {
+        get { return _windowSize; }
+        set
+        {
+            _windowSize = value;
+            QueueRedraw();
+        }
+    }
     //[Export] float orthographicSize;
     [Export] bool clampToIntegerScale;
     public Vector2 targetScreenSize;
@@ -14,7 +28,17 @@ public partial class VirtualCamera : Node2D
 
     //DEBUG ONLY
     [ExportCategory("Debug")]
-    [Export] Vector2 testScreenResolution = new Vector2(1920, 1080);
+    Vector2 _testScreenResolution = new Vector2(1920, 1080);
+    [Export]
+    Vector2 TestScreenResolution
+    {
+        get { return _testScreenResolution; }
+        set
+        {
+            _testScreenResolution = value;
+            QueueRedraw();
+        }
+    }
     [ExportGroup("Settings")]
     [Export] private float debugBorderWidth = 30.0f;
     [Export] private Color debugVirtualBorderColor = Color.FromHtml($"FF8000");
@@ -49,25 +73,38 @@ public partial class VirtualCamera : Node2D
     // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
     {
-        if (Engine.IsEditorHint())
+
+
+        if (!Engine.IsEditorHint())
         {
-            QueueRedraw();
+            UpdateScreenSize();
         }
-        else
-        {
-            var screenResolution = GetViewportRect().Size;
+    }
 
-            calculatedScale = ScaleScreen(screenResolution, this.windowSize);
-            calculatedScaleCurrent = ScaleScreen(screenResolution, this.windowSize);
+    public void MarkAsActive()
+    {
+        virtualCameraPriority = activePriority;
 
-            targetScreenSize.X = (float)screenResolution.X / calculatedScale.X;
-            targetScreenSize.Y = (float)screenResolution.Y / calculatedScale.Y;
+    }
+    public void MarkAsInactive()
+    {
+        virtualCameraPriority = inactivePriority;
+    }
+    public void UpdateScreenSize()
+    {
+        var screenResolution = GetViewportRect().Size;
+
+        calculatedScale = ScaleScreen(screenResolution, this._windowSize);
+        calculatedScaleCurrent = ScaleScreen(screenResolution, this._windowSize);
+
+        targetScreenSize.X = (float)screenResolution.X / calculatedScale.X;
+        targetScreenSize.Y = (float)screenResolution.Y / calculatedScale.Y;
 
 
-            calculatedScaleTest = ScaleScreen(testScreenResolution, this.windowSize);
-            testScreenSize.X = (float)testScreenResolution.X / calculatedScaleTest.X;
-            testScreenSize.Y = (float)testScreenResolution.Y / calculatedScaleTest.Y;
-        }
+        calculatedScaleTest = ScaleScreen(_testScreenResolution, this._windowSize);
+
+        testScreenSize.X = (float)_testScreenResolution.X / calculatedScaleTest.X;
+        testScreenSize.Y = (float)_testScreenResolution.Y / calculatedScaleTest.Y;
     }
 
     public Vector2 ScaleScreen(Vector2 inputResolution, Vector2 targetSize)
@@ -106,22 +143,30 @@ public partial class VirtualCamera : Node2D
         }
         return screenScale;
     }
+
     public override void _Draw()
     {
+        base._Draw();
+
         if (Engine.IsEditorHint())
         {
-            var halfExtentsTarget = targetScreenSize * 0.5f;
+            UpdateScreenSize();
+            var halfWindowSize = _windowSize * 0.5f;
             var halfExtentsTest = testScreenSize * 0.5f;
-            DrawLine(new Vector2(-halfExtentsTarget.X, halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(-halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, -halfExtentsTarget.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(-halfExtentsTarget.X, -halfExtentsTarget.Y), new Vector2(-halfExtentsTarget.X, halfExtentsTarget.Y), Colors.Blue, 3.0f);
 
+            //GD.Print($"halfExtentsTarget {halfWindowSize}");
+            //GD.Print($"halfExtentsTest {halfExtentsTest}");
 
             DrawLine(new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
             DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), Colors.Orange, 3.0f);
             DrawLine(new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
             DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
+
+
+            DrawLine(new Vector2(-halfWindowSize.X, halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, -halfWindowSize.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(-halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
         }
     }
 }
