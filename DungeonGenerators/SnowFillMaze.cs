@@ -6,17 +6,19 @@ using System.Transactions;
 
 public class SnowFillMaze
 {
+
+
     private static Vector2I[] directions = new Vector2I[]
     {
-        new Vector2I(1, 0),
-        new Vector2I(0, 1),
-        new Vector2I(-1, 0),
-        new Vector2I(0, -1),
+        Vector2I.Left, 
+        Vector2I.Right, 
+        Vector2I.Up, 
+        Vector2I.Down,
     };
 
-    public static void GenerateMaze(ref SnowFillCell[,] maze, Vector2I size, Vector2I startPoint)
+    public static void GenerateMaze(ref SnowFillCell2D[,] maze, Vector2I size, Vector2I startPoint)
     {
-        maze = new SnowFillCell[size.X, size.Y];
+        maze = new SnowFillCell2D[size.X, size.Y];
 
         var filledCount = 0;
         var cellCount = size.X * size.Y;
@@ -41,9 +43,9 @@ public class SnowFillMaze
         GD.Print($"Finshed in {stepCount} steps");
     }
 
-    private static void CreateMaze(ref SnowFillCell[,] map, Vector2I size, Vector2I start)
+    private static void CreateMaze(ref SnowFillCell2D[,] map, Vector2I size, Vector2I start)
     {
-        map = new SnowFillCell[size.X, size.Y];
+        map = new SnowFillCell2D[size.X, size.Y];
         GD.Print($"Starting Maze of size {new Vector2(map.GetLength(0), map.GetLength(1))} ");
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -64,7 +66,7 @@ public class SnowFillMaze
         }
     }
 
-    private static void RandomizeDisconnectedCells(ref SnowFillCell[,] map)
+    private static void RandomizeDisconnectedCells(ref SnowFillCell2D[,] map)
     {
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -78,7 +80,7 @@ public class SnowFillMaze
         }
     }
 
-    private static void FloodFillRoutine(ref SnowFillCell[,] map)
+    private static void FloodFillRoutine(ref SnowFillCell2D[,] map)
     {
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -92,11 +94,11 @@ public class SnowFillMaze
     }
 
 
-    private static void FloodFill(SnowFillCell[,] map, Vector2I currentPosition, int depth)
+    private static void FloodFill(SnowFillCell2D[,] map, Vector2I currentPosition, int depth)
     {
         //prevent going super deep
         //TODO: This really should be like size.X * size.Y?
-        if(depth > 100)
+        if (depth > 100)
         {
             return;
         }
@@ -125,7 +127,7 @@ public class SnowFillMaze
         CheckConnection(map, rightCell, left, depth);
     }
 
-    private static void CheckConnection(SnowFillCell[,] map, Vector2I testCell, Vector2I testDirection, int depth)
+    private static void CheckConnection(SnowFillCell2D[,] map, Vector2I testCell, Vector2I testDirection, int depth)
     {
         if (IsInBounds(map, testCell) && !map[testCell.X, testCell.Y].isConnected && map[testCell.X, testCell.Y].direction == testDirection)
         {
@@ -134,7 +136,7 @@ public class SnowFillMaze
         }
     }
 
-    private static int CountFilled(SnowFillCell[,] map)
+    private static int CountFilled(SnowFillCell2D[,] map)
     {
         int count = 0;
         for (int y = 0; y < map.GetLength(1); y++)
@@ -150,7 +152,7 @@ public class SnowFillMaze
         return count;
     }
 
-    private static bool IsInBounds(SnowFillCell[,] map, Vector2I point)
+    private static bool IsInBounds(SnowFillCell2D[,] map, Vector2I point)
     {
         if (point.X < 0 || point.Y < 0 || point.X >= map.GetLength(0) || point.Y >= map.GetLength(1))
         {
@@ -160,8 +162,7 @@ public class SnowFillMaze
     }
 
 }
-
-public struct SnowFillCell
+public struct SnowFillCell2D
 {
     public bool removeCell;
 

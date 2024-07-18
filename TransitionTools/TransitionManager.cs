@@ -26,7 +26,7 @@ public partial class TransitionManager : Node
     private Action startShow;
     private Action ended;
 
-    [Export(PropertyHint.NodeType, "Transition")] Transition[] transitions = new Transition[0];
+    [Export] Transition[] transitions = new Transition[0];
 
     string targetTransitionName;
     Transition currentTransition;
@@ -97,6 +97,9 @@ public partial class TransitionManager : Node
                 break;
         }
     }
+
+
+
 
     public static void StartShowingScreen()
     {

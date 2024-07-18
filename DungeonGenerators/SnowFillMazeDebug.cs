@@ -9,7 +9,7 @@ public partial class SnowFillMazeDebug : Node2D
     [Export] int debugScale = 100;
     [Export] float debugLineWidth = 3.0f;
     [Export] bool useArrows = false;
-    SnowFillCell[,] debugMaze = new SnowFillCell[16, 16];
+    SnowFillCell2D[,] debugMaze = new SnowFillCell2D[16, 16];
     [Export] Vector2I debugMapSize = new Vector2I(16, 16);
     [Export] Vector2I debugStartPoint = new Vector2I(8, 8);
     [Export] bool generateDebugMaze;
@@ -23,10 +23,11 @@ public partial class SnowFillMazeDebug : Node2D
             benchmarkStopwatch.Start();
             generateDebugMaze = false;
 
-            debugMaze = new SnowFillCell[16, 16];
+            debugMaze = new SnowFillCell2D[16, 16];
             SnowFillMaze.GenerateMaze(ref debugMaze, debugMapSize, debugStartPoint);
             benchmarkStopwatch.Stop();
             GD.Print($"Generating took {benchmarkStopwatch.Elapsed}");
+            QueueRedraw();
         }
     }
 
@@ -73,7 +74,6 @@ public partial class SnowFillMazeDebug : Node2D
         var direction = from.DirectionTo(to) * 100;
         var arrowLeft = to + (direction.Normalized() * 10).Rotated(Mathf.DegToRad(-160));
         var arrowRight = to + (direction.Normalized() * 10).Rotated(Mathf.DegToRad(160));
-
 
         DrawLine(from, to, color, width);
         DrawLine(to, arrowLeft, color, width);

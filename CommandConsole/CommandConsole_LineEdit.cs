@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class CommandConsoleTextInput : LineEdit
+public partial class CommandConsole_LineEdit : LineEdit
 {
 	// Called when the node enters the scene tree for the first lerpAmount.
 	public override void _Ready()

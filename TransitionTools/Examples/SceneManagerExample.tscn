@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Tools/TransitionTools/SceneManager.cs" id="1_uudhw"]
 [ext_resource type="Script" path="res://Tools/TransitionTools/TransitionManager.cs" id="2_871kh"]
 [ext_resource type="Script" path="res://Tools/TransitionTools/FadeImageTransition.cs" id="3_3o2d0"]
-[ext_resource type="Texture2D" uid="uid://cpe3qt1trhdmg" path="res://Tools/TransitionTools/SolidBlack.png" id="4_y7t6m"]
+[ext_resource type="Texture2D" uid="uid://cie3ki3ntuya0" path="res://Tools/TransitionTools/SolidBlack.png" id="4_y7t6m"]
 
 [node name="SceneManagerExample" type="Node"]
 script = ExtResource("1_uudhw")

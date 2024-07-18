@@ -3,9 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public partial class CommandConsoleTextBox : RichTextLabel
+public partial class CommandConsole_RichTextLabel : RichTextLabel
 {
-    private static CommandConsoleTextBox instance;
+    private static CommandConsole_RichTextLabel instance;
     private static int consoleHistoryLength = 64;
     private static bool needsUpdating;
 

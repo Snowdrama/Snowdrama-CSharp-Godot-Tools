@@ -33,11 +33,15 @@ public partial class SceneManager : Node
     {
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
+
+
         for (int i = 0; i < packedScenes.Length; i++)
         {
             if (packedScenes[i] != null)
             {
-                //var name = packedScenes[i].ResourcePath.Split("/").GetLastElement().Replace(".tscn", "");
+                string possible_name = packedScenes[i].ResourcePath.Split("/").GetLastElement().Replace(".tscn", "");
+                GD.Print($"packedScenes[i].ResourcePath: {packedScenes[i].ResourcePath}");
+                GD.Print($"possible_name: {possible_name}");
                 string name = packedScenes[i].GetState().GetNodeName(0);
                 name = name.Replace(" ", "_");
                 if (!_scenes.ContainsKey(name))
@@ -118,17 +122,39 @@ public partial class SceneManager : Node
         }
     }
 
-    private void LoadSceenAsync(PackedScene sceneToLoad)
+    public static void LoadScene(
+        string sceneName, 
+        string transitionName = null, 
+        float fakeLoadTime = 1.0f,
+        Action onStartHide = null,
+        Action onBlackout = null,
+        Action onFakeLoadComplete = null,
+        Action onStartShow = null,
+        Action onEnded = null
+        )
     {
+        instance.InstanceLoadScene(
+            sceneName, 
+            transitionName, 
+            fakeLoadTime,
+            onStartHide,
+            onBlackout,
+            onFakeLoadComplete,
+            onStartShow,
+            onEnded
+            );
     }
 
-
-    public static void LoadScene(string sceneName, string transitionName = null, float fakeLoadTime = 1.0f)
-    {
-        instance.InstanceLoadScene(sceneName, transitionName, fakeLoadTime);
-    }
-
-    private void InstanceLoadScene(string sceneName, string transitionName, float fakeLoadTime)
+    private void InstanceLoadScene(
+        string sceneName, 
+        string transitionName, 
+        float fakeLoadTime,
+        Action onStartHide,
+        Action onBlackout,
+        Action onFakeLoadComplete,
+        Action onStartShow,
+        Action onEnded
+        )
     {
         transitioning = true;
         sceneLoaded = false;
