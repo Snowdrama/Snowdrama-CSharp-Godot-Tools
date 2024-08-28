@@ -7,9 +7,16 @@ public partial class CommandConsole_LineEdit : LineEdit
 	public override void _Ready()
 	{
         this.VisibilityChanged += CommandConsoleTextInput_VisibilityChanged;
-
+        this.TextChanged += CommandConsole_LineEdit_TextChanged;
         this.TextSubmitted += CommandConsoleTextInput_TextSubmitted;
 	}
+
+    private void CommandConsole_LineEdit_TextChanged(string newText)
+    {
+        var lastCarret = this.CaretColumn;
+        this.Text = newText.Replace("`", "");
+        this.CaretColumn = lastCarret;
+    }
 
     private void CommandConsoleTextInput_TextSubmitted(string newText)
     {

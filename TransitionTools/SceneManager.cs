@@ -34,19 +34,15 @@ public partial class SceneManager : Node
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
 
-
         for (int i = 0; i < packedScenes.Length; i++)
         {
             if (packedScenes[i] != null)
             {
                 string possible_name = packedScenes[i].ResourcePath.Split("/").GetLastElement().Replace(".tscn", "");
-                GD.Print($"packedScenes[i].ResourcePath: {packedScenes[i].ResourcePath}");
-                GD.Print($"possible_name: {possible_name}");
                 string name = packedScenes[i].GetState().GetNodeName(0);
                 name = name.Replace(" ", "_");
                 if (!_scenes.ContainsKey(name))
                 {
-                    GD.Print($"Adding to Scene Manager: {name}");
                     _scenes.Add(name, packedScenes[i]);
                 }
                 else
@@ -61,23 +57,7 @@ public partial class SceneManager : Node
             var sceneResourcePath = DirAccess.Open(resourcePath);
             if (sceneResourcePath != null)
             {
-                var filePaths = sceneResourcePath.GetFiles();
-                for (int i = 0; i < filePaths.Length; i++)
-                {
-                    GD.Print($"Loading Scene from: {resourcePath}/{filePaths[i]}");
-                    var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
-                    string name = possiblyAScene.GetState().GetNodeName(0);
-                    name = name.Replace(" ", "_");
-
-                    if (!_scenes.ContainsKey(name))
-                    {
-                        _scenes.Add(name, possiblyAScene);
-                    }
-                    else
-                    {
-                        GD.PrintErr($"Scene Already Exiists in List: {name}");
-                    }
-                }
+                LoadScenesFromDirectory(resourcePath, sceneResourcePath);
             }
         }
 
@@ -92,6 +72,37 @@ public partial class SceneManager : Node
         if(currentScene != null)
         {
             previousSceneName = currentScene.Name;
+        }
+    }
+
+    private void LoadScenesFromDirectory(string resourcePath, DirAccess sceneResourcePath)
+    {
+        var filePaths = sceneResourcePath.GetFiles();
+        for (int i = 0; i < filePaths.Length; i++)
+        {
+            var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
+            string name = possiblyAScene.GetState().GetNodeName(0);
+            name = name.Replace(" ", "_");
+
+            if (!_scenes.ContainsKey(name))
+            {
+                _scenes.Add(name, possiblyAScene);
+            }
+            else
+            {
+                GD.PrintErr($"Scene Already Exiists in List: {name}");
+            }
+        }
+
+        var directoryPaths = sceneResourcePath.GetDirectories();
+
+        for (int i = 0; i < directoryPaths.Length; i++)
+        {
+            var directoryResourcePath = DirAccess.Open($"{resourcePath}/{directoryPaths[i]}");
+            if(directoryResourcePath != null)
+            {
+                LoadScenesFromDirectory($"{resourcePath}/{directoryPaths[i]}", directoryResourcePath);
+            }
         }
     }
 

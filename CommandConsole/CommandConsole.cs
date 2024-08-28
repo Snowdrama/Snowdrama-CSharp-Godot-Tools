@@ -55,6 +55,14 @@ public partial class CommandConsole : Node
                 Keycode = Key.Quoteleft
             });
         }
+        if (!InputMap.HasAction("ConsoleTryAutocomplete"))
+        {
+            InputMap.AddAction("ConsoleTryAutocomplete");
+            InputMap.ActionAddEvent("ConsoleTryAutocomplete", new InputEventKey()
+            {
+                Keycode = Key.Tab
+            });
+        }
     }
 
     public override void _Input(InputEvent @event)
@@ -111,8 +119,6 @@ public partial class CommandConsole : Node
     //   {
     //       targetedCommands[actionName][targetName] -= action;
     //   }
-
-
     /// <summary>
     /// Adds a gloabal command for use
     /// 
@@ -159,10 +165,6 @@ public partial class CommandConsole : Node
     //public static (bool, string) AutoFill(string attemptText)
     //{
     //    //check if it's
-
-
-
-
     //    //we failed to find something better, so just return the original text
     //    return (false, attemptText);
     //}
@@ -172,6 +174,8 @@ public partial class CommandConsole : Node
         //TODO: parse command string
         //check if it's targeted
         GD.Print($"Running Command: {input}");
+
+        //player->add_item gold_001 10000
         if (input.Contains("->"))
         {
             GD.Print("Command is Targeted!");
@@ -228,7 +232,6 @@ public partial class CommandConsole : Node
                     CommandConsole_RichTextLabel.PrintText("=================");
 
 
-
                     CommandConsole_RichTextLabel.PrintText("[color=#00F]================= Global Commands =================[/color]");
                     foreach (var item in globalCommands)
                     {
@@ -259,10 +262,18 @@ public partial class CommandConsole : Node
                     }
                     return true;
                 default:
+
+                    if(globalCommands.ContainsKey(command))
+                    {
+
+                    }
+                    else
+                    {
+                        CommandConsole_RichTextLabel.PrintText($"[color=#A66][color=#F00]Error:[/color] Command [color=#F00]{command}[/color] not found in list of global commands[/color]");
+                    }
                     return false;
             }
         }
-        return true;
     }
 
     private void ListCommands()
@@ -276,6 +287,7 @@ public class GameCommand
 {
     GameCommandAction command;
     public string Tooltip;
+    public int argumentCount;
     
     public void Invoke(params string[] args)
     {

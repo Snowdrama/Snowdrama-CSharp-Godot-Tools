@@ -1,45 +1,72 @@
-using Godot;
+﻿using Godot;
 using Godot.Collections;
-using System;
 
-
-/// <summary>
-/// Plays multiple sequence steps together in paralell 
-/// and then only is complete once every child step is compltete
-/// </summary>
-public partial class SequenceGroup : SequenceNode
+public partial class SequenceGroup : BaseSequenceStep
 {
-    [Export] int childrenComplete = 0;
-    [Export] Array<SequenceNode> chidlren;
-
-    public override void PlaySequence(Action setOnCompleted)
+    [Export] Array<BaseSequenceStep> groupSteps = new Array<BaseSequenceStep>();
+    public override void FinishStep()
     {
-        childrenComplete = 0;
-        base.PlaySequence(setOnCompleted);
-        foreach (var item in chidlren)
+        for (int i = 0; groupSteps.Count > 0; i++)
         {
-            //we want to know when a child completes
-            item.PlaySequence(OnChildCompleted);
-        }
-        this.State = SequenceState.Playing;
-    }
-
-    private void OnChildCompleted()
-    {
-        childrenComplete++;
-        if(chidlren.Count == childrenComplete)
-        {
-            this.Completed();
+            groupSteps[i].FinishStep();
         }
     }
 
-    public override void ForceComplete()
+    public override bool IsComplete()
     {
-        base.ForceComplete();
-        foreach (var item in chidlren)
+        if (!base.isComplete)
         {
-            //all children complete immediately
-            item.ForceComplete();
+            base.isComplete = true;
+            for (int i = 0; groupSteps.Count > 0; i++)
+            {
+                if (!groupSteps[i].IsComplete())
+                {
+                    base.isComplete = false;
+                }
+            }
+        }
+
+        return base.isComplete;
+    }
+
+    public override bool IsPlaying()
+    {
+        if (!base.isPlaying)
+        {
+            base.isPlaying = true;
+            for (int i = 0; groupSteps.Count > 0; i++)
+            {
+                if (!groupSteps[i].IsPlaying())
+                {
+                    base.isPlaying = false;
+                }
+            }
+        }
+
+        return base.isPlaying;
+    }
+
+    public override void LoadStep()
+    {
+        for (int i = 0; groupSteps.Count > 0; i++)
+        {
+            groupSteps[i].LoadStep();
+        }
+    }
+
+    public override void StartStep()
+    {
+        for (int i = 0; groupSteps.Count > 0; i++)
+        {
+            groupSteps[i].StartStep();
+        }
+    }
+
+    public override void UnloadStep()
+    {
+        for (int i = 0; groupSteps.Count > 0; i++)
+        {
+            groupSteps[i].UnloadStep();
         }
     }
 }
