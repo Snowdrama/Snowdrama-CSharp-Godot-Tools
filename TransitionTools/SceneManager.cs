@@ -8,7 +8,8 @@ using System.Timers;
 
 /// <summary>
 /// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
-/// </summary>
+/// </summary
+[GlobalClass]
 public partial class SceneManager : Node
 {
     [ExportCategory("Manual Assignment")]
@@ -80,6 +81,7 @@ public partial class SceneManager : Node
         var filePaths = sceneResourcePath.GetFiles();
         for (int i = 0; i < filePaths.Length; i++)
         {
+            GD.Print($"Loading from: ${resourcePath}/{filePaths[i]}");
             var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
             string name = possiblyAScene.GetState().GetNodeName(0);
             name = name.Replace(" ", "_");
@@ -133,8 +135,13 @@ public partial class SceneManager : Node
         }
     }
 
+    public static void LoadSceneGDS(string sceneName)
+    {
+        LoadScene(sceneName);
+    }
+
     public static void LoadScene(
-        string sceneName, 
+        string sceneName,
         string transitionName = null, 
         float fakeLoadTime = 1.0f,
         Action onStartHide = null,

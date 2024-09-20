@@ -301,16 +301,16 @@ public partial class SnowFillRoomMaze : Node2D
 //public struct SnowFillRoom
 //{
 //    public Vector2I position;
-//    public Vector2I size;
+//    public Vector2I mapSize;
 
 //    public bool Intersects(SnowFillRoom room)
 //    {
 //        if(
-//            room.position.X <= this.position.X + this.size.X &&
-//            room.position.Y <= this.position.Y + this.size.Y &&
+//            room.position.X <= this.position.X + this.mapSize.X &&
+//            room.position.Y <= this.position.Y + this.mapSize.Y &&
 
-//            this.position.X <= room.position.X + room.size.X &&
-//            this.position.Y <= room.position.Y + room.size.Y)
+//            this.position.X <= room.position.X + room.mapSize.X &&
+//            this.position.Y <= room.position.Y + room.mapSize.Y)
 //        {
 //            return true;
 //        }
@@ -323,13 +323,13 @@ public partial class SnowFillRoomMaze : Node2D
 //        switch (index)
 //        {
 //            case 0:
-//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y));
+//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y));
 //            case 1:
-//                return (new Vector2I(this.position.X + this.size.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y + this.size.Y));
+//                return (new Vector2I(this.position.X + this.mapSize.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y + this.mapSize.Y));
 //            case 2:
-//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y));
+//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y));
 //            case 3:
-//                return (new Vector2I(this.position.X, this.position.Y + this.size.Y), new Vector2I(this.position.X + this.size.X, this.position.Y + this.size.Y));
+//                return (new Vector2I(this.position.X, this.position.Y + this.mapSize.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y + this.mapSize.Y));
 //        }
 //        return (new Vector2I(), new Vector2I());
 //    }

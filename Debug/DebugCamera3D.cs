@@ -13,6 +13,8 @@ public partial class DebugCamera3D : Node3D
     float zoomSpeed = 0.1f;
     float zoom = 1.0f;
 
+    [Export]
+    float lerpSpeed = 1.0f;
 
     float pitch = 0;
 	float yaw = 0;
@@ -57,9 +59,9 @@ public partial class DebugCamera3D : Node3D
 
         var direction3D = new Vector3(rotatedMoveDirection.X, verticalVelocity, rotatedMoveDirection.Z);
 
-        targetPosition += direction3D * speed;
+        targetPosition += direction3D * speed * (float)delta; 
         var distanceToTarget = this.Position.DistanceTo(targetPosition);
-        this.Position = Vector3Extensions.MoveTowards(this.Position, targetPosition, (distanceToTarget * distanceToTarget) * speed * (float)delta);
+        this.Position = Vector3Extensions.MoveTowards(this.Position, targetPosition, lerpSpeed  * distanceToTarget * (float)delta);
     }
     public override void _Input(InputEvent @event)
     {

@@ -44,7 +44,7 @@ public partial class SnowFillMaze3D : Node
     private static void CreateMaze(ref SnowFillCell3D[,,] map, Vector3I size, Vector3I start)
     {
         map = new SnowFillCell3D[size.X, size.Y, size.Z];
-        GD.Print($"Starting Maze of size {new Vector2(map.GetLength(0), map.GetLength(1))} ");
+        GD.Print($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
         for (int y = 0; y < map.GetLength(1); y++)
         {
             for (int z = 0; z < map.GetLength(2); z++)
@@ -104,7 +104,7 @@ public partial class SnowFillMaze3D : Node
     private static void FloodFill(SnowFillCell3D[,,] map, Vector3I currentPosition, int depth)
     {
         //prevent going super deep
-        //TODO: This really should be like size.X * size.Y?
+        //TODO: This really should be like mapSize.X * mapSize.Y?
         if (depth > 100)
         {
             return;
