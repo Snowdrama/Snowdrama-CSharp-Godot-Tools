@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using static Godot.HttpRequest;
 
 //asks to be the primary camera
-public partial class VirtualCameraBrain : Camera2D
+public partial class VirtualCameraBrain2D : Camera2D
 {
-    public static VirtualCameraBrain cameraInstance;
-    public static List<VirtualCamera> cameras;
+    public static VirtualCameraBrain2D cameraInstance;
+    public static List<VirtualCamera2D> cameras;
     public Transform2D cameraTransform = Transform2D.Identity;
     public static Vector2 cameraPosition;
     public static Vector2 cameraSize;
 
-    VirtualCamera currentCamera;
+    VirtualCamera2D currentCamera;
     [ExportGroup("Zoom")]
     [Export] bool smoothScale;
 
@@ -49,7 +49,7 @@ public partial class VirtualCameraBrain : Camera2D
 
     public override void _Process(double delta)
     {
-        VirtualCameraBrain.cameraPosition = this.Position;
+        VirtualCameraBrain2D.cameraPosition = this.Position;
         cameraTransform = GetCanvasTransform();
 
         //if the list is null...then there's no VCams
@@ -128,7 +128,7 @@ public partial class VirtualCameraBrain : Camera2D
         }
     }
 
-    public static void RegisterCamera(VirtualCamera cam)
+    public static void RegisterCamera(VirtualCamera2D cam)
     {
         ConfigureCameraList();
         if (cameras != null && !cameras.Contains(cam))
@@ -136,7 +136,7 @@ public partial class VirtualCameraBrain : Camera2D
             cameras.Add(cam);
         }
     }
-    public static void UnregisterCamera(VirtualCamera cam)
+    public static void UnregisterCamera(VirtualCamera2D cam)
     {
         ConfigureCameraList();
         if (cameras != null && cameras.Contains(cam))
@@ -149,7 +149,7 @@ public partial class VirtualCameraBrain : Camera2D
     {
         if (cameras == null)
         {
-            cameras = new List<VirtualCamera>();
+            cameras = new List<VirtualCamera2D>();
         }
     }
 }

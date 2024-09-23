@@ -35,7 +35,7 @@ public partial class UIRoute : Node
         // TODO: Force the selection to this for gamepads.
         if (focusOnVisible != null)
         {
-            focusOnVisible.GrabFocus();
+            focusOnVisible?.GrabFocus();
         }
     }
 
@@ -51,7 +51,10 @@ public partial class UIRoute : Node
             //check if we have a focus, if somehow we lose that focus grab it again
             if(GetViewport().GuiGetFocusOwner() == null)
             {
-                focusOnVisible.GrabFocus();
+                if (focusOnVisible != null)
+                {
+                    focusOnVisible?.GrabFocus();
+                }
             }
         }
     }

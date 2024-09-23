@@ -4,4 +4,4 @@
 
 [node name="AudioManager" type="Node"]
 script = ExtResource("1_q6p5k")
-VolumeKeys = Array[String](["Master", "Music", "Sound", "Announcer"])
+VolumeKeys = ["Master", "Music", "Sounds", "Voices"]

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public partial class VirtualCamera : Node2D
+public partial class VirtualCamera2D : Node2D
 {
     [Export] int activePriority = 10;
     [Export] int inactivePriority = 0;
@@ -61,13 +61,13 @@ public partial class VirtualCamera : Node2D
     public override void _EnterTree()
     {
         base._EnterTree();
-        VirtualCameraBrain.RegisterCamera(this);
+        VirtualCameraBrain2D.RegisterCamera(this);
     }
 
     public override void _ExitTree()
     {
         base._ExitTree();
-        VirtualCameraBrain.UnregisterCamera(this);
+        VirtualCameraBrain2D.UnregisterCamera(this);
     }
 
     // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.

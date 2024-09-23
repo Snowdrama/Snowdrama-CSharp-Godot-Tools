@@ -4,7 +4,7 @@ using System;
 public partial class UIRouterPause : Node
 {
 
-    [Export] string pauseKey = "Pause_0";
+    [Export] string pauseKey = "Pause";
     [Export] UIRouter router;
 
     bool _paused = false;
@@ -17,6 +17,7 @@ public partial class UIRouterPause : Node
             GetTree().Paused = _paused;
             if (_paused)
             {
+                CursorManager.MenuOpen("PauseMenu");
                 if (!router.IsRouteOpen("pause"))
                 {
                     router.OpenRoute("pause");
@@ -24,6 +25,7 @@ public partial class UIRouterPause : Node
             }
             else
             {
+                CursorManager.MenuClose("PauseMenu");
                 if (router.OpenRouteCount() > 0)
                 {
                     router.CloseAll();
@@ -34,6 +36,7 @@ public partial class UIRouterPause : Node
 
     public override void _Ready()
     {
+        //we should never pause.
         ProcessMode = Node.ProcessModeEnum.Always;
     }
     public override void _Process(double delta)
@@ -42,12 +45,12 @@ public partial class UIRouterPause : Node
 
         if(GetTree().Paused && router.OpenRouteCount() <= 0)
         {
-            GetTree().Paused = false;
+            Paused = false;
         }
 
         if (!Paused && GetTree().Paused)
         {
-            GetTree().Paused = false;
+            Paused = false;
         }
     }
     public override void _Input(InputEvent @event)

@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [Tool]
-public partial class TargetingVCam : VirtualCamera
+public partial class TargetingVCam : VirtualCamera2D
 {
 	[Export] Node2D target;
     [Export] float distanceSpeed = 5;

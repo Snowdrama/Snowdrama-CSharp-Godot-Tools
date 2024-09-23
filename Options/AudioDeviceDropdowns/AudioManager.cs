@@ -29,8 +29,14 @@ public partial class AudioManager : Node
         {
             var lerp = Mathf.Clamp(Options.GetFloat(VolumeKeys[i], DefaultVolume[i]), 0.0f, 1.0f);
             var index = AudioServer.GetBusIndex(VolumeKeys[i]);
-
-            AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 10, lerp));
+            if (index >= 0)
+            {
+                AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 10, lerp));
+            }
+            else
+            {
+                GD.PrintErr($"The key {VolumeKeys[i]} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
+            }
         }
     }
 
@@ -38,10 +44,14 @@ public partial class AudioManager : Node
     public static void SetVolume(string volumeKey, float volumeValue, float volumeMinValue = 0, float volumeMaxValue = 1)
     {
         var index = AudioServer.GetBusIndex(volumeKey);
-        if (index != -1)
+        if (index >= 0)
         {
             var lerp = Mathf.InverseLerp(volumeMinValue, volumeMaxValue, volumeValue);
             AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 10, lerp));
+        }
+        else
+        {
+            GD.PrintErr($"The key {volumeKey} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
         }
     }
 }
