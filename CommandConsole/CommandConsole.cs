@@ -34,13 +34,14 @@ using static System.Collections.Specialized.BitVector32;
 /// </summary>
 public partial class CommandConsole : Node
 {
-
+    [Export] bool pauseOnOpen;
     [Export] CanvasLayer consoleCanvas;
 
     public override void _Ready()
     {
         base._Ready();
         consoleCanvas.Hide();
+        consoleCanvas.Layer = 128;
 
         CommandConsole_RichTextLabel.PrintText("=================");
         CommandConsole_RichTextLabel.PrintText("'help' for commands");
@@ -74,10 +75,12 @@ public partial class CommandConsole : Node
             if(consoleCanvas.Visible)
             {
                 consoleCanvas.Hide();
+                GetTree().Paused = false;
             }
             else
             {
                 consoleCanvas.Show();
+                GetTree().Paused = true;
             }
         }
     }

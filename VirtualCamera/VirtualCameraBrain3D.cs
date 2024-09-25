@@ -13,8 +13,6 @@ public partial class VirtualCameraBrain3D : Camera3D
     VirtualCamera3D currentCamera;
 
 
-
-
     Vector3 currentRotation;
     Vector3 lastRotation;
     float rotX;
@@ -81,8 +79,26 @@ public partial class VirtualCameraBrain3D : Camera3D
 
         if (currentCamera != null)
         {
-            this.GlobalPosition = currentCamera.GlobalPosition;
-            this.GlobalRotation = currentCamera.GlobalRotation;
+            if (currentCamera.lerpToTarget)
+            {
+                var distanceToTarget = this.GlobalPosition.DistanceTo(currentCamera.Position);
+                this.GlobalPosition = this.GlobalPosition.MoveToward(currentCamera.GlobalPosition, (float)delta * distanceToTarget * moveSpeed);
+            }
+            else
+            {
+                this.GlobalPosition = currentCamera.GlobalPosition;
+            }
+
+
+
+            if (currentCamera.enableLookAtTarget)
+            {
+                this.LookAt(currentCamera.targetToLookAt.GlobalPosition, Vector3.Up);
+            }
+            else
+            {
+                this.GlobalRotation = currentCamera.GlobalRotation;
+            }
         }
     }
 

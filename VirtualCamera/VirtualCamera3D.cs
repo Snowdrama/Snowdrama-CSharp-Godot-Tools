@@ -6,6 +6,12 @@ public partial class VirtualCamera3D : Node3D
     [Export] int activePriority = 10;
     [Export] int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
+
+
+    [Export] public bool lerpToTarget { get; private set; }
+
+    [Export] public bool enableLookAtTarget { get; private set; }
+    [Export] public Node3D targetToLookAt {  get; private set; }
     public override void _Ready()
     {
         base._Ready();

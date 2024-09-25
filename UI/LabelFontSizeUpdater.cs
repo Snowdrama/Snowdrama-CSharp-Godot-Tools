@@ -15,6 +15,7 @@ public partial class LabelFontSizeUpdater : Label
     private int oldFontSize;
     private int currentFontSize;
 
+    [Export]
     private bool needsUpdating;
     public override void _Process(double delta)
     {
@@ -47,6 +48,7 @@ public partial class LabelFontSizeUpdater : Label
 
         if (needsUpdating)
         {
+            needsUpdating = false;
             UpdateFontSize();
         }
     }

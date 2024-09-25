@@ -32,14 +32,24 @@ public static class EnumerableExtensions
 
     public static T GetRandom<T>(this IEnumerable<T> source)
     {
-        int index = random.Next(0, source.Count());
-        return source.ElementAt(index);
+        if (source.Count() > 0)
+        {
+            int index = random.Next(0, source.Count());
+            return source.ElementAt(index);
+        }
+        return default;
     }
 
     public static T GetRandom<T>(this List<T> source)
     {
-        if (source == null) throw new ArgumentNullException("source");
-        if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
-        return source[random.Next(0, source.Count)];
+        //if (source == null) throw new ArgumentNullException("source");
+        //if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
+
+        if (source.Count() > 0)
+        {
+            return source[random.Next(0, source.Count)];
+        }
+        return default;
+
     }
 }
