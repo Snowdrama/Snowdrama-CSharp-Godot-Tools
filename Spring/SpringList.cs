@@ -39,6 +39,10 @@ namespace Snowdrama.Spring
 
         public float GetValue(int id)
         {
+            if (_springConfigs[id].Clamp)
+            {
+                return Mathf.Clamp(_states[id].Current, _springConfigs[id].ClampRange.X, _springConfigs[id].ClampRange.Y);
+            }
             return _states[id].Current;
         }
         
@@ -112,10 +116,10 @@ namespace Snowdrama.Spring
                     state.Resting = false;
                 }
 
-                if (config.Clamp)
-                {
-                    state.Current = Mathf.Clamp(state.Current, config.ClampRange.X, config.ClampRange.Y);
-                }
+                //if (config.Clamp)
+                //{
+                //    state.Current = Mathf.Clamp(state.Current, config.ClampRange.X, config.ClampRange.Y);
+                //}
 
                 deltaTime -= dt;
             }

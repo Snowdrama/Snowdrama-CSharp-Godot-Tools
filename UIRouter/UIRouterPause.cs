@@ -34,11 +34,17 @@ public partial class UIRouterPause : Node
         }
     }
 
-    public override void _Ready()
+    public override void _EnterTree()
     {
-        //we should never pause.
         ProcessMode = Node.ProcessModeEnum.Always;
     }
+
+    public override void _ExitTree()
+    {
+        this.Paused = false;
+    }
+
+
     public override void _Process(double delta)
     {
         base._Process(delta);

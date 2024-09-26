@@ -119,11 +119,6 @@ public partial class SceneManager : Node
                 sceneToRemove.QueueFree();
             }
 
-            //TODO: Figure out how to load the scene async.
-            //asyncPackedSceneLoader = new Thread(() => { LoadSceenAsync(_scenes[newSceneName]); });
-            //asyncPackedSceneLoader.IsBackground = true;
-            //asyncPackedSceneLoader.Start();
-
             var instantiatedScene = _scenes[newSceneName].Instantiate();
             this.AddSibling(instantiatedScene);
             sceneLoaded = true;

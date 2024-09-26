@@ -9,9 +9,9 @@ public partial class Options : Node
 {
     public static Options instance;
     public const string MASTER_VOLUME_OPTION_KEY = "Master";
-    public const string MUSIC_VOLUME_OPTION_KEY = "MusicVolume";
-    public const string SOUND_VOLUME_OPTION_KEY = "SoundVolume";
-    public const string VOICE_VOLUME_OPTION_KEY = "VoiceVolume";
+    public const string MUSIC_VOLUME_OPTION_KEY = "Music";
+    public const string SOUND_VOLUME_OPTION_KEY = "Sounds";
+    public const string VOICE_VOLUME_OPTION_KEY = "Voices";
     public const string DISPLAY_MODE_OPTION_KEY = "WindowMode";
     public const string WINDOWED_RESOLUTION_OPTION_KEY = "WindowResolution";
     public const string VSYNC_OPTION_KEY = "VSync";

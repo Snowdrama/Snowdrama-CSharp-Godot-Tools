@@ -31,7 +31,7 @@ public partial class AudioManager : Node
             var index = AudioServer.GetBusIndex(VolumeKeys[i]);
             if (index >= 0)
             {
-                AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 10, lerp));
+                AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 0, lerp));
             }
             else
             {
@@ -47,7 +47,9 @@ public partial class AudioManager : Node
         if (index >= 0)
         {
             var lerp = Mathf.InverseLerp(volumeMinValue, volumeMaxValue, volumeValue);
-            AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 10, lerp));
+
+            
+            AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 0, lerp));
         }
         else
         {

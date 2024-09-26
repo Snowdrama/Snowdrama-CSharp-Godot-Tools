@@ -116,9 +116,12 @@ public partial class UIRouter : Resource
         if (routesOpened.Count > 0)
         {
             var rs = routesOpened.Peek();
-            routes[rs].CloseRoute();
-            OnRouteClosed?.Invoke(rs);
-            EmitSignal(SignalName.OnRouteClosedSignal, rs);
+            if(rs != null && routes != null && routes.ContainsKey(rs))
+            {
+                routes[rs].CloseRoute();
+                OnRouteClosed?.Invoke(rs);
+                EmitSignal(SignalName.OnRouteClosedSignal, rs);
+            }
         }
         OnAllRoutesClosed?.Invoke();
         EmitSignal(SignalName.OnAllRoutesClosedSignal);
