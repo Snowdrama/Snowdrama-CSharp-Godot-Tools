@@ -4,7 +4,8 @@ using System;
 public partial class UIRouterPause : Node
 {
 
-    [Export] string pauseKey = "Pause";
+    [Export] string pauseEvent = "Pause";
+    [Export] string cancelKey = "Cancel";
     [Export] UIRouter router;
 
     bool _paused = false;
@@ -63,16 +64,17 @@ public partial class UIRouterPause : Node
     {
         base._Input(@event);
 
-        if (@event.IsActionPressed(pauseKey))
+        if (@event.IsActionPressed(pauseEvent))
         {
             Paused = !Paused;
         }
-        else if (@event is InputEventKey eventKey)
+
+        
+        
+
+        if (@event.IsActionPressed(cancelKey))
         {
-            if(eventKey.Pressed && eventKey.Keycode == Key.Escape)
-            {
-                Paused = !Paused;
-            }
+            router.Back();
         }
     }
 }

@@ -277,3 +277,23 @@ public abstract class AMessage<T, U, V> : ABaseMessage
         callback?.Invoke(arg1, arg2, arg3);
     }
 }
+
+public abstract class AMessage<T, U, V, W> : ABaseMessage
+{
+    private Action<T, U, V, W> callback;
+
+    public void AddListener(Action<T, U, V, W> handler)
+    {
+        callback += handler;
+    }
+
+    public void RemoveListener(Action<T, U, V, W> handler)
+    {
+        callback -= handler;
+    }
+
+    public void Dispatch(T arg1, U arg2, V arg3, W arg4)
+    {
+        callback?.Invoke(arg1, arg2, arg3, arg4);
+    }
+}

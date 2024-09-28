@@ -30,13 +30,13 @@ public partial class UIRoute : Node
 
     public void OpenRoute()
     {
-        mainContent.Show();
-
         // TODO: Force the selection to this for gamepads.
         if (focusOnVisible != null)
         {
             focusOnVisible?.GrabFocus();
         }
+
+        mainContent.Show();
     }
 
     public void CloseRoute()

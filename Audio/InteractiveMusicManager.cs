@@ -11,7 +11,6 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
 	Array<string> trackNames = new Array<string>();
 	public override void _EnterTree()
     {
-        GD.PrintErr("InteractiveMusicManager is Entering");
         if (instance != null)
 		{
             instance.QueueFree();
@@ -21,7 +20,6 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
 
     public override void _ExitTree()
     {
-        GD.PrintErr("InteractiveMusicManager is ExitingTree");
     }
 
     [Export] public string trackTarget { get; private set; }
