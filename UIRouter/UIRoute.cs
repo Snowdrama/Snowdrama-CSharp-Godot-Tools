@@ -1,21 +1,25 @@
 using Godot;
+
+
+[GlobalClass]
 public partial class UIRoute : Node
 {
-    [Export] private UIRouter _router;
+    [Export] private UIRoutingSystem _routingSystem;
     [Export] private string routeSegment;
     [Export] private CanvasLayer mainContent;
     [Export] private Control focusOnVisible;
     [Export] private bool startEnabled = false;
     public override void _Ready()
     {
-        if(_router == null)
+        if(_routingSystem == null)
         {
-            _router = this.GetParent<UIRouter>();
+            _routingSystem = this.GetParent<UIRoutingSystem>();
         }
-        _router.RegisterRoute(routeSegment, this);
+
+        _routingSystem.GetRouter().RegisterRoute(routeSegment, this);
         if (startEnabled)
         {
-            _router.OpenRoute(routeSegment);
+            _routingSystem.GetRouter().OpenRoute(routeSegment);
             mainContent.Show();
         }
         else
@@ -25,9 +29,12 @@ public partial class UIRoute : Node
     }
     public override void _ExitTree()
     {
-        _router.UnregisterRoute(routeSegment);
+        _routingSystem.GetRouter().UnregisterRoute(routeSegment);
     }
-
+    public UIRouter GetRouter()
+    {
+        return _routingSystem.GetRouter();
+    }
     public void OpenRoute()
     {
         // TODO: Force the selection to this for gamepads.

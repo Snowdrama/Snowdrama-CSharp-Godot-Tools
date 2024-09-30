@@ -59,7 +59,7 @@ public partial class MessagedSoundPool : Node
         playPosiotionedSoundMessage2D = Messages.Get<PlayPosiotionedSoundMessage2D>();
         playPosiotionedSoundMessage2D.AddListener(PlayPositionedSound2D);
         playPosiotionedSoundMessage3D = Messages.Get<PlayPosiotionedSoundMessage3D>();
-        playPosiotionedSoundMessage3D.AddListener(PlayPositionedSound2D);
+        playPosiotionedSoundMessage3D.AddListener(PlayPositionedSound3D);
     }
 
     public override void _ExitTree()
@@ -67,12 +67,20 @@ public partial class MessagedSoundPool : Node
         base._ExitTree();
         playSoundMessage.RemoveListener(PlaySound);
         playPosiotionedSoundMessage2D.RemoveListener(PlayPositionedSound2D);
+        playPosiotionedSoundMessage3D.RemoveListener(PlayPositionedSound3D);
 
 
         Messages.Return<PlaySoundMessage>();
         Messages.Return<PlayPosiotionedSoundMessage2D>();
         Messages.Return<PlayPosiotionedSoundMessage3D>();
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="busName"></param>
+    /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlaySound(AudioStream stream, string busName, float volume)
     {
 
@@ -80,9 +88,8 @@ public partial class MessagedSoundPool : Node
         {
             if (!players2D[i].Playing)
             {
-                var busVolume = Options.GetFloat($"{busName}", 1f);
-                var busVolumeDb = Mathf.Lerp(-80, 0, busVolume / 1);
-                players[i].VolumeDb = busVolumeDb;
+                var volumeDB = Mathf.Lerp(-80, 0, volume / 1);
+                players[i].VolumeDb = volumeDB;
                 players[i].Bus = busName;
                 players[i].Stream = stream;
                 players[i].Play();
@@ -90,6 +97,13 @@ public partial class MessagedSoundPool : Node
             }
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="playPosition"></param>
+    /// <param name="busName"></param>
+    /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlayPositionedSound2D(AudioStream stream, Vector2 playPosition, string busName, float volume)
     {
         if (!use2DPlayers)
@@ -101,8 +115,7 @@ public partial class MessagedSoundPool : Node
         {
             if (!players2D[i].Playing)
             {
-                var busVolume = Options.GetFloat($"{busName}", 50f);
-                var busVolumeDb = Mathf.Lerp(-80, 0, busVolume / 100);
+                var busVolumeDb = Mathf.Lerp(-80, 0, volume / 100);
                 players2D[i].VolumeDb = busVolumeDb;
                 players2D[i].Bus = busName;
                 players2D[i].Stream = stream;
@@ -112,6 +125,13 @@ public partial class MessagedSoundPool : Node
             }
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="playPosition"></param>
+    /// <param name="busName"></param>
+    /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlayPositionedSound3D(AudioStream stream, Vector3 playPosition, string busName, float volume)
     {
         if (!use3DPlayers)

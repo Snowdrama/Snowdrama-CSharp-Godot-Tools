@@ -1,12 +1,12 @@
 using Godot;
 using System;
 
-public partial class UIRouteGoToSceneButton : Button
+public partial class UIRouteGoToSceneButton : UIBaseRouterButton
 {
-    [Export] UIRouter _router;
     [Export] string sceneName;
     public override void _Ready()
     {
+        base._Ready();
         this.Connect(SignalName.Pressed, Callable.From(() => {
             SceneManager.LoadScene(sceneName);
         }));
