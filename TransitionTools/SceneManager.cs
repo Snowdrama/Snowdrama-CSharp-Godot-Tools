@@ -9,7 +9,7 @@ using System.Timers;
 /// <summary>
 /// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
 /// </summary
-[GlobalClass]
+[GlobalClass, Tool]
 public partial class SceneManager : Node
 {
     [ExportCategory("Manual Assignment")]
@@ -30,7 +30,10 @@ public partial class SceneManager : Node
     bool transitioning;
     bool sceneLoaded;
     bool fakeLoadComplete;
-    public override void _Ready()
+
+    [ExportCategory("Debug")]
+    [Export] bool pulPackedScenesFromAutoPath;
+    public override void _EnterTree()
     {
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
         GD.PrintRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
@@ -76,13 +79,25 @@ public partial class SceneManager : Node
         }
     }
 
+    
+
     private void LoadScenesFromDirectory(string resourcePath, DirAccess sceneResourcePath)
     {
         var filePaths = sceneResourcePath.GetFiles();
         for (int i = 0; i < filePaths.Length; i++)
         {
-            GD.Print($"Loading from: ${resourcePath}/{filePaths[i]}");
-            var possiblyAScene = GD.Load<PackedScene>($"{resourcePath}/{filePaths[i]}");
+            GD.Print($"Loading from: {resourcePath}/{filePaths[i]}");
+            var possiblePath = $"{resourcePath}/{filePaths[i]}";
+            if (possiblePath.Contains(".remap"))
+            {
+                possiblePath = possiblePath.Replace(".remap", "");
+            }
+
+            if (!ResourceLoader.Exists(possiblePath)){
+                GD.PrintErr($"Path {possiblePath} doesn't point to a path the resource loader can load");
+                continue;
+            }
+            var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
             string name = possiblyAScene.GetState().GetNodeName(0);
             name = name.Replace(" ", "_");
 
@@ -115,14 +130,20 @@ public partial class SceneManager : Node
         {
             if (sceneToRemove != null)
             {
+                GD.Print($"Removing Scene: {sceneToRemove.Name}");
                 previousSceneName = sceneToRemove.Name;
                 sceneToRemove.QueueFree();
             }
 
+            GD.Print($"Instatiating Scene: {newSceneName}");
             var instantiatedScene = _scenes[newSceneName].Instantiate();
+            instantiatedScene.Ready += () =>
+            {
+                GD.Print("Instantiated Scene Ready!");
+                sceneLoaded = true;
+                currentScene = instantiatedScene;
+            };
             this.AddSibling(instantiatedScene);
-            sceneLoaded = true;
-            currentScene = instantiatedScene;
         }
         else
         {
@@ -211,7 +232,7 @@ public partial class SceneManager : Node
 
     public override void _Process(double delta)
     {
-        if (transitioning  && sceneLoaded && fakeLoadComplete)
+        if (transitioning && sceneLoaded && fakeLoadComplete)
         {
             transitioning = false;
             sceneLoaded = false;
