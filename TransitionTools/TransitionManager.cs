@@ -110,6 +110,10 @@ public partial class TransitionManager : Node
     {
         instance.StartInstanceFakeLoad();
     }
+    public static string[] GetAvailableTransitions()
+    {
+        return instance.transitions.Select(x => x.TransitionName).ToArray();
+    }
 
     public void StartInstanceFakeLoad()
     {
@@ -128,7 +132,7 @@ public partial class TransitionManager : Node
             }
             else
             {
-                GD.PrintErr($"No Transition Found named: {targetTransitionName}");
+                GD.PrintErr($"No Transition Found named: {targetTransitionName} Using Random Transition");
                 //we didn't find a transition so random
                 currentTransition = transitions.GetRandom();
             }
@@ -176,7 +180,7 @@ public partial class TransitionManager : Node
     /// <param name="onStartShow">The callback used the frame that we start revealing the new scene.</param>
     /// <param name="onEnded">The callback used the frame after the transition has fully ended</param>
     /// <param name="transitionName">the name of the transition to use, if left null it will choose one at random</param>
-    /// <param name="fakeLoadTime">the time of how long the fake load should wait before calling complete</param>
+    /// <param name="fakeLoadTime">the UpdateTimeMax of how long the fake load should wait before calling complete</param>
     /// <param name="automaticallyStartFakeTime">Should it automatically go to the fakeLoad on blackout?</param>
     public static void StartTransition(
         Action onStartHide, 

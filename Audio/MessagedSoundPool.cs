@@ -8,7 +8,6 @@ public partial class MessagedSoundPool : Node
     [Export] bool use2DPlayers = true;
     [Export] bool use3DPlayers = true;
 
-
     List<AudioStreamPlayer> players = new List<AudioStreamPlayer>();
     List<AudioStreamPlayer2D> players2D = new List<AudioStreamPlayer2D>();
     List<AudioStreamPlayer3D> players3D = new List<AudioStreamPlayer3D>();

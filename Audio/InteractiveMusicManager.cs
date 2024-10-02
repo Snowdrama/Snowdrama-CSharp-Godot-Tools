@@ -40,7 +40,7 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
 		
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    // Called every frame. 'delta' is the elapsed UpdateTimeMax since the previous frame.
     public override void _Process(double delta)
 	{
 		if (currentTrack != trackTarget && trackNames.Contains(trackTarget))

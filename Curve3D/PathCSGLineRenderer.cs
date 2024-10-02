@@ -15,7 +15,7 @@ public partial class PathCSGLineRenderer : Node3D
 	{
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
+	// Called every frame. 'delta' is the elapsed UpdateTimeMax since the previous frame.
 	public override void _Process(double delta)
 	{
         if(polygon == null)
