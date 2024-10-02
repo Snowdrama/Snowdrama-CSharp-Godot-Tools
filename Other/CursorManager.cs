@@ -12,30 +12,48 @@ public partial class CursorManager : Node
     [Export] Input.MouseModeEnum MouseStateOnExitTree;
     [Export] Input.MouseModeEnum MouseStateDefault;
     [Export] Input.MouseModeEnum MouseStateWhenSourcesActive;
+
+    [Export] bool disableCapture = false;
     public override void _EnterTree()
     {
-        this.ProcessMode = ProcessModeEnum.Always;
+        if (!disableCapture)
+        {
+            this.ProcessMode = ProcessModeEnum.Always;
 
-        Input.MouseMode = MouseStateOnEnterTree;
-        ClearMenus();
+            Input.MouseMode = MouseStateOnEnterTree;
+            ClearMenus();
+        }
     }
 
     public override void _ExitTree()
     {
-        Input.MouseMode = MouseStateOnExitTree;
-        ClearMenus();
+        if (!disableCapture)
+        {
+            Input.MouseMode = MouseStateOnExitTree;
+            ClearMenus();
+        }
     }
 
 
     public override void _Process(double delta)
     {
-        if(visibleSources.Count > 0)
+        if (!disableCapture)
         {
-            Input.MouseMode = MouseStateWhenSourcesActive;
-        }
-        else
-        {
-            Input.MouseMode = MouseStateDefault;
+            if (InputSchemeChooser.SchemeType == InputSchemeType.KBM)
+            {
+                if (visibleSources.Count > 0)
+                {
+                    Input.MouseMode = MouseStateWhenSourcesActive;
+                }
+                else
+                {
+                    Input.MouseMode = MouseStateDefault;
+                }
+            }
+            else
+            {
+                Input.MouseMode = Input.MouseModeEnum.Visible;
+            }
         }
     }
 
