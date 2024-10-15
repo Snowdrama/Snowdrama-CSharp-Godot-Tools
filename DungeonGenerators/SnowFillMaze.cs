@@ -6,8 +6,6 @@ using System.Transactions;
 
 public class SnowFillMaze
 {
-
-
     private static Vector2I[] directions = new Vector2I[]
     {
         Vector2I.Left, 

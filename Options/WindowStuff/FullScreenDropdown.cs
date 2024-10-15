@@ -11,8 +11,8 @@ public partial class FullScreenDropdown : OptionButton
 	{
         this.ItemSelected += OnItemSelected;
         this.Clear();
-        this.AddItem("Windowed", 0);
-        this.AddItem("Fullscreen", 1);
+        this.AddItem("GRAPHICS_SCREEN_MODE_WINDOWED", 0);
+        this.AddItem("GRAPHICS_SCREEN_MODE_FULLSCREEN", 1);
         UpdateOptionToValue();
     }
 

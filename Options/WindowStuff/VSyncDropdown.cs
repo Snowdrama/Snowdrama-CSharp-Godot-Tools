@@ -8,10 +8,10 @@ public partial class VSyncDropdown : OptionButton
     [Export]
     public Array<string> Values = new Array<string>
     {
-        "Enabled (Default)",
-        "Disabled",
-        "Adaptive",
-        "Mailbox",
+        "GRAPHICS_VSYNC_ON",
+        "GRAPHICS_VSYNC_OFF",
+        "GRAPHICS_VSYNC_ADAPTIVE",
+        "GRAPHICS_VSYNC_MAILBOX",
     };
     public override void _Ready()
     {

@@ -9,21 +9,27 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
 	AudioStreamInteractive stream;
 
 	Array<string> trackNames = new Array<string>();
-	public override void _EnterTree()
+
+    public override void _EnterTree()
     {
         if (instance != null)
 		{
             instance.QueueFree();
         }
         instance = this;
+
+        this.ProcessMode = ProcessModeEnum.Always;
     }
 
     public override void _ExitTree()
     {
     }
 
-    [Export] public string trackTarget { get; private set; }
-    [Export] public string currentTrack { get; private set; }
+    [Export] public string trackTargetName { get; private set; }
+    [Export] public string trackOverrideName { get; private set; }
+
+    [Export] public bool applyTrackOverride { get; private set; }
+    [Export] public string currentTrackName { get; private set; }
 
     public override void _Ready()
     {
@@ -43,20 +49,37 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
     // Called every frame. 'delta' is the elapsed UpdateTimeMax since the previous frame.
     public override void _Process(double delta)
 	{
-		if (currentTrack != trackTarget && trackNames.Contains(trackTarget))
-		{
-			currentTrack = trackTarget;
-            this.Set("parameters/switch_to_clip", trackTarget);
-		}
+        if (applyTrackOverride)
+        {
+            if(currentTrackName != trackOverrideName && trackNames.Contains(trackOverrideName))
+            {
+                currentTrackName = trackOverrideName;
+                this.Set("parameters/switch_to_clip", trackOverrideName);
+            }
+        }
+        else
+        {
+            if (currentTrackName != trackTargetName && trackNames.Contains(trackTargetName))
+            {
+                currentTrackName = trackTargetName;
+                this.Set("parameters/switch_to_clip", trackTargetName);
+            }
+        }
 
+        //we don't ever want the music to pause
         if(this.StreamPaused)
         {
             this.StreamPaused = false;
         }
     }
 
-	public static void ChangeToTrack(string name)
-	{
-        instance.trackTarget = name;
+    public static void ChangeToTrack(string name)
+    {
+        instance.trackTargetName = name;
+    }
+    public static void TemporaryTrackOverride(string name, bool overrideTrack)
+    {
+        instance.trackOverrideName = name;
+        instance.applyTrackOverride = overrideTrack;
     }
 }

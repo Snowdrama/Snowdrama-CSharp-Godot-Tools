@@ -15,6 +15,8 @@ public partial class Options : Node
     public const string DISPLAY_MODE_OPTION_KEY = "WindowMode";
     public const string WINDOWED_RESOLUTION_OPTION_KEY = "WindowResolution";
     public const string VSYNC_OPTION_KEY = "VSync";
+    public const string LANUGAGE_OPTION_KEY = "Language";
+    public const string LANUGAGE_OPTION_STRING_KEY = "LanguageString";
 
     public static readonly Vector2I DEFAULT_WINDOW_RESOLUTION = new Vector2I(1280, 720);
 
