@@ -4,16 +4,23 @@ using System;
 using System.Diagnostics;
 using System.Transactions;
 
-public class SnowFillMaze
+public class Directions2D
 {
     private static Vector2I[] directions = new Vector2I[]
     {
-        Vector2I.Left, 
-        Vector2I.Right, 
-        Vector2I.Up, 
+        Vector2I.Left,
+        Vector2I.Right,
+        Vector2I.Up,
         Vector2I.Down,
     };
+    public static Vector2I GetRandomDirection()
+    {
+        return directions.GetRandom();
+    }
+}
 
+public class SnowFillMaze
+{
     public static readonly Vector2I DOWN = new Vector2I(0, 1);
     public static readonly Vector2I UP = new Vector2I(0, -1);
     public static readonly Vector2I RIGHT = new Vector2I(1, 0);
@@ -44,11 +51,7 @@ public class SnowFillMaze
             stepCount++;
         }
 
-
-
-
         //finally hook up all directions
-
         for (int y = 0; y < maze.GetLength(1); y++)
         {
             for (int x = 0; x < maze.GetLength(0); x++)
@@ -97,7 +100,7 @@ public class SnowFillMaze
                 map[x, y].extraProperties_string = new Dictionary<string, string>();
 
                 map[x, y].position = new Vector2I(x, y);
-                map[x, y].direction = directions.GetRandom();
+                map[x, y].direction = Directions2D.GetRandomDirection();
                 if (map[x, y].position == start)
                 {
                     GD.Print($"Starting Cell is {start}");
@@ -119,7 +122,7 @@ public class SnowFillMaze
             {
                 if (map[x, y].isConnected == false)
                 {
-                    map[x, y].direction = directions.GetRandom();
+                    map[x, y].direction = Directions2D.GetRandomDirection();
                 }
             }
         }
@@ -224,6 +227,7 @@ public class SnowFillMaze
         }
         return true;
     }
+
 
 }
 public struct SnowFillCell2D

@@ -205,27 +205,27 @@ public class LineRenderer
     //    }
     //}
 
-    //private void Corner(Vector3 center, Vector3 pivot)
+    //private void Corner(Vector3 mapCenter, Vector3 pivot)
     //{
     //    var orthogonal =
-    //        (camera.GlobalTransform.origin - center)
-    //        .Cross(center - pivot)
+    //        (camera.GlobalTransform.origin - mapCenter)
+    //        .Cross(mapCenter - pivot)
     //        .Normalized() * thickness;
 
-    //    var axis = (center - camera.GlobalTransform.origin).Normalized();
+    //    var axis = (mapCenter - camera.GlobalTransform.origin).Normalized();
 
     //    var array = new Vector3[cornerSmooth + 1];
-    //    array[0] = center + orthogonal;
-    //    array[cornerSmooth] = center - orthogonal;
+    //    array[0] = mapCenter + orthogonal;
+    //    array[cornerSmooth] = mapCenter - orthogonal;
 
     //    for (int i = 1; i < cornerSmooth; i++)
-    //        array[i] = center + (orthogonal.Rotated(axis, Lerp(0, Mathf.PI, (float)(i) / cornerSmooth)));
+    //        array[i] = mapCenter + (orthogonal.Rotated(axis, Lerp(0, Mathf.PI, (float)(i) / cornerSmooth)));
 
     //    for (int i = 1; i < cornerSmooth + 1; i++)
     //    {
     //        AddVertex(array[i - 1]);
     //        AddVertex(array[i]);
-    //        AddVertex(center);
+    //        AddVertex(mapCenter);
     //    }
     //}
 

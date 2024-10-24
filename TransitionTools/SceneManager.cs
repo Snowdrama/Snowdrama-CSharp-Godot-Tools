@@ -9,7 +9,7 @@ using System.Timers;
 /// <summary>
 /// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
 /// </summary
-[GlobalClass, Tool]
+[GlobalClass]
 public partial class SceneManager : Node
 {
     [ExportCategory("Manual Assignment")]

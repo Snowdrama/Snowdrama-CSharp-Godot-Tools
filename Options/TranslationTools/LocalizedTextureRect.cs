@@ -28,7 +28,7 @@ public partial class LocalizedTextureRect : TextureRect
 	{
 		foreach (var item in localizedTextureList)
 		{
-			Debug.Log($"Adding {item.code} texture {item.texture} is null? {item.texture == null}");
+			//Debug.Log($"Adding {item.code} texture {item.texture} is null? {item.texture == null}");
 			localizedTextures.Add(item.code, item.texture);
 		}
 		LoadOptionFromSave();
@@ -46,7 +46,7 @@ public partial class LocalizedTextureRect : TextureRect
 	{
 		if(currentLocale !=  TranslationServer.GetLocale())
 		{
-			Debug.Log($"Updating Locale to {TranslationServer.GetLocale()}");
+			//Debug.Log($"Updating Locale to {TranslationServer.GetLocale()}");
 			currentLocale = TranslationServer.GetLocale();
 			LoadFromLocale(currentLocale);
 		}
@@ -56,15 +56,15 @@ public partial class LocalizedTextureRect : TextureRect
     {
         if (localizedTextures.ContainsKey(locale))
         {
-            Debug.Log($"localizedTextures contains key: {TranslationServer.GetLocale()}");
+            //Debug.Log($"localizedTextures contains key: {TranslationServer.GetLocale()}");
             if (localizedTextures[locale] != null)
             {
-                Debug.Log($"localizedTextures texture not null: {TranslationServer.GetLocale()}");
+                //Debug.Log($"localizedTextures texture not null: {TranslationServer.GetLocale()}");
                 this.Texture = localizedTextures[locale];
             }
             else
             {
-                Debug.Log($"localizedTextures is null apparently: {TranslationServer.GetLocale()}");
+                //Debug.Log($"localizedTextures is null apparently: {TranslationServer.GetLocale()}");
                 this.Texture = defaultTexture;
             }
         }

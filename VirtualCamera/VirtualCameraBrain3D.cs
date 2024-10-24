@@ -24,13 +24,14 @@ public partial class VirtualCameraBrain3D : Camera3D
 
     [Export] float moveSpeed = 5.0f;
     [Export] float rotationSpeed = 5.0f;
+
+    CameraPositionMessage cameraPositionMessage;
     public override void _EnterTree()
     {
         base._EnterTree();
         cameraInstance = this;
 
-
-
+        cameraPositionMessage = Messages.Get<CameraPositionMessage>();
     }
 
     public override void _ExitTree()
@@ -38,6 +39,7 @@ public partial class VirtualCameraBrain3D : Camera3D
 
         base._ExitTree();
         cameraInstance = null;
+        Messages.Return<CameraPositionMessage>();
     }
 
     public override void _Process(double delta)
@@ -100,6 +102,8 @@ public partial class VirtualCameraBrain3D : Camera3D
                 this.GlobalRotation = currentCamera.GlobalRotation;
             }
         }
+
+        cameraPositionMessage.Dispatch(this.GlobalPosition);
     }
 
     public static void RegisterCamera(VirtualCamera3D cam)
