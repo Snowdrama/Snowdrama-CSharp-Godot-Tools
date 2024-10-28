@@ -34,6 +34,6 @@ public partial class ParticlePool3D : Node
         particle.GlobalPosition = position;
 		particle.OneShot = true;
         particle.Restart();
-        GD.Print($"Playing Particle {particle.Name}");
+        //GD.Print($"Playing Particle {particle.Name}");
 	}
 }

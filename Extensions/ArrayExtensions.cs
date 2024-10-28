@@ -11,6 +11,20 @@ public static class ArrayExtensions
         if (source.Length == 0) throw new Exception("GetRandom can't be called since list has no values");
         return source[random.Next(0, source.Length)];
     }
+    public static T GetRandomNoRepeat<T>(this T[] source, T last)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Length == 0) throw new Exception("GetRandomNoRepeat can't be called since list has no values");
+        if (source.Length == 1) throw new Exception("GetRandomNoRepeat can't be called since to not repeat it needs at least 2 values");
+
+        var next = source[random.Next(0, source.Length)];
+        while(next.Equals(last))
+        {
+            next = source[random.Next(0, source.Length)];
+        }
+
+        return next;
+    }
 
     public static T[] Shuffle<T>(this T[] sourceList)
     {

@@ -1,12 +1,20 @@
 using Godot;
 
-public class Debug{
+public class Debug
+{
     public static void Log(string message,
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
     {
         var path = sourceFilePath.Split("\\");
-        GD.Print($"[{path[path.Length-1]}:{sourceLineNumber}]:[{message}]");
+        GD.Print($"[{path[path.Length - 1]}:{sourceLineNumber}]:[{message}]");
+    }
+    public static void LogWarn(string message,
+        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+    {
+        var path = sourceFilePath.Split("\\");
+        GD.PrintRich($"[color=#FF0][{path[path.Length - 1]}:{sourceLineNumber}]:[{message}][/color]");
     }
     public static void LogError(string message, 
         [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",

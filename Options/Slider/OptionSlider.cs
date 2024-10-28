@@ -8,7 +8,7 @@ public partial class OptionSlider : HSlider
     double localValue;
     public override void _Ready()
     {
-        if (Options.HasBool(optionKey))
+        if (Options.HasDouble(optionKey))
         {
             localValue = Options.GetDouble(optionKey);
             GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");

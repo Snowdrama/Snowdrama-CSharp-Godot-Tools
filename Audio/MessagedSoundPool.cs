@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 public partial class MessagedSoundPool : Node
 {
     [Export] int audioPlayerCount = 64;
@@ -8,9 +10,13 @@ public partial class MessagedSoundPool : Node
     [Export] bool use2DPlayers = true;
     [Export] bool use3DPlayers = true;
 
-    List<AudioStreamPlayer> players = new List<AudioStreamPlayer>();
-    List<AudioStreamPlayer2D> players2D = new List<AudioStreamPlayer2D>();
-    List<AudioStreamPlayer3D> players3D = new List<AudioStreamPlayer3D>();
+    Stack<AudioStreamPlayer> players = new Stack<AudioStreamPlayer>();
+    Stack<AudioStreamPlayer2D> players2D = new Stack<AudioStreamPlayer2D>();
+    Stack<AudioStreamPlayer3D> players3D = new Stack<AudioStreamPlayer3D>();
+
+    List<AudioStreamPlayer> usedPlayers = new List<AudioStreamPlayer>();
+    List<AudioStreamPlayer2D> usedPlayers2D = new List<AudioStreamPlayer2D>();
+    List<AudioStreamPlayer3D> usedPlayers3D = new List<AudioStreamPlayer3D>();
 
     PlaySoundMessage playSoundMessage;
     PlayPosiotionedSoundMessage2D playPosiotionedSoundMessage2D;
@@ -22,7 +28,14 @@ public partial class MessagedSoundPool : Node
         {
             var newPlayer = new AudioStreamPlayer();
             newPlayer.Autoplay = false;
-            players.Add(newPlayer);
+            newPlayer.Finished += () =>
+            {
+                if (!players.Contains(newPlayer))
+                {
+                    players.Push(newPlayer);
+                }
+            };
+            players.Push(newPlayer);
             this.AddChild(newPlayer);
         }
         if (use2DPlayers)
@@ -31,7 +44,14 @@ public partial class MessagedSoundPool : Node
             {
                 var newPlayer = new AudioStreamPlayer2D();
                 newPlayer.Autoplay = false;
-                players2D.Add(newPlayer);
+                newPlayer.Finished += () =>
+                {
+                    if (!players2D.Contains(newPlayer))
+                    {
+                        players2D.Push(newPlayer);
+                    }
+                };
+                players2D.Push(newPlayer);
                 this.AddChild(newPlayer);
             }
         }
@@ -41,15 +61,15 @@ public partial class MessagedSoundPool : Node
             {
                 var newPlayer = new AudioStreamPlayer3D();
                 newPlayer.Autoplay = false;
-                players3D.Add(newPlayer);
+                newPlayer.Finished += () =>
+                {
+                    if (!players3D.Contains(newPlayer))
+                    {
+                        players3D.Push(newPlayer);
+                    }
+                };
+                players3D.Push(newPlayer);
                 this.AddChild(newPlayer);
-            }
-        }
-        foreach (var child in this.GetChildren())
-        {
-            if(child is AudioStreamPlayer2D)
-            {
-                players2D.Add((AudioStreamPlayer2D)child);    
             }
         }
 
@@ -74,6 +94,14 @@ public partial class MessagedSoundPool : Node
         Messages.Return<PlayPosiotionedSoundMessage3D>();
     }
 
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+        DebugDraw2D.SetText("Players count:", $"{players.Count}");
+        DebugDraw2D.SetText("Players2D count:", $"{players2D.Count}");
+        DebugDraw2D.SetText("Players3D count:", $"{players3D.Count}");
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -82,18 +110,16 @@ public partial class MessagedSoundPool : Node
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlaySound(AudioStream stream, string busName, float volume)
     {
-
-        for (int i = 0; i < players2D.Count; i++)
+        if(players.Count > 0)
         {
-            if (!players2D[i].Playing)
-            {
-                var volumeDB = Mathf.Lerp(-80, 0, volume / 1);
-                players[i].VolumeDb = volumeDB;
-                players[i].Bus = busName;
-                players[i].Stream = stream;
-                players[i].Play();
-                return;
-            }
+            var player = players.Pop();
+            var volumeDB = Mathf.Lerp(-80, 0, volume / 1.0f);
+            player.VolumeDb = volumeDB;
+            player.Bus = busName;
+            player.Stream = stream;
+            player.Play();
+
+            usedPlayers.Add(player);
         }
     }
     /// <summary>
@@ -110,18 +136,17 @@ public partial class MessagedSoundPool : Node
             GD.PrintErr("Tried to play a 2D sound but not using 2D sound pool, See MessagedSoundPool");
             return;
         }
-        for (int i = 0; i < players2D.Count; i++)
+
+        if (players2D.Count > 0)
         {
-            if (!players2D[i].Playing)
-            {
-                var busVolumeDb = Mathf.Lerp(-80, 0, volume / 100);
-                players2D[i].VolumeDb = busVolumeDb;
-                players2D[i].Bus = busName;
-                players2D[i].Stream = stream;
-                players2D[i].Position = playPosition;
-                players2D[i].Play();
-                return;
-            }
+            var player = players2D.Pop();
+            var volumeDB = Mathf.Lerp(-80, 0, volume / 1);
+            player.VolumeDb = volumeDB;
+            player.Bus = busName;
+            player.Stream = stream;
+            player.Position = playPosition;
+            player.Play();
+            usedPlayers2D.Add(player);
         }
     }
     /// <summary>
@@ -139,19 +164,16 @@ public partial class MessagedSoundPool : Node
             return;
         }
 
-        for (int i = 0; i < players3D.Count; i++)
+        if (players3D.Count > 0)
         {
-            if (!players3D[i].Playing)
-            {
-                var busVolume = Options.GetFloat($"{busName}", 50f);
-                var busVolumeDb = Mathf.Lerp(-80, 0, busVolume / 100);
-                players3D[i].VolumeDb = busVolumeDb;
-                players3D[i].Bus = busName;
-                players3D[i].Stream = stream;
-                players3D[i].Position = playPosition;
-                players3D[i].Play();
-                return;
-            }
+            var player = players3D.Pop();
+            var volumeDB = Mathf.Lerp(-80, 0, volume / 1);
+            player.VolumeDb = volumeDB;
+            player.Bus = busName;
+            player.Stream = stream;
+            player.Position = playPosition;
+            player.Play();
+            usedPlayers3D.Add(player);
         }
     }
 }

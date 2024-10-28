@@ -1,7 +1,9 @@
 using System;
+using static Godot.OpenXRInterface;
+
 namespace Snowdrama.Core
 {
-    public class Noise
+    public class RandomAndNoise
     {
         /// <summary>
         /// Min C# implementatiion based on the example hash function
@@ -105,6 +107,29 @@ namespace Snowdrama.Core
             mangled ^= mangled >> 16;
             return mangled;
         }
-    }
 
+        private static Random rand = new Random();
+        public static float RandomRange(float min, float max)
+        {
+            return (float)(min + (rand.NextDouble() * (max - min)));
+        }
+        public static double RandomRange(double min, double max)
+        {
+            return (double)(min + (rand.NextDouble() * (max - min)));
+        }
+        public static void RandomBytes(ref byte[] byteArrayRef)
+        {
+            rand.NextBytes(byteArrayRef);
+        }
+        public static byte[] RandomBytes(int numberOfBytes)
+        {
+            byte[] bytes = new byte[numberOfBytes];
+            rand.NextBytes(bytes);
+            return bytes;
+        }
+        public static int RandomRange(int min, int max)
+        {
+            return rand.Next(min, max);
+        }
+    }
 }

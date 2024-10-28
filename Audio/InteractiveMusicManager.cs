@@ -43,7 +43,10 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
             trackNames.Add(stream.GetClipName(i));
         }
 
-		
+        //if (!this.Playing)
+        //{
+        //    this.Play();
+        //}
     }
 
     // Called every frame. 'delta' is the elapsed UpdateTimeMax since the previous frame.
@@ -73,13 +76,21 @@ public partial class InteractiveMusicManager : AudioStreamPlayer
         }
     }
 
-    public static void ChangeToTrack(string name)
+    public static void ChangeToTrack(string name, bool startPlaying = true)
     {
         instance.trackTargetName = name;
+        if (startPlaying && !instance.Playing)
+        {
+            instance.Play();
+        }
     }
-    public static void TemporaryTrackOverride(string name, bool overrideTrack)
+    public static void TemporaryTrackOverride(string name, bool overrideTrack, bool startPlaying = true)
     {
         instance.trackOverrideName = name;
         instance.applyTrackOverride = overrideTrack;
+        if (startPlaying && !instance.Playing)
+        {
+            instance.Play();
+        }
     }
 }

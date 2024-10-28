@@ -11,7 +11,7 @@ public partial class OptionCheckButton : CheckButton
         if (Options.HasBool(optionKey))
         {
             localValue = Options.GetBool(optionKey);
-            GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetBool(optionKey)}");
+            GD.Print($"[CheckButton: {this.Name}] Value From Config? {Options.GetBool(optionKey)}");
             this.ButtonPressed = localValue;
         }
         else
