@@ -31,6 +31,15 @@ public partial class SceneManager : Node
     bool sceneLoaded;
     bool fakeLoadComplete;
 
+    private static bool _isTransitioningScenes = false;
+    public static bool IsTransitioning
+    {
+        get
+        {
+            return _isTransitioningScenes;
+        }
+    }
+
     [ExportCategory("Debug")]
     [Export] bool pulPackedScenesFromAutoPath;
     public override void _EnterTree()
@@ -215,12 +224,15 @@ public partial class SceneManager : Node
             return;
         }
         GD.Print($"Loading: {sceneTarget}");
+        _isTransitioningScenes = true;
         TransitionManager.StartTransition(
             () => { }, 
             OnTransitionBlackout, 
             OnFakeLoadComplete, 
             () => { }, 
-            () => { }, 
+            () => {
+                _isTransitioningScenes = false;
+            }, 
             transitionName, 
             fakeLoadTime);
     }
