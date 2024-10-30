@@ -40,7 +40,9 @@ public partial class UIRoute : Node
         // TODO: Force the selection to this for gamepads.
         if (focusOnVisible != null)
         {
+            focusOnVisible.SetBlockSignals(true);
             focusOnVisible?.GrabFocus();
+            focusOnVisible.SetBlockSignals(false);
         }
 
         mainContent.Show();
@@ -60,7 +62,9 @@ public partial class UIRoute : Node
             {
                 if (focusOnVisible != null)
                 {
+                    focusOnVisible.SetBlockSignals(true);
                     focusOnVisible?.GrabFocus();
+                    focusOnVisible.SetBlockSignals(false);
                 }
             }
         }

@@ -9,7 +9,7 @@
 /// string - The Bus name to use, like "Sounds" or "Voice"
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// </summary>
-public class PlayPosiotionedSoundMessage2D : AMessage<AudioStream, Vector2, string, float> { }
+public class PlayPosiotionedSoundMessage2D : AMessage<AudioStream, Vector2, string, float, Vector2> { }
 
 
 
@@ -22,7 +22,7 @@ public class PlayPosiotionedSoundMessage2D : AMessage<AudioStream, Vector2, stri
 /// string - The Bus name to use, like "Sounds" or "Voice"
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// </summary>
-public class PlayPosiotionedSoundMessage3D : AMessage<AudioStream, Vector3, string, float> { }
+public class PlayPosiotionedSoundMessage3D : AMessage<AudioStream, Vector3, string, float, Vector2> { }
 
 
 /// <summary>
@@ -33,4 +33,4 @@ public class PlayPosiotionedSoundMessage3D : AMessage<AudioStream, Vector3, stri
 /// string - The Bus name to use, like "Sounds" or "Voice"
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// </summary>
-public class PlaySoundMessage : AMessage<AudioStream, string, float> { }
+public class PlaySoundMessage : AMessage<AudioStream, string, float, Vector2> { }

@@ -36,8 +36,37 @@ public partial class UI_Button_Sounds : Node
             parentButton = pc;
             parentButton.FocusMode = Control.FocusModeEnum.All;
             parentButton.Pressed += ButtonPressed;
+            parentButton.ButtonDown += ParentButton_ButtonDown;
+            parentButton.ButtonUp += ParentButton_ButtonUp;
             parentButton.FocusEntered += Button_FocusEntered;
+            parentButton.MouseEntered += ParentButton_MouseEntered;
+            parentButton.MouseExited += ParentButton_MouseExited;
         }
+    }
+
+    bool mouseOver = false;
+    private void ParentButton_MouseExited()
+    {
+        mouseOver = false;
+    }
+
+    private void ParentButton_MouseEntered()
+    {
+        mouseOver = true;
+    }
+
+    bool pressedDown = false;
+    private void ParentButton_ButtonUp()
+    {
+        Debug.Log($"Button {parentButton.Name} ButtonUp");
+        pressedDown = false;
+    }
+
+
+    private void ParentButton_ButtonDown()
+    {
+        Debug.Log($"Button {parentButton.Name} ButtonDown");
+        pressedDown = true;
     }
 
     public override void _ExitTree()
@@ -45,20 +74,21 @@ public partial class UI_Button_Sounds : Node
         if (parentButton != null)
         {
             parentButton.Pressed -= ButtonPressed;
+            parentButton.ButtonDown -= ParentButton_ButtonDown;
+            parentButton.ButtonUp -= ParentButton_ButtonUp;
             parentButton.FocusEntered -= Button_FocusEntered;
         }
     }
 
     private void ButtonPressed()
     {
-        if (parentButton != null && parentButton.ButtonPressed)
-        {
-            pressedPlayer.Play();
-        }
+        Debug.Log($"Button {parentButton.Name} ButtonPressed");
+        pressedPlayer.Play();
     }
     private void Button_FocusEntered()
     {
-        if (parentButton != null && !parentButton.ButtonPressed)
+        Debug.Log($"Button {parentButton.Name} FocusEntered");
+        if (!pressedDown && !mouseOver)
         {
             focusPlayer.Play();
         }

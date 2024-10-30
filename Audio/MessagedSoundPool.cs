@@ -1,4 +1,5 @@
 using Godot;
+using Snowdrama.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,18 +109,28 @@ public partial class MessagedSoundPool : Node
     /// <param name="stream"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlaySound(AudioStream stream, string busName, float volume)
+    public void PlaySound(AudioStream stream, string busName, float volume, Vector2 pitchRange)
     {
-        if(players.Count > 0)
+        if(stream == null)
+        {
+            Debug.LogError($"Tried to play a sound with a null stream!");
+            return;
+        }
+        if (players.Count > 0)
         {
             var player = players.Pop();
             var volumeDB = Mathf.Lerp(-80, 0, volume / 1.0f);
             player.VolumeDb = volumeDB;
             player.Bus = busName;
             player.Stream = stream;
+            player.PitchScale = RandomAndNoise.RandomRange(pitchRange.X, pitchRange.Y);
             player.Play();
 
             usedPlayers.Add(player);
+        }
+        else
+        {
+            Debug.LogError("Message pool doesn't have any available sounds!");
         }
     }
     /// <summary>
@@ -129,11 +140,16 @@ public partial class MessagedSoundPool : Node
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound2D(AudioStream stream, Vector2 playPosition, string busName, float volume)
+    public void PlayPositionedSound2D(AudioStream stream, Vector2 playPosition, string busName, float volume, Vector2 pitchRange)
     {
+        if (stream == null)
+        {
+            Debug.LogError($"Tried to play a sound with a null stream!");
+            return;
+        }
         if (!use2DPlayers)
         {
-            GD.PrintErr("Tried to play a 2D sound but not using 2D sound pool, See MessagedSoundPool");
+            Debug.LogError("Tried to play a 2D sound but not using 2D sound pool, See MessagedSoundPool");
             return;
         }
 
@@ -145,8 +161,13 @@ public partial class MessagedSoundPool : Node
             player.Bus = busName;
             player.Stream = stream;
             player.Position = playPosition;
+            player.PitchScale = RandomAndNoise.RandomRange(pitchRange.X, pitchRange.Y);
             player.Play();
             usedPlayers2D.Add(player);
+        }
+        else
+        {
+            Debug.LogError("2D Message pool doesn't have any available sounds!");
         }
     }
     /// <summary>
@@ -156,14 +177,18 @@ public partial class MessagedSoundPool : Node
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound3D(AudioStream stream, Vector3 playPosition, string busName, float volume)
+    public void PlayPositionedSound3D(AudioStream stream, Vector3 playPosition, string busName, float volume, Vector2 pitchRange)
     {
-        if (!use3DPlayers)
+        if (stream == null)
         {
-            GD.PrintErr("Tried to play a 3D sound but not using 3D sound pool, See MessagedSoundPool");
+            Debug.LogError($"Tried to play a sound with a null stream!");
             return;
         }
-
+        if (!use3DPlayers)
+        {
+            Debug.LogError("Tried to play a 3D sound but not using 3D sound pool, See MessagedSoundPool");
+            return;
+        }
         if (players3D.Count > 0)
         {
             var player = players3D.Pop();
@@ -172,8 +197,13 @@ public partial class MessagedSoundPool : Node
             player.Bus = busName;
             player.Stream = stream;
             player.Position = playPosition;
+            player.PitchScale = RandomAndNoise.RandomRange(pitchRange.X, pitchRange.Y);
             player.Play();
             usedPlayers3D.Add(player);
+        }
+        else
+        {
+            Debug.LogError("3D Message pool doesn't have any available sounds!");
         }
     }
 }
