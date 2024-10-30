@@ -58,14 +58,12 @@ public partial class UI_Button_Sounds : Node
     bool pressedDown = false;
     private void ParentButton_ButtonUp()
     {
-        Debug.Log($"Button {parentButton.Name} ButtonUp");
         pressedDown = false;
     }
 
 
     private void ParentButton_ButtonDown()
     {
-        Debug.Log($"Button {parentButton.Name} ButtonDown");
         pressedDown = true;
     }
 
@@ -82,12 +80,10 @@ public partial class UI_Button_Sounds : Node
 
     private void ButtonPressed()
     {
-        Debug.Log($"Button {parentButton.Name} ButtonPressed");
         pressedPlayer.Play();
     }
     private void Button_FocusEntered()
     {
-        Debug.Log($"Button {parentButton.Name} FocusEntered");
         if (!pressedDown && !mouseOver)
         {
             focusPlayer.Play();

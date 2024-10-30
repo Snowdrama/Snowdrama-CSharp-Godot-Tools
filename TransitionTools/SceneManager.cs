@@ -255,7 +255,10 @@ public partial class SceneManager : Node
 
     private void OnTransitionBlackout()
     {
-        previousSceneName = currentScene.Name;
+        if(currentScene != null)
+        {
+            previousSceneName = currentScene.Name;
+        }
         SwapScenes(currentScene, sceneTarget);
     }
 

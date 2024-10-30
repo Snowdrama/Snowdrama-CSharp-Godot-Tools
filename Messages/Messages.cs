@@ -71,10 +71,8 @@ public class Messages
     {
         if (messageHubs.ContainsKey(hubName))
         {
-            Debug.Log($"Using Hub {hubName}");
             return messageHubs[hubName];
         }
-        Debug.Log($"Creating Hub {hubName}");
         var newHub = new MessageHub();
         messageHubs.Add(hubName, newHub);
         return newHub;

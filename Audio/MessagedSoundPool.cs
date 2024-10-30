@@ -28,6 +28,7 @@ public partial class MessagedSoundPool : Node
         for (int i = 0; i < audioPlayerCount; i++)
         {
             var newPlayer = new AudioStreamPlayer();
+            newPlayer.ProcessMode = ProcessModeEnum.Always;
             newPlayer.Autoplay = false;
             newPlayer.Finished += () =>
             {
@@ -44,6 +45,7 @@ public partial class MessagedSoundPool : Node
             for (int i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new AudioStreamPlayer2D();
+                newPlayer.ProcessMode = ProcessModeEnum.Always;
                 newPlayer.Autoplay = false;
                 newPlayer.Finished += () =>
                 {
@@ -61,6 +63,7 @@ public partial class MessagedSoundPool : Node
             for (int i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new AudioStreamPlayer3D();
+                newPlayer.ProcessMode = ProcessModeEnum.Always;
                 newPlayer.Autoplay = false;
                 newPlayer.Finished += () =>
                 {
@@ -98,9 +101,9 @@ public partial class MessagedSoundPool : Node
     public override void _Process(double delta)
     {
         base._Process(delta);
-        DebugDraw2D.SetText("Players count:", $"{players.Count}");
-        DebugDraw2D.SetText("Players2D count:", $"{players2D.Count}");
-        DebugDraw2D.SetText("Players3D count:", $"{players3D.Count}");
+        //DebugDraw2D.SetText("Players count:", $"{players.Count}");
+        //DebugDraw2D.SetText("Players2D count:", $"{players2D.Count}");
+        //DebugDraw2D.SetText("Players3D count:", $"{players3D.Count}");
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using Godot;
 using System;
 using static Godot.OpenXRInterface;
 
@@ -112,6 +113,14 @@ namespace Snowdrama.Core
         public static float RandomRange(float min, float max)
         {
             return (float)(min + (rand.NextDouble() * (max - min)));
+        }
+        public static float RandomPercent()
+        {
+            return (float)rand.NextDouble() * 100.0f;
+        }
+        public static float RandomRange(Vector2 range)
+        {
+            return (float)(range.X + (rand.NextDouble() * (range.Y - range.X)));
         }
         public static double RandomRange(double min, double max)
         {
