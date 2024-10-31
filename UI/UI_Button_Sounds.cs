@@ -7,9 +7,11 @@ public partial class UI_Button_Sounds : Node
 
     [Export] AudioStream focusSound;
     [Export] AudioStream pressedSound;
+    [Export] AudioStream hoverSound;
 
     AudioStreamPlayer focusPlayer;
     AudioStreamPlayer pressedPlayer;
+    AudioStreamPlayer hoverPlayer;
 
     public override void _Ready()
     {
@@ -28,6 +30,14 @@ public partial class UI_Button_Sounds : Node
         pressedPlayer.Autoplay = false;
         pressedPlayer.StreamPaused = false;
         this.AddChild(pressedPlayer);
+
+        hoverPlayer = new AudioStreamPlayer();
+        hoverPlayer.Stream = hoverSound;
+        hoverPlayer.VolumeDb = 0.0f;
+        hoverPlayer.PitchScale = 1.0f;
+        hoverPlayer.Autoplay = false;
+        hoverPlayer.StreamPaused = false;
+        this.AddChild(hoverPlayer);
 
         var parent = this.GetParent();
         if (parent is BaseButton pc)
@@ -53,6 +63,7 @@ public partial class UI_Button_Sounds : Node
     private void ParentButton_MouseEntered()
     {
         mouseOver = true;
+        hoverPlayer.Play();
     }
 
     bool pressedDown = false;

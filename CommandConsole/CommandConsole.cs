@@ -42,6 +42,8 @@ public partial class CommandConsole : Node
         base._Ready();
         consoleCanvas.Hide();
         consoleCanvas.Layer = 128;
+        this.ProcessMode = ProcessModeEnum.Always;
+        consoleCanvas.ProcessMode = ProcessModeEnum.Always;
 
         CommandConsole_RichTextLabel.PrintText("=================");
         CommandConsole_RichTextLabel.PrintText("'help' for commands");

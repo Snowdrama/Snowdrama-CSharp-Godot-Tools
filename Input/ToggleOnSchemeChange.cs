@@ -51,6 +51,10 @@ public partial class ToggleOnSchemeChange : Node
         {
             node3D.Visible = vis;
         }
+        if (target is Control control)
+        {
+            control.Visible = vis;
+        }
         if (target is CanvasLayer canvas)
         {
             canvas.Visible = vis;

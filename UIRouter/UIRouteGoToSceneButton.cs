@@ -10,5 +10,10 @@ public partial class UIRouteGoToSceneButton : UIBaseRouterButton
         this.Connect(SignalName.Pressed, Callable.From(() => {
             SceneManager.LoadScene(sceneName);
         }));
+
+        if (Disabled)
+        {
+            this.FocusMode = FocusModeEnum.None;
+        }
     }
 }

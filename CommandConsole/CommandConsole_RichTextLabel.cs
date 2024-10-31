@@ -20,6 +20,7 @@ public partial class CommandConsole_RichTextLabel : RichTextLabel
         this.ScrollFollowing = true;
         vScrollBar = this.GetVScrollBar();
         instance = this;
+        this.ProcessMode = ProcessModeEnum.Always;
     }
     public static void PrintText(string lineToPush)
     {

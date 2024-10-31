@@ -3,13 +3,17 @@ using System;
 
 public partial class CommandConsole_LineEdit : LineEdit
 {
+    static CommandConsole_LineEdit instance;
 	// Called when the node enters the scene tree for the first lerpAmount.
 	public override void _Ready()
 	{
         this.VisibilityChanged += CommandConsoleTextInput_VisibilityChanged;
         this.TextChanged += CommandConsole_LineEdit_TextChanged;
         this.TextSubmitted += CommandConsoleTextInput_TextSubmitted;
-	}
+        this.ProcessMode = ProcessModeEnum.Always;
+
+        instance = this;
+    }
 
     private void CommandConsole_LineEdit_TextChanged(string newText)
     {
@@ -32,5 +36,10 @@ public partial class CommandConsole_LineEdit : LineEdit
 		{
 			this.GrabFocus();
 		}
+    }
+
+    public static void ClearLine()
+    {
+        instance.Clear();
     }
 }
