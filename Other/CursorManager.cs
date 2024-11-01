@@ -14,12 +14,12 @@ public partial class CursorManager : Node
     [Export] Input.MouseModeEnum MouseStateWhenSourcesActive;
 
     [Export] bool disableCapture = false;
+
     public override void _EnterTree()
     {
+        this.ProcessMode = ProcessModeEnum.Always;
         if (!disableCapture)
         {
-            this.ProcessMode = ProcessModeEnum.Always;
-
             Input.MouseMode = MouseStateOnEnterTree;
             ClearMenus();
         }
