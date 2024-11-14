@@ -13,10 +13,13 @@ public partial class Options : Node
     public const string SOUND_VOLUME_OPTION_KEY = "Sounds";
     public const string VOICE_VOLUME_OPTION_KEY = "Voices";
     public const string DISPLAY_MODE_OPTION_KEY = "WindowMode";
+
+    public const string WINDOW_MODE_OPTION_KEY = "WindowMode";
     public const string WINDOWED_RESOLUTION_OPTION_KEY = "WindowResolution";
     public const string VSYNC_OPTION_KEY = "VSync";
     public const string LANUGAGE_OPTION_KEY = "Language";
     public const string LANUGAGE_OPTION_STRING_KEY = "LanguageString";
+
 
     public static readonly Vector2I DEFAULT_WINDOW_RESOLUTION = new Vector2I(1280, 720);
 
@@ -25,35 +28,46 @@ public partial class Options : Node
 
     public static ConfigFile config;
 
+
+    //loads the config ONLY if the config hasn't ben loaded already
+    //used to validate that the config has been loaded
     private static void ValidateLoadConfig()
     {
-        if(config == null)
+        if (config == null)
         {
-            config = new ConfigFile();
-            Error configErr = config.Load(userConfigLocation);
-            GD.Print($"Loading Config From {userConfigLocation}");
-            if (configErr != Error.Ok)
+            LoadConfig();
+        }
+    }
+
+
+    //forces a reload of the config, it does not check if the config has been loaded
+    private static void LoadConfig()
+    {
+        config = new ConfigFile();
+        Error configErr = config.Load(userConfigLocation);
+        GD.Print($"Loading Config From {userConfigLocation}");
+        if (configErr != Error.Ok)
+        {
+            GD.Print($"Loading Failed, Loading Default From {defaultConfigLocation}");
+            //load from the default cfg
+            var defaultConfig = new ConfigFile();
+            Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
+
+
+            if (defaultConfigErr == Error.Ok)
             {
-                GD.Print($"Loading Failed, Loading Default From {defaultConfigLocation}");
-                //load from the default cfg
-                var defaultConfig = new ConfigFile();
-                Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
-
-
-                if (defaultConfigErr == Error.Ok)
-                {
-                    GD.Print("Loading Success!");
-                    config = defaultConfig;
-                    GD.Print($"Saving To {userConfigLocation}");
-                    config.Save(userConfigLocation);
-                }
-                else
-                {
-                    GD.PrintErr($"Loading Default Failed Somehow...");
-                }
+                GD.Print("Loading Success!");
+                config = defaultConfig;
+                GD.Print($"Saving To {userConfigLocation}");
+                config.Save(userConfigLocation);
+            }
+            else
+            {
+                GD.PrintErr($"Loading Default Failed Somehow...");
             }
         }
     }
+
     private static void SaveConfig()
     {
         if(config != null)

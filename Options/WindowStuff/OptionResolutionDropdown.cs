@@ -5,12 +5,10 @@ using Godot.Collections;
 //This class just handles the changing of the resolution with the WindowManager
 
 //The WindowManager must be added as a auto-load for this to work
-[GlobalClass]
-public partial class OptionResolutionDropdown : OptionButton
-{
-	[Export] Vector2I defaultResolution;
 
-    [Export] public Array<Vector2I> resolutions = new Array<Vector2I>
+public static class GameWindowResolutions
+{
+    public static Array<Vector2I> resolutions = new Array<Vector2I>
     {
         new Vector2I(1280, 720),
         new Vector2I(640, 360),
@@ -26,6 +24,14 @@ public partial class OptionResolutionDropdown : OptionButton
         new Vector2I(3200, 1800),
         new Vector2I(3840, 2160),
     };
+}
+
+
+[GlobalClass]
+public partial class OptionResolutionDropdown : OptionButton
+{
+	[Export] Vector2I defaultResolution;
+
     public override void _Ready()
     {
         LoadDataIntoOptionButton();
@@ -36,7 +42,7 @@ public partial class OptionResolutionDropdown : OptionButton
 
     private void OnItemSelected(long index)
     {
-        WindowManager.WindowedResolution = resolutions[(int)index];
+        WindowManager.WindowedResolution = GameWindowResolutions.resolutions[(int)index];
     }
 
     private void OnVisibilityChanged()
@@ -47,9 +53,9 @@ public partial class OptionResolutionDropdown : OptionButton
     private void LoadValueFromOptions()
     {
         var loadedValue = Options.GetVector2I(Options.WINDOWED_RESOLUTION_OPTION_KEY, defaultResolution);
-        for (int i = 0; i < resolutions.Count; i++)
+        for (int i = 0; i < GameWindowResolutions.resolutions.Count; i++)
         {
-            if (resolutions[i] == loadedValue)
+            if (GameWindowResolutions.resolutions[i] == loadedValue)
             {
                 this.Select(i);
                 return;
@@ -62,15 +68,15 @@ public partial class OptionResolutionDropdown : OptionButton
     private void LoadDataIntoOptionButton()
     {
         this.Clear();
-        for (int i = 0; i < resolutions.Count; i++)
+        for (int i = 0; i < GameWindowResolutions.resolutions.Count; i++)
         {
             if (i == 0)
             {
-                this.AddItem($"{resolutions[i].X} x {resolutions[i].Y} (Default)");
+                this.AddItem($"{GameWindowResolutions.resolutions[i].X} x {GameWindowResolutions.resolutions[i].Y} (Default)");
             }
             else
             {
-                this.AddItem($"{resolutions[i].X} x {resolutions[i].Y}");
+                this.AddItem($"{GameWindowResolutions.resolutions[i].X} x {GameWindowResolutions.resolutions[i].Y}");
             }
         }
     }

@@ -8,8 +8,8 @@ public partial class VSyncDropdown : OptionButton
     [Export]
     public Array<string> Values = new Array<string>
     {
-        "GRAPHICS_VSYNC_ON",
         "GRAPHICS_VSYNC_OFF",
+        "GRAPHICS_VSYNC_ON",
         "GRAPHICS_VSYNC_ADAPTIVE",
         "GRAPHICS_VSYNC_MAILBOX",
     };
@@ -29,27 +29,20 @@ public partial class VSyncDropdown : OptionButton
 
     private void VSyncToggle_ItemSelected(long index)
     {
-        switch (index)
+        if(index >= 0 && index <= 3)
         {
-            case 0:
-                WindowManager.VSyncMode = DisplayServer.VSyncMode.Enabled;
-                break;
-            case 1:
-                WindowManager.VSyncMode = DisplayServer.VSyncMode.Disabled;
-                break;
-            case 2:
-                WindowManager.VSyncMode = DisplayServer.VSyncMode.Adaptive;
-                break;
-            case 3:
-                WindowManager.VSyncMode = DisplayServer.VSyncMode.Mailbox;
-                break;
+            WindowManager.VSyncMode = (DisplayServer.VSyncMode)index;
+            Options.SetInt(Options.VSYNC_OPTION_KEY, (int)index);
         }
-        Options.SetInt(Options.VSYNC_OPTION_KEY, (int)index);
+        else
+        {
+            Debug.LogError("VSync index must be 0-3, Disabled, Enabled, Adaptive, Mailbox");
+        }
     }
 
     private void LoadOptionFromSave()
     {
-        var vsync = Options.GetInt(Options.VSYNC_OPTION_KEY, 0);
+        var vsync = Options.GetInt(Options.VSYNC_OPTION_KEY, (int)DisplayServer.VSyncMode.Enabled);
         this.Select(vsync);
     }
 
@@ -60,6 +53,5 @@ public partial class VSyncDropdown : OptionButton
         {
             this.AddItem($"{Values[i]}");
         }
-
     }
 }
