@@ -1,17 +1,10 @@
 using Godot;
 using System;
 
-public enum InputType
-{
-    None,
-    Gamepad,
-    KBM,
-}
-
-public class ChangeInputTypeMessage : AMessage<InputType> { }
+public class ChangeInputTypeMessage : AMessage<InputSchemeType> { }
 public partial class VirtualCursorSystem : Node
 {
-    public static InputType currentInputType { get; private set; }
+    public static InputSchemeType currentInputType { get; private set; }
     ChangeInputTypeMessage changeInput;
 
 	public override void _Ready()
@@ -34,7 +27,7 @@ public partial class VirtualCursorSystem : Node
         Messages.Return<ChangeInputTypeMessage>();
     }
 
-    public void InputChanged(InputType newInputType)
+    public void InputChanged(InputSchemeType newInputType)
     {
         currentInputType = newInputType;
     }

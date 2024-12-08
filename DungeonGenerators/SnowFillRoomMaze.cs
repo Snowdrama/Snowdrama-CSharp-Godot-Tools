@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 
 [Tool]
 public partial class SnowFillRoomMaze : Node2D

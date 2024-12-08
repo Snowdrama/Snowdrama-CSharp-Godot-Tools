@@ -1,6 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
 
+# Godot 4.4+ ignores for .uid for compatibility with 4.3 and earlier. TODO: Remove this once 4.4 releases and bump the min spec for the lib to 4.4
+*.uid
+
+
 # Godot-specific ignores
 .import/
 export.cfg

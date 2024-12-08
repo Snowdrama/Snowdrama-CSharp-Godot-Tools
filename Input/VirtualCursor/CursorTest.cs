@@ -20,7 +20,7 @@ public partial class CursorTest : Node
 
 		if(@event is InputEventMouseButton buttonClick)
 		{
-			GD.Print($"Device {buttonClick.Device} Pressed the {buttonClick.ButtonIndex} button at {buttonClick.Position}");
+			GD.Print($"Device {buttonClick.Device} Pressed the {buttonClick.ButtonIndex} joyButton at {buttonClick.Position}");
 		}
     }
 }

@@ -73,8 +73,6 @@ public partial class VirtualCamera2D : Node2D
     // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
     {
-
-
         if (!Engine.IsEditorHint())
         {
             UpdateScreenSize();
