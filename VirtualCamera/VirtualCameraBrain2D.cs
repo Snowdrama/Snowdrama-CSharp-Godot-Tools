@@ -30,7 +30,6 @@ public partial class VirtualCameraBrain2D : Camera2D
     [Export] bool LerpRotation;
     [Export] double LerpRotationSpeed = 10.0;
 
-
     public override void _EnterTree()
     {
         base._EnterTree();

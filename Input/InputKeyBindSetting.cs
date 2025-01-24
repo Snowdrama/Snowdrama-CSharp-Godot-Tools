@@ -5,14 +5,30 @@ using System;
 public partial class InputButtonBinding : Resource
 {
     [Export] public string ActionName = "Jump";
-    [Export] public Key key = Key.Space;
-    [Export] public JoyButton joyButton = JoyButton.A;
-    [Export] public MouseButton mouseButton = MouseButton.Left;
+    [Export] public Key key = Key.None;
+    [Export] public Key modifier = Key.None;
+    [Export] public JoyButton joyButton = JoyButton.Invalid;
+    [Export] public MouseButton mouseButton = MouseButton.None;
 
-    public void UpdateKey(Key newKey)
+    [Export] public bool CtrlModifier = false;
+    [Export] public bool AltModifier = false;
+    [Export] public bool ShiftModifier = false;
+    [Export] public bool MetaModifier = false;
+
+    public void UpdateKey(
+        Key newKey,
+        bool ctrlPressed = false,
+        bool shiftPressed = false,
+        bool altPressed = false,
+        bool metaPressed = false
+    )
     {
-        SwapKey(ActionName, key, newKey);
+        SwapKey(ActionName, key, newKey, ctrlPressed, shiftPressed, altPressed, metaPressed);
         key = newKey;
+        CtrlModifier = ctrlPressed;
+        ShiftModifier = shiftPressed;
+        AltModifier = altPressed;
+        MetaModifier = metaPressed;
     }
 
     public void UpdateJoyButton(JoyButton newJoyButton)
@@ -36,11 +52,16 @@ public partial class InputButtonBinding : Resource
 
         InputMap.ActionAddEvent(ActionName, new InputEventKey()
         {
-            Keycode = key
+            Keycode = key,
+            CtrlPressed = CtrlModifier,
+            ShiftPressed = ShiftModifier,
+            AltPressed = AltModifier,
+            MetaPressed = MetaModifier,
         });
         InputMap.ActionAddEvent(ActionName, new InputEventJoypadButton()
         {
-            ButtonIndex = joyButton
+            ButtonIndex = joyButton,
+            
         });
         InputMap.ActionAddEvent(ActionName, new InputEventMouseButton()
         {
@@ -48,17 +69,40 @@ public partial class InputButtonBinding : Resource
         });
     }
 
-    private void SwapKey(string action, Key oldKey, Key newKey)
+    private void SwapKey(
+        string action, 
+        Key oldKey, 
+        Key newKey, 
+        bool ctrlPressed = false, 
+        bool shiftPressed = false, 
+        bool altPressed = false,
+        bool metaPressed = false
+    )
     {
         var oldKeyInput = new InputEventKey()
         {
-            Keycode = oldKey
+            Keycode = oldKey,
+            CtrlPressed = CtrlModifier,
+            ShiftPressed = ShiftModifier,
+            AltPressed = AltModifier,
+            MetaPressed = MetaModifier,
         };
+
+        key = newKey;
+        CtrlModifier = ctrlPressed;
+        ShiftModifier = shiftPressed;
+        AltModifier = altPressed;
+        MetaModifier = metaPressed;
 
         var newKeyInput = new InputEventKey()
         {
-            Keycode = newKey
+            Keycode = newKey,
+            CtrlPressed = ctrlPressed,
+            ShiftPressed = shiftPressed,
+            AltPressed = altPressed,
+            MetaPressed = metaPressed,
         };
+
 
         if (!InputMap.HasAction(action))
         {

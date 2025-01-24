@@ -106,7 +106,20 @@ public partial class SceneManager : Node
                 GD.PrintErr($"Path {possiblePath} doesn't point to a path the resource loader can load");
                 continue;
             }
+
+            if (!possiblePath.Contains(".tscn"))
+            {
+                Debug.LogWarn($"Path {possiblePath} is not a scene so skipping");
+                continue;
+            }
+
             var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
+            if(possiblyAScene == null)
+            {
+                Debug.LogWarn($"Path {possiblePath} loaded but is null for some reason, skipping");
+                continue;
+            }
+
             string name = possiblyAScene.GetState().GetNodeName(0);
             name = name.Replace(" ", "_");
 
@@ -269,6 +282,9 @@ public partial class SceneManager : Node
 
     public static void SetCurrentScene(Node currentNode)
     {
-        instance.currentScene = currentNode;
+        if(currentNode != null)
+        {
+            instance.currentScene = currentNode;
+        }
     }
 }

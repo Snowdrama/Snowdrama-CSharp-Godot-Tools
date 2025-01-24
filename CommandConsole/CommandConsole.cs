@@ -50,22 +50,23 @@ public partial class CommandConsole : Node
         CommandConsole_RichTextLabel.PrintText("=================");
 
 
-        if (!InputMap.HasAction("OpenConsole"))
-        {
-            InputMap.AddAction("OpenConsole");
-            InputMap.ActionAddEvent("OpenConsole", new InputEventKey()
-            {
-                Keycode = Key.Quoteleft
-            });
-        }
-        if (!InputMap.HasAction("ConsoleTryAutocomplete"))
-        {
-            InputMap.AddAction("ConsoleTryAutocomplete");
-            InputMap.ActionAddEvent("ConsoleTryAutocomplete", new InputEventKey()
-            {
-                Keycode = Key.Tab
-            });
-        }
+        //if (!InputMap.HasAction("OpenConsole"))
+        //{
+        //    InputMap.AddAction("OpenConsole");
+        //    InputMap.ActionAddEvent("OpenConsole", new InputEventKey()
+        //    {
+        //        Keycode = Key.Quoteleft,
+        //        CtrlPressed = true,
+        //    });
+        //}
+        //if (!InputMap.HasAction("ConsoleTryAutocomplete"))
+        //{
+        //    InputMap.AddAction("ConsoleTryAutocomplete");
+        //    InputMap.ActionAddEvent("ConsoleTryAutocomplete", new InputEventKey()
+        //    {
+        //        Keycode = Key.Tab
+        //    });
+        //}
     }
 
     public override void _Input(InputEvent @event)
