@@ -1,5 +1,7 @@
 using Godot;
+#if IMGUI
 using ImGuiNET;
+#endif
 using System;
 
 public partial class InputSchemeSwitcher : Node

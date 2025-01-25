@@ -3,42 +3,30 @@ using Godot.Collections;
 using System;
 using System.Collections.Generic;
 
-[Tool]
+[Tool, GlobalClass]
 public partial class VirtualCamera2D : Node2D
 {
     [Export] int activePriority = 10;
     [Export] int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
-    
-    Vector2 _windowSize = new Vector2(1920, 1080);
-    [Export]
-    Vector2 WindowSize
-    {
-        get { return _windowSize; }
-        set
-        {
-            _windowSize = value;
-            QueueRedraw();
-        }
-    }
+
+    [Export] Vector2 WindowSize = new Vector2(1920, 1080);
     //[Export] float orthographicSize;
     [Export] bool clampToIntegerScale;
     public Vector2 targetScreenSize;
     public Vector2 testScreenSize;
 
+    [Export] public bool PositionSmoothingEnabled;
+    [Export] public float PositionSmoothingSpeed;
+
+    [ExportGroup("Camera Bounds")]
+    Vector2 currentPosition;
+    [Export]bool useCameraBounds;
+    [Export]Rect2 cameraBounds;
+
     //DEBUG ONLY
     [ExportCategory("Debug")]
-    Vector2 _testScreenResolution = new Vector2(1920, 1080);
-    [Export]
-    Vector2 TestScreenResolution
-    {
-        get { return _testScreenResolution; }
-        set
-        {
-            _testScreenResolution = value;
-            QueueRedraw();
-        }
-    }
+    [Export] Vector2 TestScreenResolution = new Vector2(1920, 1080);
     [ExportGroup("Settings")]
     [Export] private float debugBorderWidth = 30.0f;
     [Export] private Color debugVirtualBorderColor = Color.FromHtml($"FF8000");
@@ -50,12 +38,17 @@ public partial class VirtualCamera2D : Node2D
 
 
     [ExportGroup("Read Only")]
-    [Export] public Vector2 calculatedScale;
+    [Export] public Vector2 cameraZoomLevel;
+    [Export] public Vector2 windowResScale;
     [Export] public Vector2 calculatedScaleCurrent;
     [Export] public Vector2 calculatedScaleTest;
+
+    [Export] public Vector2 relativeZoom = new Vector2(0.0f, 0.0f);
+
     public override void _Ready()
     {
         base._Ready();
+        currentPosition = this.GlobalPosition;
     }
 
     public override void _EnterTree()
@@ -73,9 +66,22 @@ public partial class VirtualCamera2D : Node2D
     // Called every frame. 'delta' is the elapsed lerpAmount since the previous frame.
     public override void _Process(double delta)
     {
-        if (!Engine.IsEditorHint())
+        base._Process(delta);
+        currentPosition = this.GlobalPosition;
+        windowResScale = WindowSize.FindScaleFactor(GetViewportRect().Size);
+
+        cameraZoomLevel = windowResScale + relativeZoom;
+
+        if (Engine.IsEditorHint())
         {
-            UpdateScreenSize();
+            QueueRedraw();
+        }
+
+        if (useCameraBounds)
+        {
+            currentPosition.X = currentPosition.X.Clamp(cameraBounds.Position.X, cameraBounds.End.X);
+            currentPosition.Y = currentPosition.Y.Clamp(cameraBounds.Position.Y, cameraBounds.End.Y);
+            this.GlobalPosition = currentPosition;
         }
     }
 
@@ -88,58 +94,19 @@ public partial class VirtualCamera2D : Node2D
     {
         virtualCameraPriority = inactivePriority;
     }
-    public void UpdateScreenSize()
+
+
+    public void SetWindowSize(Vector2 setWindowSize)
     {
-        var screenResolution = GetViewportRect().Size;
-
-        calculatedScale = ScaleScreen(screenResolution, this._windowSize);
-        calculatedScaleCurrent = ScaleScreen(screenResolution, this._windowSize);
-
-        targetScreenSize.X = (float)screenResolution.X / calculatedScale.X;
-        targetScreenSize.Y = (float)screenResolution.Y / calculatedScale.Y;
-
-
-        calculatedScaleTest = ScaleScreen(_testScreenResolution, this._windowSize);
-
-        testScreenSize.X = (float)_testScreenResolution.X / calculatedScaleTest.X;
-        testScreenSize.Y = (float)_testScreenResolution.Y / calculatedScaleTest.Y;
+        WindowSize = setWindowSize;
+        windowResScale = WindowSize.FindScaleFactor(GetViewportRect().Size);
     }
 
-    public Vector2 ScaleScreen(Vector2 inputResolution, Vector2 targetSize)
+
+    public void SetCameraBounds(bool shouldUseCameraBounds, Rect2 setCameraBounds = new Rect2())
     {
-        var windowSize = GetViewportRect().Size;
-        var screenScale = new Vector2();
-        //screenResolution.x(1920) / screenResolution.x(960) = calculatedScale.x(2)
-        //screenResolution.x(1920) / screenResolution.x(3,840) = calculatedScale.x(0.5)
-        screenScale.X = (float)inputResolution.X / targetSize.X;
-        screenScale.Y = (float)inputResolution.Y / targetSize.Y;
-
-
-
-        //either we're clamping the zoom to an integer scale 1x 2x etc
-        if (clampToIntegerScale)
-        {
-            screenScale.X = Mathf.FloorToInt(screenScale.X);
-            screenScale.X = Mathf.Clamp(screenScale.X, 1, 10_000);
-            screenScale.Y = Mathf.FloorToInt(screenScale.Y);
-            screenScale.Y = Mathf.Clamp(screenScale.Y, 1, 10_000);
-        }
-        //or we're just making sure the zoom ratio is never 0 for some reason.
-        else
-        {
-            screenScale.X = Math.Clamp(screenScale.X, 0.0001f, 10_000.0f);
-            screenScale.Y = Math.Clamp(screenScale.Y, 0.0001f, 10_000.0f);
-        }
-
-        if (screenScale.X > screenScale.Y)
-        {
-            screenScale.X = screenScale.Y;
-        }
-        else
-        {
-            screenScale.Y = screenScale.X;
-        }
-        return screenScale;
+        useCameraBounds = shouldUseCameraBounds;
+        cameraBounds = setCameraBounds;
     }
 
     public override void _Draw()
@@ -148,8 +115,7 @@ public partial class VirtualCamera2D : Node2D
 
         if (Engine.IsEditorHint())
         {
-            UpdateScreenSize();
-            var halfWindowSize = _windowSize * 0.5f;
+            var halfWindowSize = WindowSize * 0.5f;
             var halfExtentsTest = testScreenSize * 0.5f;
 
             //GD.Print($"halfExtentsTarget {halfWindowSize}");

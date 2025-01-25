@@ -32,6 +32,7 @@ using static System.Collections.Specialized.BitVector32;
 /// 
 /// these are just references to functions 
 /// </summary>
+public delegate void GameCommandAction(params string[] args);
 public partial class CommandConsole : Node
 {
     [Export] bool pauseOnOpen;
@@ -288,24 +289,3 @@ public partial class CommandConsole : Node
     }
 }
 
-public delegate void GameCommandAction(params string[] args);
-public class GameCommand
-{
-    GameCommandAction command;
-    public string Tooltip;
-    public int argumentCount;
-    
-    public void Invoke(params string[] args)
-    {
-        command.Invoke(args);
-    }
-
-    public void RegisterCommand(GameCommandAction addCommand)
-    {
-        command += addCommand;
-    }
-    public void UnrgisterCommand(GameCommandAction removeCommand)
-    {
-        command -= removeCommand;
-    }
-}

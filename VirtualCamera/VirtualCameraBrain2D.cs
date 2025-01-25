@@ -48,6 +48,7 @@ public partial class VirtualCameraBrain2D : Camera2D
 
     public override void _Process(double delta)
     {
+        base._Process(delta);
         VirtualCameraBrain2D.cameraPosition = this.Position;
         cameraTransform = GetCanvasTransform();
 
@@ -76,7 +77,6 @@ public partial class VirtualCameraBrain2D : Camera2D
             }
             return 0;
         });
-        currentCamera = cameras[0];
 
         //current one is the highest virtualCameraPriority
         if (currentCamera != cameras[0])
@@ -86,6 +86,8 @@ public partial class VirtualCameraBrain2D : Camera2D
 
         if (currentCamera != null)
         {
+            this.PositionSmoothingEnabled = currentCamera.PositionSmoothingEnabled;
+            this.PositionSmoothingSpeed = currentCamera.PositionSmoothingSpeed;
             if (LerpPosition)
             {
                 if (LerpPositionByDistance)
@@ -116,13 +118,13 @@ public partial class VirtualCameraBrain2D : Camera2D
                 this.Rotation = currentCamera.GlobalRotation;
             }
 
-            if (smoothScale && currentCamera.calculatedScale.Length() > 0.1f)
+            if (smoothScale && currentCamera.cameraZoomLevel.Length() > 0.1f)
             {
-                this.Zoom = Vector2Extensions.Lerp(this.Zoom, currentCamera.calculatedScale, (float)delta);
+                this.Zoom = Vector2Extensions.Lerp(this.Zoom, currentCamera.cameraZoomLevel, (float)delta);
             }
             else
             {
-                this.Zoom = currentCamera.calculatedScale;
+                this.Zoom = currentCamera.cameraZoomLevel;
             }
         }
     }

@@ -106,5 +106,26 @@ public static class FloatExtensions
     public static bool InRange(this int value, int min, int max) 
     {
         return value >= min && value <= max;
-    } 
+    }
+
+
+    /// <summary>
+    /// Returns a scale that you could multiply some value by to get the target value
+    /// 
+    /// for example if the target is 300 and the current size is 100 it would return 3 since 3 * 100 = 300
+    /// </summary>
+    /// <param name="currentSize">The size you want to scale</param>
+    /// <param name="targetSize">The target size you want to be</param>
+    /// <returns>the scale needed to make the current size to the target size</returns>
+    /// <exception cref="ArgumentException">Current Size can't be 0</exception>
+    public static float FindScaleFactor(float currentSize, float targetSize)
+    {
+        if (currentSize != 0)
+        {
+            throw new ArgumentException(
+                $"MatchScale function must be non 0 and non negative inputs, " +
+                $"inputs were CurrentSize{currentSize} and TargetSize{targetSize}");
+        }
+        return targetSize / currentSize;
+    }
 }

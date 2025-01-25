@@ -2,7 +2,6 @@ using Godot;
 using Godot.Collections;
 using System;
 
-
 /// <summary>
 /// This is an example resource used for setting a player's input device.
 /// 
@@ -14,66 +13,6 @@ using System;
 /// If your game doesn't need these interactions you should make a new 
 /// resource and use the IInputDevice interface. 
 /// </summary>
-
-
-
-public interface IInputDevice
-{
-    public bool GetInputString(string keyName, out string outputValue);
-}
-
-
-public enum InputDeviceEventType
-{
-    Key = 0,
-    JoyButton = 1,
-    JoyAxis = 2,
-}
-
-struct InputDeviceEventDescription
-{
-    public string eventName;
-    public InputDeviceEventType type;
-    public int inputButtonIndex; //JoyButton.Start, Key.Escape
-    public float inputButtonValue; //typicaly used for JoyAxis to denote the axis direction.
-}
-
-public partial class InputDevice_JoyButtonInput : Resource
-{
-    [Export] public string eventName;
-    [Export] public InputDeviceEventType type;
-    [Export] public JoyButton inputButtonIndex;
-}
-public partial class InputDevice_JoyAxisInput : Resource
-{
-    [Export] public string eventName;
-    [Export] public InputDeviceEventType type;
-    [Export] public JoyAxis inputButtonIndex; 
-    [Export] public float inputButtonValue; 
-}
-public partial class InputDevice_KeyInput : Resource
-{
-    [Export] public string eventName;
-    [Export] public InputDeviceEventType type;
-    [Export] public Key inputButtonIndex;
-}
-
-public partial class InputDevice_Configuration : Resource
-{
-    [Export] Godot.Collections.Array<InputDevice_KeyInput> _defaultKeys;
-    [Export] Godot.Collections.Array<InputDevice_JoyButtonInput> _defaultJoyButtons;
-    [Export] Godot.Collections.Array<InputDevice_JoyAxisInput> _defaultJoyAxis;
-
-    public Godot.Collections.Array<InputDevice_KeyInput> DefaultKeys{
-        get { return _defaultKeys; }    
-    }
-    public Godot.Collections.Array<InputDevice_JoyButtonInput> DefaultJoyButtons{
-        get { return _defaultJoyButtons; }    
-    }
-    public Godot.Collections.Array<InputDevice_JoyAxisInput> DefaultJoyAxis{
-        get { return _defaultJoyAxis; }    
-    }
-}
 
 [GlobalClass]
 public partial class InputDeviceResource : Resource

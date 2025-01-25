@@ -145,4 +145,14 @@ public static class Vector2Extensions{
 
         return newVector;
     }
+    public static Vector2 FindScaleFactor(this Vector2 size, Vector2 targetSize, bool stretchToFit = false)
+    {
+        if (!stretchToFit)
+        {
+            var fullScale = targetSize / size;
+            var minimumNeededToFit = Mathf.Min(fullScale.X, fullScale.Y);
+            return new Vector2(minimumNeededToFit, minimumNeededToFit);
+        }
+        return targetSize / size;
+    }
 }
