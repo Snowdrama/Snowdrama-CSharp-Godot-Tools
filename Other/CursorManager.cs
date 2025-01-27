@@ -12,9 +12,9 @@ public partial class CursorManager : Node
     [Export] Input.MouseModeEnum MouseStateOnExitTree;
     [Export] Input.MouseModeEnum MouseStateDefault;
     [Export] Input.MouseModeEnum MouseStateWhenSourcesActive;
+    [Export] Input.MouseModeEnum MouseStateWhenGamepad;
 
     [Export] bool disableCapture = false;
-
     public override void _EnterTree()
     {
         this.ProcessMode = ProcessModeEnum.Always;
@@ -39,20 +39,43 @@ public partial class CursorManager : Node
     {
         if (!disableCapture)
         {
+            var targetNewMode = Input.MouseMode;
+
             if (InputSchemeChooser.SchemeType == InputSchemeType.KBM)
             {
                 if (visibleSources.Count > 0)
                 {
-                    Input.MouseMode = MouseStateWhenSourcesActive;
+                    targetNewMode = MouseStateWhenSourcesActive;
                 }
                 else
                 {
-                    Input.MouseMode = MouseStateDefault;
+                    targetNewMode = MouseStateDefault;
                 }
             }
             else
             {
-                Input.MouseMode = Input.MouseModeEnum.Visible;
+                targetNewMode = MouseStateWhenGamepad;
+            }
+
+            if (Input.MouseMode != targetNewMode)
+            {
+                if (InputSchemeChooser.SchemeType == InputSchemeType.KBM)
+                {
+                    if (visibleSources.Count > 0)
+                    {
+                        Debug.Log($"There's {visibleSources.Count} Visible sources so mouse is {MouseStateWhenSourcesActive}");
+                    }
+                    else
+                    {
+                        Debug.Log($"No visible menus so mouse state is: {MouseStateDefault}");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Gamepad is being used so mouse is now: {MouseStateWhenGamepad}");
+                }
+
+                Input.MouseMode = targetNewMode;
             }
         }
     }

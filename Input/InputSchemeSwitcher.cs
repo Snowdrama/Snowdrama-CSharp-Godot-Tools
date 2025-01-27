@@ -1,3 +1,5 @@
+//Comment this out if you're not using ImGui.NET for Godot
+//#define IMGUI
 using Godot;
 #if IMGUI
 using ImGuiNET;
@@ -9,6 +11,8 @@ public partial class InputSchemeSwitcher : Node
     //delay is used to prevent erronious button presses during boot like phantom trigger pulls
     double delay = 1.0;
     bool ready;
+
+    [Export] bool mouseMovementSwitchesScheme = true;
 	public override void _EnterTree()
 	{
         this.ProcessMode = ProcessModeEnum.Always;
@@ -71,6 +75,17 @@ public partial class InputSchemeSwitcher : Node
     {
         if(!ready) { return; }
 
+        if (mouseMovementSwitchesScheme)
+        {
+            if (@event is InputEventMouseMotion mouseMoved)
+            {
+                //don't consider dummy device 42069
+                if (mouseMoved.Device != 42069)
+                {
+                    InputSchemeChooser.RequestSchemeType(InputSchemeType.KBM);
+                }
+            }
+        }
         if (@event is InputEventJoypadButton joyButton)
         {
             //don't consider dummy device 42069

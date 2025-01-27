@@ -140,5 +140,13 @@ namespace Snowdrama.Core
         {
             return rand.Next(min, max);
         }
+        public static float RandomSelection(float[] options)
+        {
+            return options[RandomRange(0, options.Length)];
+        }
+        public static int RandomSelection(int[] options)
+        {
+            return options[RandomRange(0, options.Length)];
+        }
     }
 }
