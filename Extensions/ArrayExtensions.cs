@@ -1,6 +1,9 @@
+using Godot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Numerics;
 
 public static class ArrayExtensions
 {
@@ -80,5 +83,40 @@ public static class ArrayExtensions
         }
 
         return newList.ToArray();
+    }
+
+    public static bool TryGetValue<T>(this T[] values, int index, out T result)
+    {
+        if(index >= 0 && index < values.Length)
+        {
+            result = values[index];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this T[,] values, Vector2I index, out T result)
+    {
+        if (values.IsIndexInBounds(index))
+        {
+            result = values[index.X, index.Y];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool IsIndexInBounds<T>(this T[,] values, Vector2I index)
+    {
+        if (index.X >= 0 && 
+            index.Y >= 0 &&
+            index.X < values.GetLength(0) &&
+            index.Y < values.GetLength(1)
+            )
+        {
+            return true;
+        }
+        return false;
     }
 }

@@ -4,7 +4,15 @@ using System;
 
 /// <summary>
 /// Based on a video I cannot find anymore so if anyone can remember a GDC talk or something like it that sounds like this
-/// Please hit me up on Twitter @_Snowdrama
+/// Please hit me up on Twitter @_Snowdrama or on BlueSky @snowdrama.bsky.social
+/// 
+/// This is essentially a layered gradient descent algorithm, or something like an implementation of flowfields
+/// Creating a graph of weights that moves towards some points. 
+/// 
+/// My initial use case was for pathfinding, where I wanted to be able to do pathinding for swarms without needing to do
+/// A* for every entity. 
+/// 
+/// 
 /// 
 /// The basic idea is that when pathfinding for large swarms, you don't want every entity to do something like A* 
 /// that'd be too expensive. Instead we create a large grid of nodes and each node points to another node
@@ -55,6 +63,5 @@ public partial class FloodPathfinding : Node
 	public void UpdateTile()
 	{
 
-	} 
-
+	}
 }
