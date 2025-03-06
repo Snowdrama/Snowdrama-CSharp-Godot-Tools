@@ -148,5 +148,12 @@ namespace Snowdrama.Core
         {
             return options[RandomRange(0, options.Length)];
         }
+
+        public static Vector2 RandomPosition(Vector2 min, Vector2 max)
+        {
+            var x = RandomRange(min.X, max.X);
+            var y = RandomRange(min.Y, max.Y);
+            return new Vector2(x, y);
+        }
     }
 }

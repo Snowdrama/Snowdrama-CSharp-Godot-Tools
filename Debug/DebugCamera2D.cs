@@ -8,7 +8,7 @@ public partial class DebugCamera2D : VirtualCamera2D
 
     [Export]
     float zoomSpeed = 0.1f;
-    float zoom = 0.0f;
+    float zoom = 1.0f;
 
 
     [Export]

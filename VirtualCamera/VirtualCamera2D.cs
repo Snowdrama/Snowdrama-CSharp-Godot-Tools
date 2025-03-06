@@ -38,7 +38,7 @@ public partial class VirtualCamera2D : Node2D
 
 
     [ExportGroup("Read Only")]
-    [Export] public Vector2 cameraZoomLevel;
+    [Export] public Vector2 cameraZoomLevel = new Vector2(1.0f,1.0f);
     [Export] public Vector2 windowResScale;
     [Export] public Vector2 calculatedScaleCurrent;
     [Export] public Vector2 calculatedScaleTest;
