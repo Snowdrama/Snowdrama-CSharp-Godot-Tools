@@ -2,8 +2,10 @@ using Godot;
 using Godot.Collections;
 using System;
 
-[GlobalClass]
-public partial class HeatDiffusionBlocker : Node2D
+public partial class HeatDiffusionBlocker : Node2D, IHeatDiffusionBlocker
 {
-    [Export] public Array<Vector2> blockerOffsets = new Array<Vector2>();
+    public virtual Array<Vector2> GetBlockerPoints()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -69,8 +69,11 @@ public partial class AnimatedTextureRect : TextureRect
         if (SpriteFrames != null && SpriteFrames.HasAnimation(AnimationName))
         {
             CurrentSpriteFrameCount = SpriteFrames.GetFrameCount(AnimationName);
-            Frame = Frame.WrapClamp(0, CurrentSpriteFrameCount);
-            this.Texture = SpriteFrames.GetFrameTexture(AnimationName, Frame);
+            if(CurrentSpriteFrameCount > 0)
+            {
+                Frame = Frame.WrapClamp(0, CurrentSpriteFrameCount);
+                this.Texture = SpriteFrames.GetFrameTexture(AnimationName, Frame);
+            }
         }
     }
 }

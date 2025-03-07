@@ -40,18 +40,43 @@ public partial class HeatDiffusionMap : Node2D
     static readonly Vector2I SE = new Vector2I(1, 1);
     static readonly Vector2I SW = new Vector2I(-1, 1);
 
-    [Export(PropertyHint.Range, "0.5, 2.0, 0.00001")] float constantFalloff = 0.75f;
+
+    [Export(PropertyHint.Range, "0.9, 2.0, 0.0001")] float multiplyfalloff = 0.95f;
+    [Export(PropertyHint.Range, "0, 0.5f, 0.0001")] float linearFalloff = 0.0f;
+    [Export] float maxHeat = 10.0f;
     [Export] Array<HeatDiffusionObject> heatGeneratorObjects = new Array<HeatDiffusionObject>();
     [Export] Array<HeatDiffusionBlocker> heatBlockerObjects = new Array<HeatDiffusionBlocker>();
     //float[,] heatGenerators = new float[100, 100];
     float[,] heatMap = new float[100, 100];
+    Vector2I[,] directionMap = new Vector2I[100, 100];
     bool[,] ignoreMap = new bool[100, 100];
     bool[,] generatorMap = new bool[100, 100];
-    [Export] Vector2I size = new Vector2I(100, 100);
+    [Export] public Vector2I mapSize = new Vector2I(100, 100);
 
     [Export] public Vector2 CellSize = new Vector2I(50, 50);
+
+    //[Export] float CellSize.X = 25;
+    [Export] float cellOffset = 5;
+
+
+    [ExportGroup("Average Options")]
+    [Export] bool eightWayAverage = true;
+    [Export] bool eightWayMovement = true;
+    [ExportGroup("DebugSprites")]
+    [Export] PackedScene arrowSpritePrefab;
+    Sprite2D[,] arrowSpriteArray;
     [ExportGroup("Debug")]
-    [Export] float colorBoost = 1.0f;
+    private Font _defaultFont = ThemeDB.FallbackFont;
+    [Export] bool drawArrows = true;
+    [Export] bool drawTiles = true;
+    [Export] bool drawText = false;
+    [Export] bool drawCell = false;
+    [Export] Color landColor = Colors.DarkGreen;
+    [Export] Color visionColor = Colors.CornflowerBlue;
+    [Export] float remapRange = 0.2f;
+    [Export] float remapRangeMax = 0.5f;
+    [Export] float remapTargetRange = 0.0f;
+    [Export] float remapTargetRangeMax = 1.0f;
     public void AddHeatGeneratorObject(HeatDiffusionObject node)
     {
         heatGeneratorObjects.Add(node);
@@ -69,10 +94,21 @@ public partial class HeatDiffusionMap : Node2D
     public override void _Ready()
     {
         base._Ready();
-        //heatGenerators = new float[size.X, size.Y];
-        heatMap = new float[size.X, size.Y];
-        ignoreMap = new bool[size.X, size.Y];
-        generatorMap = new bool[size.X, size.Y];
+        //heatGenerators = new float[mapSize.X, mapSize.Y];
+        heatMap = new float[mapSize.X, mapSize.Y];
+        ignoreMap = new bool[mapSize.X, mapSize.Y];
+        generatorMap = new bool[mapSize.X, mapSize.Y];
+        arrowSpriteArray = new Sprite2D[mapSize.X, mapSize.Y];
+        for (int y = 0; y < heatMap.GetLength(1); y++)
+        {
+            for (int x = 0; x < heatMap.GetLength(0); x++)
+            {
+                var debugSprite = (Sprite2D)arrowSpritePrefab.Instantiate();
+                this.AddChild(debugSprite);
+                debugSprite.GlobalPosition = (new Vector2(x, y) * CellSize) + (CellSize * 0.5f);
+                arrowSpriteArray[x, y] = debugSprite;
+            }
+        }
 
         //for (int i = 0; i < 4; i++)
         //{
@@ -93,7 +129,7 @@ public partial class HeatDiffusionMap : Node2D
     }
 
     Stopwatch sw = new Stopwatch();
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double delta)
     {
         //if (Input.IsActionPressed("ui_select"))
         //{
@@ -143,7 +179,7 @@ public partial class HeatDiffusionMap : Node2D
         //then set them with the blockers
         foreach (var item in heatBlockerObjects)
         {
-            foreach(var blockOffset in item.blockerOffsets)
+            foreach(var blockOffset in item.GetBlockerPoints())
             {
                 Vector2I cellPosition = ((item.GlobalPosition + blockOffset) / CellSize).FloorToInt();
 
@@ -161,7 +197,23 @@ public partial class HeatDiffusionMap : Node2D
         {
             for (int x = 0; x < heatMap.GetLength(0); x++)
             {
-                heatMap = AverageCells(new Vector2I(x, y), heatMap, ignoreMap, constantFalloff);
+                AverageCell(new Vector2I(x, y), multiplyfalloff);
+                if (drawArrows)
+                {
+                    if(directionMap[x, y] == Vector2.Zero)
+                    {
+                        arrowSpriteArray[x, y].Visible = false;
+                    }
+                    else
+                    {
+                        arrowSpriteArray[x, y].Visible = true;
+                    }
+                    arrowSpriteArray[x, y].Rotation = ((Vector2)directionMap[x, y]).Angle();
+                }
+                else
+                {
+                    arrowSpriteArray[x, y].Visible = false;;
+                }
             }
         }
 
@@ -177,16 +229,6 @@ public partial class HeatDiffusionMap : Node2D
         //}
     }
 
-    //[Export] float CellSize.X = 25;
-    [Export] float cellOffset = 30;
-
-    [Export] float minThing = 0.2f;
-    [Export] float maxThing = 1.2f;
-
-    [Export] float minThing1 = 0.2f;
-    [Export] float maxThing1 = 1.2f;
-    [Export] Color landColor = Colors.DarkGreen;
-    [Export] Color visionColor = Colors.CornflowerBlue;
     public override void _Draw()
     {
         base._Draw();
@@ -195,17 +237,20 @@ public partial class HeatDiffusionMap : Node2D
         {
             for (int x = 0; x < heatMap.GetLength(0); x++)
             {
-                var val = Mathf.Lerp(minThing1, maxThing1, Mathf.InverseLerp(minThing, maxThing, heatMap[x, y])).Clamp(0, 1.0f);
-                var colorLerp = landColor.Lerp(visionColor, val);
-                DrawRect(
-                    new Rect2(
-                        x * CellSize.X,
-                        y * CellSize.Y,
-                        CellSize.X,
-                        CellSize.Y
-                    ),
-                    colorLerp
-                );
+                if (drawTiles)
+                {
+                    var val = Mathf.Lerp(remapTargetRange, remapTargetRangeMax, Mathf.InverseLerp(remapRange, remapRangeMax, heatMap[x, y])).Clamp(0, 1.0f);
+                    var colorLerp = landColor.Lerp(visionColor, val);
+                    DrawRect(
+                        new Rect2(
+                            (x * CellSize.X) + (cellOffset * 0.5f),
+                            (y * CellSize.Y) + (cellOffset * 0.5f),
+                            CellSize.X - (cellOffset * 0.5f),
+                            CellSize.Y - (cellOffset * 0.5f)
+                        ),
+                        colorLerp
+                    );
+                }
                 if (drawText)
                 {
                     DrawString(
@@ -227,93 +272,135 @@ public partial class HeatDiffusionMap : Node2D
                         ),
                         $"\n[{x}, {y}]"
                     );
-
                 }
             }
         }
 
-        foreach (var item in heatGeneratorObjects)
+        if (drawText)
         {
-            Vector2I cellPosition = (item.GlobalPosition / CellSize.Y).FloorToInt();
-
-            DrawString(
-                _defaultFont,
-                new Vector2(
-                    cellPosition.X * CellSize.X + 5,
-                    (cellPosition.Y * CellSize.Y) + 45
-                ),
-                $"[{cellPosition.X}, {cellPosition.Y}]"
-            );
-            if (heatMap.IsIndexInBounds(cellPosition))
+            foreach (var item in heatGeneratorObjects)
             {
-                heatMap[cellPosition.X, cellPosition.Y] = item.generatedHeat;
+                Vector2I cellPosition = (item.GlobalPosition / CellSize.Y).FloorToInt();
+
+                DrawString(
+                    _defaultFont,
+                    new Vector2(
+                        cellPosition.X * CellSize.X + 5,
+                        (cellPosition.Y * CellSize.Y) + 45
+                    ),
+                    $"[{cellPosition.X}, {cellPosition.Y}]"
+                );
+                if (heatMap.IsIndexInBounds(cellPosition))
+                {
+                    heatMap[cellPosition.X, cellPosition.Y] = item.generatedHeat;
+                }
             }
         }
     }
-    [Export] bool drawText = false;
-    [Export] bool drawCell = true;
-    private Font _defaultFont = ThemeDB.FallbackFont;
-    [Export] bool eightWayAverage = true;
-    [Export] bool eightWayMovement = true;
-    private float[,] AverageCells(Vector2I cellPos, float[,] cells, bool[,] ignore, float constant = 1.0f)
+    private float[,] AverageCell(Vector2I cellPos, float constant = 1.0f)
     {
-        var totalValue = cells[cellPos.X, cellPos.Y];
-        var cellValue = cells[cellPos.X, cellPos.Y];
+        var totalValue = heatMap[cellPos.X, cellPos.Y];
+        var cellValue = heatMap[cellPos.X, cellPos.Y];
+        var highestDirection = Vector2I.Zero;
+        var highestValue = 0.0f;
         float cellCount = 1;
 
         if (!generatorMap[cellPos.X, cellPos.Y] && !ignoreMap[cellPos.X, cellPos.Y])
         {
-            if (ignoreMap.IsIndexInBounds(cellPos + N) && !ignore[cellPos.X + N.X, cellPos.Y + N.Y] && cells.TryGetValue(cellPos + N, out cellValue)) { totalValue += cellValue; cellCount++; }
-            if (ignoreMap.IsIndexInBounds(cellPos + S) && !ignore[cellPos.X + S.X, cellPos.Y + S.Y] && cells.TryGetValue(cellPos + S, out cellValue)) { totalValue += cellValue; cellCount++; }
-            if (ignoreMap.IsIndexInBounds(cellPos + E) && !ignore[cellPos.X + E.X, cellPos.Y + E.Y] && cells.TryGetValue(cellPos + E, out cellValue)) { totalValue += cellValue; cellCount++; }
-            if (ignoreMap.IsIndexInBounds(cellPos + W) && !ignore[cellPos.X + W.X, cellPos.Y + W.Y] && cells.TryGetValue(cellPos + W, out cellValue)) { totalValue += cellValue; cellCount++; }
+            GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, N);
+            GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, S);
+            GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, E);
+            GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, W);
 
             if (eightWayAverage)
             {
-                if (ignoreMap.IsIndexInBounds(cellPos + NE) && !ignore[cellPos.X + NE.X, cellPos.Y + NE.Y] && cells.TryGetValue(cellPos + NE, out cellValue)) { totalValue += cellValue; cellCount++; }
-                if (ignoreMap.IsIndexInBounds(cellPos + NW) && !ignore[cellPos.X + NW.X, cellPos.Y + NW.Y] && cells.TryGetValue(cellPos + NW, out cellValue)) { totalValue += cellValue; cellCount++; }
-                if (ignoreMap.IsIndexInBounds(cellPos + SE) && !ignore[cellPos.X + SE.X, cellPos.Y + SE.Y] && cells.TryGetValue(cellPos + SE, out cellValue)) { totalValue += cellValue; cellCount++; }
-                if (ignoreMap.IsIndexInBounds(cellPos + SW) && !ignore[cellPos.X + SW.X, cellPos.Y + SW.Y] && cells.TryGetValue(cellPos + SW, out cellValue)) { totalValue += cellValue; cellCount++; }
+                GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, NE);
+                GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, NW);
+                GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, SE);
+                GetCellHeat(ref totalValue, ref cellCount, ref highestDirection, ref highestValue, cellPos, SW);
             }
-            var test = (totalValue * constant) / cellCount;
-            cells[cellPos.X, cellPos.Y] = test;
+            var test = ((totalValue * multiplyfalloff) / cellCount) - linearFalloff;
+            heatMap[cellPos.X, cellPos.Y] = test.Clamp(0.0f, maxHeat);
+            directionMap[cellPos.X, cellPos.Y] = highestDirection;
         }
-        return cells;
+        return heatMap;
     }
 
-    //public Vector2 GetHeatGradientDirection(Vector2 pos)
-    //{
-    //    Vector2I cellPos = (pos / CellSize).FloorToInt();
+    private void GetCellHeat(ref float currentValue, ref float cellCount, ref Vector2I highestDirection, ref float highestValue, Vector2I cellPos, Vector2I direction)
+    {
+        float cellValue = 0f;
 
-    //    if (!heatMap.IsIndexInBounds(cellPos))
-    //    {
-    //        return Vector2.Zero;
-    //    }
 
-    //    var averageDirectionTotal = Vector2.Zero;
-    //    float currentCellValue = heatMap[cellPos.X, cellPos.Y];
-    //    float cellValue = 0;
-    //    float cellCount = 0;
-    //    float highestValue = heatMap[cellPos.X, cellPos.Y];
-    //    Vector2 highestCell = cellPos;
-    //    Vector2 highestDirection = Vector2.Zero;
+        if (
+            ignoreMap.IsIndexInBounds(cellPos + direction) && 
+            !ignoreMap[cellPos.X + direction.X, cellPos.Y + direction.Y] && 
+            heatMap.TryGetValue(cellPos + direction, out cellValue)
+        ) {
+            if (cellValue > highestValue) { 
+                highestDirection = direction; 
+                highestValue = cellValue;
+            }
 
-    //    if (ignoreMap.IsIndexInBounds(cellPos + N) && !ignoreMap[cellPos.X + N.X, cellPos.Y + N.Y] && heatMap.TryGetValue(cellPos + N, out cellValue)) { if (cellValue > highestValue) { highestDirection = N; highestValue = cellValue; highestCell = cellPos + N; averageDirectionTotal += N; } cellCount++; }
-    //    if (ignoreMap.IsIndexInBounds(cellPos + S) && !ignoreMap[cellPos.X + S.X, cellPos.Y + S.Y] && heatMap.TryGetValue(cellPos + S, out cellValue)) { if (cellValue > highestValue) { highestDirection = S; highestValue = cellValue; highestCell = cellPos + S; averageDirectionTotal += S; } cellCount++; }
-    //    if (ignoreMap.IsIndexInBounds(cellPos + E) && !ignoreMap[cellPos.X + E.X, cellPos.Y + E.Y] && heatMap.TryGetValue(cellPos + E, out cellValue)) { if (cellValue > highestValue) { highestDirection = E; highestValue = cellValue; highestCell = cellPos + E; averageDirectionTotal += E; } cellCount++; }
-    //    if (ignoreMap.IsIndexInBounds(cellPos + W) && !ignoreMap[cellPos.X + W.X, cellPos.Y + W.Y] && heatMap.TryGetValue(cellPos + W, out cellValue)) { if (cellValue > highestValue) { highestDirection = W; highestValue = cellValue; highestCell = cellPos + W; averageDirectionTotal += W; } cellCount++; }
+            currentValue += cellValue;
+            cellCount++;
+        }
+    }
 
-    //    if (eightWayMovement)
-    //    {
-    //        if (ignoreMap.IsIndexInBounds(cellPos + NE) && !ignoreMap[cellPos.X + NE.X, cellPos.Y + NE.Y] && heatMap.TryGetValue(cellPos + NE, out cellValue)) { if (cellValue > highestValue) { highestDirection = NE; highestValue = cellValue; highestCell = cellPos + NE; averageDirectionTotal += NE; } cellCount++; }
-    //        if (ignoreMap.IsIndexInBounds(cellPos + NW) && !ignoreMap[cellPos.X + NW.X, cellPos.Y + NW.Y] && heatMap.TryGetValue(cellPos + NW, out cellValue)) { if (cellValue > highestValue) { highestDirection = NW; highestValue = cellValue; highestCell = cellPos + NW; averageDirectionTotal += NW; } cellCount++; }
-    //        if (ignoreMap.IsIndexInBounds(cellPos + SE) && !ignoreMap[cellPos.X + SE.X, cellPos.Y + SE.Y] && heatMap.TryGetValue(cellPos + SE, out cellValue)) { if (cellValue > highestValue) { highestDirection = SE; highestValue = cellValue; highestCell = cellPos + SE; averageDirectionTotal += SE; } cellCount++; }
-    //        if (ignoreMap.IsIndexInBounds(cellPos + SW) && !ignoreMap[cellPos.X + SW.X, cellPos.Y + SW.Y] && heatMap.TryGetValue(cellPos + SW, out cellValue)) { if (cellValue > highestValue) { highestDirection = SW; highestValue = cellValue; highestCell = cellPos + SW; averageDirectionTotal += SW; } cellCount++; }
-    //    }
+    public Vector2 GetHeatGradientDirection(Vector2 pos)
+    {
+        Vector2I cellPos = (pos / CellSize).FloorToInt();
+        if (directionMap.IsIndexInBounds(cellPos))
+        {
+            return directionMap[cellPos.X, cellPos.Y];
+        }
+        return Vector2.Zero;
+    }
 
-    //    Debug.Log($"{highestCell}: {highestValue} , {highestDirection}");
-    //    return (highestDirection).Normalized();
-    //}
+    public Vector2I GetCellInFlowDirection(Vector2I cellPos)
+    {
+        if (directionMap.IsIndexInBounds(cellPos))
+        {
+            var newCell = cellPos + directionMap[cellPos.X, cellPos.Y];
+            if (directionMap.IsIndexInBounds(newCell))
+            {
+                //if (generatorMap[newCell.X, newCell.Y])
+                //{
+                //    return Vector2I.Zero;
+                //}
+                return newCell;
+            }
+        }
+        return Vector2I.Zero;
+    }
+
+
+    public (Vector2[] posList, Vector2I[] cellList) GetHeatGradintPath(Vector2 startPos, int count = 3)
+    {
+
+        var startingCell = GetCellFromPosition(startPos);
+
+        Vector2I[] cellList = new Vector2I[count];
+        Vector2[] posList = new Vector2[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            if(i == 0)
+            {
+                cellList[i] = GetCellInFlowDirection(startingCell);
+            }
+            else
+            {
+                cellList[i] = GetCellInFlowDirection(cellList[i - 1]);
+            }
+        }
+        for (int i = 0; i < count; i++)
+        {
+            posList[i] = GetCenterPositionFromCell(cellList[i]);
+        }
+
+        return (posList, cellList);
+    }
+
     public Vector2 GetHeatGradientTarget(Vector2 pos, float threshold = 0.0f)
     {
         Vector2I cellPos = (pos / CellSize).FloorToInt();
@@ -369,8 +456,12 @@ public partial class HeatDiffusionMap : Node2D
 
     //    return list;
     //}
-    public Vector2I GetCell(Vector2 pos)
+    public Vector2I GetCellFromPosition(Vector2 pos)
     {
         return (pos / CellSize).FloorToInt();
+    }
+    public Vector2I GetCenterPositionFromCell(Vector2I pos)
+    {
+        return ((pos * CellSize) + (CellSize * 0.5f)).FloorToInt();
     }
 }
