@@ -2,11 +2,11 @@ using Godot;
 
 
 [GlobalClass]
-public partial class UIRoute : Node
+public partial class UIRoute : Control
 {
     [Export] private UIRoutingSystem _routingSystem;
     [Export] private string routeSegment;
-    [Export] private CanvasLayer mainContent;
+    [Export] private Control mainContent;
     [Export] private Control focusOnVisible;
     [Export] private bool startEnabled = false;
     public override void _Ready()

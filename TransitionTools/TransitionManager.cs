@@ -3,6 +3,7 @@ using Godot.Collections;
 using System;
 using System.Linq;
 
+[GlobalClass]
 public partial class TransitionManager : Node
 {
     static TransitionManager instance;

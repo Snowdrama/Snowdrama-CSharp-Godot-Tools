@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 
 //Make this an auto load in the settings! 
+[GlobalClass]
 public partial class Options : Node
 {
     public static Options instance;

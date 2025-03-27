@@ -1,5 +1,6 @@
-﻿using Godot;
+using Godot;
 
+[GlobalClass]
 public partial class FadePanelTransition : Transition
 {
     [Export] Panel panel;

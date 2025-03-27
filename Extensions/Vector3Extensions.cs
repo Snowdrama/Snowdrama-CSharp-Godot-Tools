@@ -79,9 +79,6 @@ public static class Vector3Extensions
     public static Vector3 MoveTowardsAngle(this Vector3 from, Vector3 to, float delta)
     {
         Vector3 newVector = new Vector3();
-
-        GD.Print($" {from} -> {to}");
-                
         newVector.X = Mathf.RotateToward(from.X, to.X, delta);
         newVector.Y = Mathf.RotateToward(from.Y, to.Y, delta);
         newVector.Z = Mathf.RotateToward(from.Z, to.Z, delta);
