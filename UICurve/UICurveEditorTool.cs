@@ -2,6 +2,8 @@
 using Godot;
 using System;
 
+namespace Snowdrama.Core;
+
 [Tool]
 public partial class UICurveEditorTool : EditorPlugin
 {

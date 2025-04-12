@@ -2,6 +2,8 @@ using Godot;
 using Godot.Collections;
 using System;
 
+namespace Snowdrama.Core;
+
 [Tool, GlobalClass]
 public partial class UICurveNode : Control
 {
@@ -92,111 +94,96 @@ public partial class UICurveNode : Control
     public override void _Process(double delta)
     {
         base._Process(delta);
-        if (Engine.IsEditorHint())
-        {
-            if(oldSize != this.Size)
-            {
-                oldSize = this.Size;
-                UpdateHandles();
-            }
+        if (_curve == null) { return; }
+        if (targetControl == null) { return; }
 
+        if (Engine.IsEditorHint() && GodotTools.IsNodeSelectedEditor(this))
+        {
             if(handles.Count != _curve.controlPoints.Count)
             {
                 ManageHandleCount();
             }
+            UpdateHandles();
         }
 
-        if (_curve == null) { return; }
-        if (targetControl == null) { return; }
 
-        var pos = _curve.EvaluateScreen(t, this);
-        //Debug.Log($"Setting Pos: {pos}");
-        targetControl.GlobalPosition = pos;
-        switch (anchorType)
-        {
-            case LayoutPreset.TopLeft:
-                targetControl.GlobalPosition = pos;
-                break;
-            case LayoutPreset.TopRight:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(1.0f, 0.0f));
-                break;
-            case LayoutPreset.BottomLeft:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(0.0f, 1.0f));
-                break;
-            case LayoutPreset.BottomRight:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(1.0f, 1.0f));
-                break;
-            case LayoutPreset.CenterLeft:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(0.0f, 0.5f));
-                break;
-            case LayoutPreset.CenterTop:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(0.0f, 1.0f));
-                break;
-            case LayoutPreset.CenterRight:
-                targetControl.GlobalPosition = pos - (targetControl.Size * new Vector2(1.0f, 0.5f));
-                break;
-            case LayoutPreset.CenterBottom:
-                break;
-            case LayoutPreset.Center:
-                targetControl.GlobalPosition = pos - (targetControl.Size * 0.5f);
-                break;
-            case LayoutPreset.LeftWide:
-                break;
-            case LayoutPreset.TopWide:
-                break;
-            case LayoutPreset.RightWide:
-                break;
-            case LayoutPreset.BottomWide:
-                break;
-            case LayoutPreset.VcenterWide:
-                break;
-            case LayoutPreset.HcenterWide:
-                break;
-            case LayoutPreset.FullRect:
-                break;
-            default:
-                break;
-        }
+        var curvePos = _curve.EvaluateScreen(t, this);
+        var relativeCurvePos = curvePos + this.GlobalPosition;
+        //targetControl.GlobalPosition = curvePos + this.GlobalPosition;
+        var offset = ContentFitterTools.CornerOffset(targetControl.Size, anchorType);
+        targetControl.GlobalPosition = relativeCurvePos - offset;
+        //switch (anchorType)
+        //{
+        //    case LayoutPreset.TopLeft:
+        //        targetControl.GlobalPosition = globalPos;
+        //        break;
+        //    case LayoutPreset.TopRight:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(1.0f, 0.0f));
+        //        break;
+        //    case LayoutPreset.BottomLeft:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(0.0f, 1.0f));
+        //        break;
+        //    case LayoutPreset.BottomRight:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(1.0f, 1.0f));
+        //        break;
+        //    case LayoutPreset.CenterLeft:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(0.0f, 0.5f));
+        //        break;
+        //    case LayoutPreset.CenterTop:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(0.0f, 1.0f));
+        //        break;
+        //    case LayoutPreset.CenterRight:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * new Vector2(1.0f, 0.5f));
+        //        break;
+        //    case LayoutPreset.CenterBottom:
+        //        break;
+        //    case LayoutPreset.Center:
+        //        targetControl.GlobalPosition = globalPos - (targetControl.Size * 0.5f);
+        //        break;
+        //    case LayoutPreset.LeftWide:
+        //        break;
+        //    case LayoutPreset.TopWide:
+        //        break;
+        //    case LayoutPreset.RightWide:
+        //        break;
+        //    case LayoutPreset.BottomWide:
+        //        break;
+        //    case LayoutPreset.VcenterWide:
+        //        break;
+        //    case LayoutPreset.HcenterWide:
+        //        break;
+        //    case LayoutPreset.FullRect:
+        //        break;
+        //    default:
+        //        break;
+        //}
 
-        if (Engine.IsEditorHint())
-        {
-            var selection = EditorInterface.Singleton.GetSelection();
-            var selectedNodes = selection.GetSelectedNodes();
-            if (selectedNodes != null)
-            {
-                //Debug.Log($"{selectedNodes.Count}");
-                if (selectedNodes.Count > 0)
-                {
-                    var selectedNode = selectedNodes[0];
-                    if (selectedNode == this)
-                    {
-                        QueueRedraw();
-                    }
-                }
-            }
-        }
+        QueueRedraw();
     }
 
     public override void _Draw()
     {
         base._Draw();
-        if (_curve == null) { return; }
-        if (targetControl == null) { return; }
-        for (int i = 0; i < _curve.controlPoints.Count; i++)
+        if (GodotTools.IsNodeSelectedEditor(this))
         {
-            var controlPoint = _curve.controlPoints[i];
-            var worldPoint = _curve.controlPoints[i] * this.Size;
-            DrawCircle(worldPoint, 10.0f, Colors.Cyan, false);
-        }
+            if (_curve == null) { return; }
+            if (targetControl == null) { return; }
+            for (int i = 0; i < _curve.controlPoints.Count; i++)
+            {
+                var controlPoint = _curve.controlPoints[i];
+                var worldPoint = _curve.controlPoints[i] * this.Size;
+                DrawCircle(worldPoint, 10.0f, Colors.Cyan, false);
+            }
 
-        int rez = _curve.controlPoints.Count * 10;
-        for (float c = 0; c < rez; c++)
-        {
-            float t1 = c / rez;
-            float t2 = (c + 1) / rez;
-            var worldPoint1 = _curve.Evaluate(t1) * this.Size;
-            var worldPoint2 = _curve.Evaluate(t2) * this.Size;
-            DrawLine(worldPoint1, worldPoint2, Colors.Red);
+            int rez = _curve.controlPoints.Count * 10;
+            for (float c = 0; c < rez; c++)
+            {
+                float t1 = c / rez;
+                float t2 = (c + 1) / rez;
+                var worldPoint1 = _curve.Evaluate(t1) * this.Size;
+                var worldPoint2 = _curve.Evaluate(t2) * this.Size;
+                DrawLine(worldPoint1, worldPoint2, Colors.Red);
+            }
         }
     }
     
