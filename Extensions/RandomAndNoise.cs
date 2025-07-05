@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using static Godot.OpenXRInterface;
 
 namespace Snowdrama.Core
 {
@@ -139,6 +138,14 @@ namespace Snowdrama.Core
         public static int RandomRange(int min, int max)
         {
             return rand.Next(min, max);
+        }
+        public static float RandomAngleDegrees()
+        {
+            return (float)rand.NextDouble() * 360.0f;
+        }
+        public static float RandomAngle()
+        {
+            return (float)rand.NextDouble() * Mathf.Tau;
         }
         public static float RandomSelection(float[] options)
         {
