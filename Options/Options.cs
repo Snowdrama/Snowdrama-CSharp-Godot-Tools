@@ -1,7 +1,5 @@
 
 using Godot;
-using Godot.Collections;
-using Newtonsoft.Json.Linq;
 
 
 //Make this an auto load in the settings! 
@@ -71,7 +69,7 @@ public partial class Options : Node
 
     private static void SaveConfig()
     {
-        if(config != null)
+        if (config != null)
         {
             config.Save(userConfigLocation);
         }
@@ -86,7 +84,7 @@ public partial class Options : Node
         var value = config.GetValue("Options", key, defaultValue);
         var hasSection = config.HasSection("Options");
         var hasSectionKey = config.HasSectionKey("Options", key);
-        if(hasSection && hasSectionKey)
+        if (hasSection && hasSectionKey)
         {
             if (value.VariantType == Variant.Type.Vector2I)
             {
@@ -232,7 +230,7 @@ public partial class Options : Node
     public static bool HasBool(string key)
     {
         ValidateLoadConfig();
-        if(config.HasSectionKey("Options", key))
+        if (config.HasSectionKey("Options", key))
         {
             var value = config.GetValue("Options", key);
             if (value.VariantType == Variant.Type.Bool)
