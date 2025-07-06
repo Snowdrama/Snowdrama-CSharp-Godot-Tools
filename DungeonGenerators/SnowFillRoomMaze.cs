@@ -25,7 +25,7 @@ public partial class SnowFillRoomMaze : Node2D
     {
         if (generateDebugMaze)
         {
-            GD.Print("Generazing Maze");
+            Debug.Log("Generazing Maze");
             generateDebugMaze = false;
             benchmarkStopwatch.Reset();
             benchmarkStopwatch.Start();
@@ -41,7 +41,7 @@ public partial class SnowFillRoomMaze : Node2D
             }
 
             benchmarkStopwatch.Stop();
-            GD.Print($"Generating took {benchmarkStopwatch.Elapsed}");
+            Debug.Log($"Generating took {benchmarkStopwatch.Elapsed}");
 
             QueueRedraw();
         }
@@ -70,7 +70,7 @@ public partial class SnowFillRoomMaze : Node2D
             {
                 if (!OverlappingRoom(map, roomPosition, roomSize))
                 {
-                    GD.Print($"Creating room {roomIndex} at: {roomPosition} sized: {roomSize}");
+                    Debug.Log($"Creating room {roomIndex} at: {roomPosition} sized: {roomSize}");
                     SetRoom(ref map, roomPosition, roomSize, roomGap, roomIndex);
                     roomIndex++;
                 }
@@ -169,7 +169,7 @@ public partial class SnowFillRoomMaze : Node2D
                     var downConnects = CheckConnection(map, downCell, up);
                     var leftConnects = CheckConnection(map, leftCell, right);
                     var rightConnects = CheckConnection(map, rightCell, left);
-                    if(!upConnects && !downConnects && !leftConnects && !rightConnects)
+                    if (!upConnects && !downConnects && !leftConnects && !rightConnects)
                     {
                         //nothing points to us!
                         map[currentPosition.X, currentPosition.Y].removeCell = true;
@@ -186,7 +186,7 @@ public partial class SnowFillRoomMaze : Node2D
             //make sure it's in bounds
             IsPointInBounds(map, testCell) &&
             //if the cell isn't removed
-            !map[testCell.X, testCell.Y].removeCell && 
+            !map[testCell.X, testCell.Y].removeCell &&
             //if it's pointing towards us
             map[testCell.X, testCell.Y].direction == testDirection
         )

@@ -1,8 +1,5 @@
 using Godot;
 using Godot.Collections;
-using System;
-using System.Diagnostics;
-using System.Transactions;
 
 public class Directions2D
 {
@@ -82,13 +79,13 @@ public class SnowFillMaze
         }
 
 
-        GD.Print($"Finshed in {stepCount} steps");
+        Debug.Log($"Finshed in {stepCount} steps");
     }
 
     private static void CreateMaze(ref SnowFillCell2D[,] map, Vector2I size, Vector2I start)
     {
         map = new SnowFillCell2D[size.X, size.Y];
-        GD.Print($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
+        Debug.Log($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
         for (int y = 0; y < map.GetLength(1); y++)
         {
             for (int x = 0; x < map.GetLength(0); x++)
@@ -103,7 +100,7 @@ public class SnowFillMaze
                 map[x, y].direction = Directions2D.GetRandomDirection();
                 if (map[x, y].position == start)
                 {
-                    GD.Print($"Starting Cell is {start}");
+                    Debug.Log($"Starting Cell is {start}");
                     map[x, y].isConnected = true;
                 }
                 else
@@ -187,10 +184,10 @@ public class SnowFillMaze
     private static bool CheckValidPathInDirection(SnowFillCell2D[,] map, Vector2I testCell, Vector2I testDirection)
     {
         //are we both in bounds?
-        if (IsInBounds(map, testCell) && IsInBounds(map, testCell+testDirection))
+        if (IsInBounds(map, testCell) && IsInBounds(map, testCell + testDirection))
         {
             //do we point to them?
-            if(map[testCell.X, testCell.Y].direction == testDirection)
+            if (map[testCell.X, testCell.Y].direction == testDirection)
             {
                 return true;
             }

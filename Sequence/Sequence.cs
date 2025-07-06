@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 using Godot.Collections;
 
 public partial class Sequence : Node
@@ -18,9 +18,9 @@ public partial class Sequence : Node
         {
             var child = this.GetChild(i);
 
-            if(child is BaseSequenceStep step)
+            if (child is BaseSequenceStep step)
             {
-                if(!sequenceStepList.Contains(step))
+                if (!sequenceStepList.Contains(step))
                 {
                     sequenceStepList.Add(step);
                 }
@@ -45,11 +45,11 @@ public partial class Sequence : Node
     {
         if (sequenceStepList.Count <= 0)
         {
-            GD.PrintErr($"Hey you forgot to put any sequence steps in {this.Name}");
+            Debug.LogError($"Hey you forgot to put any sequence steps in {this.Name}");
             return;
         }
 
-        GD.Print($"Loading the sequence steps for {this.Name}");
+        Debug.Log($"Loading the sequence steps for {this.Name}");
         foreach (var item in sequenceStepList)
         {
             item.LoadStep();
@@ -63,7 +63,7 @@ public partial class Sequence : Node
 
     public void FinishSequence()
     {
-        GD.Print($"Unloading the sequence steps for {this.Name}");
+        Debug.Log($"Unloading the sequence steps for {this.Name}");
         foreach (var item in sequenceStepList)
         {
             item.UnloadStep();
@@ -76,25 +76,25 @@ public partial class Sequence : Node
     {
         if (!isPlaying)
         {
-            //GD.Print($"{this.Name}: Not Playing");
+            //Debug.Log($"{this.Name}: Not Playing");
             return;
         }
 
         if (currentStepIndex < 0)
         {
-            //GD.Print($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
+            //Debug.Log($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
             return;
         }
 
         if (currentStepIndex >= sequenceStepList.Count)
         {
-            //GD.Print($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
+            //Debug.Log($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
             return;
         }
 
         if (currentStep == null)
         {
-            //GD.Print($"{this.Name}: CurrentStep not set");
+            //Debug.Log($"{this.Name}: CurrentStep not set");
             return;
         }
 
@@ -153,7 +153,7 @@ public partial class Sequence : Node
                     //there's no next step so we stop playing
                     isPlaying = false;
                     currentStepState = SequenceStepState.None;
-                    currentStep = null; 
+                    currentStep = null;
                 }
                 else
                 {

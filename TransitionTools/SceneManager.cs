@@ -1,10 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Timers;
 
 /// <summary>
 /// NOTE FUTURE ME: This uses the first node's name in the file, NOT THE SCENES FILE NAME!!!!
@@ -44,8 +40,8 @@ public partial class SceneManager : Node
     [Export] bool pulPackedScenesFromAutoPath;
     public override void _EnterTree()
     {
-        GD.PrintRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
-        GD.PrintRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
+        Debug.LogRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
+        Debug.LogRich("[wave amp=25.0 freq=10.0][color=#00FF80]Also that if the name contains spaces it will escape them with underscores!!![/color][/wave]");
 
         for (int i = 0; i < packedScenes.Length; i++)
         {
@@ -60,7 +56,7 @@ public partial class SceneManager : Node
                 }
                 else
                 {
-                    GD.PrintErr($"Scene Already Exiists in List: {name}");
+                    Debug.LogError($"Scene Already Exiists in List: {name}");
                 }
             }
         }
@@ -82,28 +78,29 @@ public partial class SceneManager : Node
         instance = this;
         this.ProcessMode = ProcessModeEnum.Always;
 
-        if(currentScene != null)
+        if (currentScene != null)
         {
             previousSceneName = currentScene.Name;
         }
     }
 
-    
+
 
     private void LoadScenesFromDirectory(string resourcePath, DirAccess sceneResourcePath)
     {
         var filePaths = sceneResourcePath.GetFiles();
         for (int i = 0; i < filePaths.Length; i++)
         {
-            GD.Print($"Loading from: {resourcePath}/{filePaths[i]}");
+            Debug.Log($"Loading from: {resourcePath}/{filePaths[i]}");
             var possiblePath = $"{resourcePath}/{filePaths[i]}";
             if (possiblePath.Contains(".remap"))
             {
                 possiblePath = possiblePath.Replace(".remap", "");
             }
 
-            if (!ResourceLoader.Exists(possiblePath)){
-                GD.PrintErr($"Path {possiblePath} doesn't point to a path the resource loader can load");
+            if (!ResourceLoader.Exists(possiblePath))
+            {
+                Debug.LogError($"Path {possiblePath} doesn't point to a path the resource loader can load");
                 continue;
             }
 
@@ -114,7 +111,7 @@ public partial class SceneManager : Node
             }
 
             var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
-            if(possiblyAScene == null)
+            if (possiblyAScene == null)
             {
                 Debug.LogWarn($"Path {possiblePath} loaded but is null for some reason, skipping");
                 continue;
@@ -129,7 +126,7 @@ public partial class SceneManager : Node
             }
             else
             {
-                GD.PrintErr($"Scene Already Exiists in List: {name}");
+                Debug.LogError($"Scene Already Exiists in List: {name}");
             }
         }
 
@@ -138,7 +135,7 @@ public partial class SceneManager : Node
         for (int i = 0; i < directoryPaths.Length; i++)
         {
             var directoryResourcePath = DirAccess.Open($"{resourcePath}/{directoryPaths[i]}");
-            if(directoryResourcePath != null)
+            if (directoryResourcePath != null)
             {
                 LoadScenesFromDirectory($"{resourcePath}/{directoryPaths[i]}", directoryResourcePath);
             }
@@ -152,16 +149,16 @@ public partial class SceneManager : Node
         {
             if (sceneToRemove != null)
             {
-                GD.Print($"Removing Scene: {sceneToRemove.Name}");
+                Debug.Log($"Removing Scene: {sceneToRemove.Name}");
                 previousSceneName = sceneToRemove.Name;
                 sceneToRemove.QueueFree();
             }
 
-            GD.Print($"Instatiating Scene: {newSceneName}");
+            Debug.Log($"Instatiating Scene: {newSceneName}");
             var instantiatedScene = _scenes[newSceneName].Instantiate();
             instantiatedScene.Ready += () =>
             {
-                GD.Print("Instantiated Scene Ready!");
+                Debug.Log("Instantiated Scene Ready!");
                 sceneLoaded = true;
                 currentScene = instantiatedScene;
             };
@@ -169,7 +166,7 @@ public partial class SceneManager : Node
         }
         else
         {
-            GD.PrintErr($"Scene {sceneTarget} was not found in list of scenes");
+            Debug.LogError($"Scene {sceneTarget} was not found in list of scenes");
         }
     }
 
@@ -180,7 +177,7 @@ public partial class SceneManager : Node
 
     public static void LoadScene(
         string sceneName,
-        string transitionName = null, 
+        string transitionName = null,
         float fakeLoadTime = 1.0f,
         Action onStartHide = null,
         Action onBlackout = null,
@@ -190,8 +187,8 @@ public partial class SceneManager : Node
         )
     {
         instance.InstanceLoadScene(
-            sceneName, 
-            transitionName, 
+            sceneName,
+            transitionName,
             fakeLoadTime,
             onStartHide,
             onBlackout,
@@ -202,8 +199,8 @@ public partial class SceneManager : Node
     }
 
     private void InstanceLoadScene(
-        string sceneName, 
-        string transitionName, 
+        string sceneName,
+        string transitionName,
         float fakeLoadTime,
         Action onStartHide,
         Action onBlackout,
@@ -217,36 +214,37 @@ public partial class SceneManager : Node
         fakeLoadComplete = false;
 
         sceneTarget = sceneName;
-        GD.Print($"Trying To Load: {sceneTarget}");
-        if(sceneTarget == null)
+        Debug.Log($"Trying To Load: {sceneTarget}");
+        if (sceneTarget == null)
         {
-            GD.PrintErr($"Scene name in null, need to pass a scene name! Use one of these:");
+            Debug.LogError($"Scene name in null, need to pass a scene name! Use one of these:");
             foreach (var item in _scenes)
             {
-                GD.PrintErr($"Scene Name Keys: {item.Key}");
+                Debug.LogError($"Scene Name Keys: {item.Key}");
             }
             return;
         }
         if (!_scenes.ContainsKey(sceneTarget))
         {
-            GD.PrintErr($"Scene name {sceneTarget} not found in list. It needs to be in the list! Scenes in List:");
+            Debug.LogError($"Scene name {sceneTarget} not found in list. It needs to be in the list! Scenes in List:");
             foreach (var item in _scenes)
             {
-                GD.PrintErr($"Scene Name Keys: {item.Key}");
+                Debug.LogError($"Scene Name Keys: {item.Key}");
             }
             return;
         }
-        GD.Print($"Loading: {sceneTarget}");
+        Debug.Log($"Loading: {sceneTarget}");
         _isTransitioningScenes = true;
         TransitionManager.StartTransition(
-            () => { }, 
-            OnTransitionBlackout, 
-            OnFakeLoadComplete, 
-            () => { }, 
-            () => {
+            () => { },
+            OnTransitionBlackout,
+            OnFakeLoadComplete,
+            () => { },
+            () =>
+            {
                 _isTransitioningScenes = false;
-            }, 
-            transitionName, 
+            },
+            transitionName,
             fakeLoadTime);
     }
 
@@ -268,7 +266,7 @@ public partial class SceneManager : Node
 
     private void OnTransitionBlackout()
     {
-        if(currentScene != null)
+        if (currentScene != null)
         {
             previousSceneName = currentScene.Name;
         }
@@ -282,7 +280,7 @@ public partial class SceneManager : Node
 
     public static void SetCurrentScene(Node currentNode)
     {
-        if(currentNode != null)
+        if (currentNode != null)
         {
             instance.currentScene = currentNode;
         }

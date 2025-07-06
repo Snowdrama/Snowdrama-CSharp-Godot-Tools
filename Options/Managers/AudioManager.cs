@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Reflection;
 
 
 public partial class AudioManager : Node
@@ -34,7 +32,7 @@ public partial class AudioManager : Node
             }
             else
             {
-                GD.PrintErr($"The key {VolumeKeys[i]} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
+                Debug.LogError($"The key {VolumeKeys[i]} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
             }
         }
     }
@@ -47,12 +45,12 @@ public partial class AudioManager : Node
         {
             var lerp = Mathf.InverseLerp(volumeMinValue, volumeMaxValue, volumeValue);
 
-            
+
             AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 0, lerp));
         }
         else
         {
-            GD.PrintErr($"The key {volumeKey} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
+            Debug.LogError($"The key {volumeKey} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
         }
     }
 }

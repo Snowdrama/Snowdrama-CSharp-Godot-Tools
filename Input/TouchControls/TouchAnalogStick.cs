@@ -140,7 +140,7 @@ public partial class TouchAnalogStick : Control
         {
             if (touch.Pressed)
             {
-                InputSchemeChooser.RequestSchemeType(InputSchemeType.Touch);
+                InputSchemeHelper.RequestSchemeType(InputSchemeType.Touch);
                 if (inputArea.HasPoint(touch.Position))
                 {
                     if (!joyMoving)
@@ -175,7 +175,7 @@ public partial class TouchAnalogStick : Control
         {
             if(BitmaskExtensions.IsSet(mouse.ButtonMask, MouseButtonMask.Left))
             {
-                InputSchemeChooser.RequestSchemeType(InputSchemeType.Touch);
+                InputSchemeHelper.RequestSchemeType(InputSchemeType.Touch);
                 if (inputArea.HasPoint(mouse.Position))
                 {
                     if (!joyMoving)

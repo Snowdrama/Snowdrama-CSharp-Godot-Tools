@@ -41,7 +41,7 @@ public partial class CursorManager : Node
         {
             var targetNewMode = Input.MouseMode;
 
-            if (InputSchemeChooser.SchemeType == InputSchemeType.KBM)
+            if (InputSchemeHelper.SchemeType == InputSchemeType.KBM)
             {
                 if (visibleSources.Count > 0)
                 {
@@ -59,7 +59,7 @@ public partial class CursorManager : Node
 
             if (Input.MouseMode != targetNewMode)
             {
-                if (InputSchemeChooser.SchemeType == InputSchemeType.KBM)
+                if (InputSchemeHelper.SchemeType == InputSchemeType.KBM)
                 {
                     if (visibleSources.Count > 0)
                     {

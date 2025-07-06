@@ -1,7 +1,4 @@
 using Godot;
-using Godot.Collections;
-using System;
-using System.Collections.Generic;
 
 [Tool, GlobalClass]
 public partial class VirtualCamera2D : Node2D
@@ -21,8 +18,8 @@ public partial class VirtualCamera2D : Node2D
 
     [ExportGroup("Camera Bounds")]
     Vector2 currentPosition;
-    [Export]bool useCameraBounds;
-    [Export]Rect2 cameraBounds;
+    [Export] bool useCameraBounds;
+    [Export] Rect2 cameraBounds;
 
     //DEBUG ONLY
     [ExportCategory("Debug")]
@@ -38,7 +35,7 @@ public partial class VirtualCamera2D : Node2D
 
 
     [ExportGroup("Read Only")]
-    [Export] public Vector2 cameraZoomLevel = new Vector2(1.0f,1.0f);
+    [Export] public Vector2 cameraZoomLevel = new Vector2(1.0f, 1.0f);
     [Export] public Vector2 windowResScale;
     [Export] public Vector2 calculatedScaleCurrent;
     [Export] public Vector2 calculatedScaleTest;
@@ -118,8 +115,8 @@ public partial class VirtualCamera2D : Node2D
             var halfWindowSize = WindowSize * 0.5f;
             var halfExtentsTest = testScreenSize * 0.5f;
 
-            //GD.Print($"halfExtentsTarget {halfWindowSize}");
-            //GD.Print($"halfExtentsTest {halfExtentsTest}");
+            //Debug.Log($"halfExtentsTarget {halfWindowSize}");
+            //Debug.Log($"halfExtentsTest {halfExtentsTest}");
 
             DrawLine(new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
             DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), Colors.Orange, 3.0f);

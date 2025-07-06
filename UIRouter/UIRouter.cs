@@ -15,7 +15,7 @@ public partial class UIRouter : Resource
     [Signal] public delegate void OnRouteOpenedSignalEventHandler(string route);
     [Signal] public delegate void OnRouteClosedSignalEventHandler(string route);
     [Signal] public delegate void OnAllRoutesClosedSignalEventHandler();
-    
+
     public bool IsRouteOpen(string routeSegment)
     {
         ValidateRouter();
@@ -50,7 +50,7 @@ public partial class UIRouter : Resource
     public void RegisterRoute(string routeSegment, UIRoute reference)
     {
         ValidateRouter();
-        GD.Print(routeSegment);
+        Debug.Log(routeSegment);
         if (routes.ContainsKey(routeSegment.ToLower()))
         {
             routes[routeSegment.ToLower()] = reference;
@@ -116,7 +116,7 @@ public partial class UIRouter : Resource
         if (routesOpened.Count > 0)
         {
             var rs = routesOpened.Peek();
-            if(rs != null && routes != null && routes.ContainsKey(rs))
+            if (rs != null && routes != null && routes.ContainsKey(rs))
             {
                 routes[rs].CloseRoute();
                 OnRouteClosed?.Invoke(rs);

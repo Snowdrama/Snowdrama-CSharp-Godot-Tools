@@ -9,6 +9,13 @@ public class Debug
         var path = sourceFilePath.Split("\\");
         GD.Print($"[{path[path.Length - 1]}:{sourceLineNumber}]:[{message}]");
     }
+    public static void LogRich(string message,
+        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+    {
+        var path = sourceFilePath.Split("\\");
+        GD.PrintRich($"[{path[path.Length - 1]}:{sourceLineNumber}]:[{message}]");
+    }
     public static void LogWarn(string message,
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
@@ -16,7 +23,7 @@ public class Debug
         var path = sourceFilePath.Split("\\");
         GD.PrintRich($"[color=#FF0][{path[path.Length - 1]}:{sourceLineNumber}]:[{message}][/color]");
     }
-    public static void LogError(string message, 
+    public static void LogError(string message,
         [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)

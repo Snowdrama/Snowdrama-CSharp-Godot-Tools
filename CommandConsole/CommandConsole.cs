@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Collections.Specialized.BitVector32;
 
 /// <summary>
 /// An implementation of a command console found in many games. 
@@ -76,7 +75,7 @@ public partial class CommandConsole : Node
 
         if (Input.IsActionJustPressed("OpenConsole"))
         {
-            if(consoleCanvas.Visible)
+            if (consoleCanvas.Visible)
             {
                 consoleCanvas.Hide();
                 GetTree().Paused = false;
@@ -91,7 +90,7 @@ public partial class CommandConsole : Node
 
     //a dictionary of command names that point to a dictionary of targets and their targets.
     static Dictionary<string, Dictionary<string, GameCommand>> targetedCommands = new Dictionary<string, Dictionary<string, GameCommand>>();
-	static Dictionary<string, GameCommand> globalCommands = new Dictionary<string, GameCommand>();
+    static Dictionary<string, GameCommand> globalCommands = new Dictionary<string, GameCommand>();
 
     //targeted commands can have targets such as "player->addGold" or "npc1->addGold"
     public static void AddTargetedAction(string targetName, string commandName, GameCommandAction action, string tooltip = "")
@@ -116,7 +115,7 @@ public partial class CommandConsole : Node
         }
 
         targetedCommands[commandName][targetName].RegisterCommand(action);
-        if(!string.IsNullOrEmpty(tooltip))
+        if (!string.IsNullOrEmpty(tooltip))
         {
             targetedCommands[commandName][targetName].Tooltip = tooltip;
         }
@@ -180,22 +179,22 @@ public partial class CommandConsole : Node
     {
         //TODO: parse command string
         //check if it's targeted
-        GD.Print($"Running Command: {input}");
+        Debug.Log($"Running Command: {input}");
 
         //player->add_item gold_001 10000
         if (input.Contains("->"))
         {
-            GD.Print("Command is Targeted!");
-            string[] segments = input.Split(new string[]{"->", " "}, StringSplitOptions.TrimEntries);
+            Debug.Log("Command is Targeted!");
+            string[] segments = input.Split(new string[] { "->", " " }, StringSplitOptions.TrimEntries);
             string target = segments[0];
             string command = segments[1];
 
             string[] args = segments[2..segments.Length];
 
-            GD.Print($"Command has {args.Length} segments");
+            Debug.Log($"Command has {args.Length} segments");
             for (int i = 0; i < args.Length; i++)
             {
-                GD.Print($"{i}: {args[i]}");
+                Debug.Log($"{i}: {args[i]}");
             }
 
             if (targetedCommands.ContainsKey(command))
@@ -255,7 +254,7 @@ public partial class CommandConsole : Node
                     return true;
                 case "list_command_targets":
 
-                    if(args.Length > 0)
+                    if (args.Length > 0)
                     {
                         CommandConsole_RichTextLabel.PrintText("=======================================");
                         CommandConsole_RichTextLabel.PrintText($"Listing Allowed Targets for {args[0]}:");
@@ -270,7 +269,7 @@ public partial class CommandConsole : Node
                     return true;
                 default:
 
-                    if(globalCommands.ContainsKey(command))
+                    if (globalCommands.ContainsKey(command))
                     {
 
                     }

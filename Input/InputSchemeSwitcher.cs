@@ -4,7 +4,6 @@ using Godot;
 #if IMGUI
 using ImGuiNET;
 #endif
-using System;
 
 public partial class InputSchemeSwitcher : Node
 {
@@ -13,28 +12,29 @@ public partial class InputSchemeSwitcher : Node
     bool ready;
 
     [Export] bool mouseMovementSwitchesScheme = true;
-	public override void _EnterTree()
-	{
+
+    public override void _EnterTree()
+    {
         this.ProcessMode = ProcessModeEnum.Always;
         this.SetProcessInput(true);
-	}
+    }
 
     public override void _Ready()
     {
         base._Ready();
 
-        
+
         if (OS.HasFeature("pc") || OS.HasFeature("web_linuxbsd") || OS.HasFeature("web_macos") || OS.HasFeature("web_windows"))
         {
-            InputSchemeChooser.RequestSchemeType(InputSchemeType.KBM);
+            InputSchemeHelper.RequestSchemeType(InputSchemeType.KBM);
         }
-        else if(OS.HasFeature("web_android") || OS.HasFeature("web_ios") || OS.HasFeature("android") || OS.HasFeature("ios") || OS.HasFeature("mobile"))
+        else if (OS.HasFeature("web_android") || OS.HasFeature("web_ios") || OS.HasFeature("android") || OS.HasFeature("ios") || OS.HasFeature("mobile"))
         {
-            InputSchemeChooser.RequestSchemeType(InputSchemeType.Touch);
+            InputSchemeHelper.RequestSchemeType(InputSchemeType.Touch);
         }
         else
         {
-            InputSchemeChooser.RequestSchemeType(InputSchemeType.Gamepad);
+            InputSchemeHelper.RequestSchemeType(InputSchemeType.Gamepad);
         }
         delay = 1.0;
     }
@@ -45,7 +45,7 @@ public partial class InputSchemeSwitcher : Node
         if (delay > 0.0f)
         {
             delay -= delta;
-            if(delay <= 0.0)
+            if (delay <= 0.0)
             {
                 //we're ready after a small time
                 ready = true;
@@ -67,13 +67,13 @@ public partial class InputSchemeSwitcher : Node
             //don't consider dummy device 42069
             if (keyInput.Device != 42069)
             {
-                InputSchemeChooser.RequestSchemeType(InputSchemeType.KBM);
+                InputSchemeHelper.RequestSchemeType(InputSchemeType.KBM);
             }
         }
     }
     public override void _UnhandledInput(InputEvent @event)
     {
-        if(!ready) { return; }
+        if (!ready) { return; }
 
         if (mouseMovementSwitchesScheme)
         {
@@ -82,7 +82,7 @@ public partial class InputSchemeSwitcher : Node
                 //don't consider dummy device 42069
                 if (mouseMoved.Device != 42069)
                 {
-                    InputSchemeChooser.RequestSchemeType(InputSchemeType.KBM);
+                    InputSchemeHelper.RequestSchemeType(InputSchemeType.KBM);
                 }
             }
         }
@@ -91,7 +91,7 @@ public partial class InputSchemeSwitcher : Node
             //don't consider dummy device 42069
             if (joyButton.Device != 42069)
             {
-                InputSchemeChooser.RequestSchemeType(InputSchemeType.Gamepad);
+                InputSchemeHelper.RequestSchemeType(InputSchemeType.Gamepad);
             }
         }
         if (@event is InputEventJoypadMotion joyMotion)
@@ -99,7 +99,7 @@ public partial class InputSchemeSwitcher : Node
             //don't consider dummy device 42069
             if (joyMotion.Device != 42069)
             {
-                InputSchemeChooser.RequestSchemeType(InputSchemeType.Gamepad);
+                InputSchemeHelper.RequestSchemeType(InputSchemeType.Gamepad);
             }
         }
     }

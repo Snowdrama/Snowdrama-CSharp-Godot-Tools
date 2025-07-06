@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class SnowFillMaze3D : Node
 {
@@ -38,13 +37,13 @@ public partial class SnowFillMaze3D : Node
             }
             stepCount++;
         }
-        GD.Print($"Finshed in {stepCount} steps");
+        Debug.Log($"Finshed in {stepCount} steps");
     }
 
     private static void CreateMaze(ref SnowFillCell3D[,,] map, Vector3I size, Vector3I start)
     {
         map = new SnowFillCell3D[size.X, size.Y, size.Z];
-        GD.Print($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
+        Debug.Log($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
         for (int y = 0; y < map.GetLength(1); y++)
         {
             for (int z = 0; z < map.GetLength(2); z++)
@@ -55,7 +54,7 @@ public partial class SnowFillMaze3D : Node
                     map[x, y, z].direction = directions.GetRandom();
                     if (map[x, y, z].position == start)
                     {
-                        GD.Print($"Starting Cell is {start}");
+                        Debug.Log($"Starting Cell is {start}");
                         map[x, y, z].isConnected = true;
                     }
                     else

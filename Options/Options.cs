@@ -44,10 +44,10 @@ public partial class Options : Node
     {
         config = new ConfigFile();
         Error configErr = config.Load(userConfigLocation);
-        GD.Print($"Loading Config From {userConfigLocation}");
+        Debug.Log($"Loading Config From {userConfigLocation}");
         if (configErr != Error.Ok)
         {
-            GD.Print($"Loading Failed, Loading Default From {defaultConfigLocation}");
+            Debug.Log($"Loading Failed, Loading Default From {defaultConfigLocation}");
             //load from the default cfg
             var defaultConfig = new ConfigFile();
             Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
@@ -55,14 +55,14 @@ public partial class Options : Node
 
             if (defaultConfigErr == Error.Ok)
             {
-                GD.Print("Loading Success!");
+                Debug.Log("Loading Success!");
                 config = defaultConfig;
-                GD.Print($"Saving To {userConfigLocation}");
+                Debug.Log($"Saving To {userConfigLocation}");
                 config.Save(userConfigLocation);
             }
             else
             {
-                GD.PrintErr($"Loading Default Failed Somehow...");
+                Debug.LogError($"Loading Default Failed Somehow...");
             }
         }
     }
@@ -75,7 +75,7 @@ public partial class Options : Node
         }
         else
         {
-            GD.PrintErr("Couldn't save config because config is null");
+            Debug.LogError("Couldn't save config because config is null");
         }
     }
     public static Vector2I GetVector2I(string key, Vector2I defaultValue = new Vector2I())

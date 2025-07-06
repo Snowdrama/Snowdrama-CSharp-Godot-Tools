@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class OptionSlider : HSlider
 {
@@ -11,7 +10,7 @@ public partial class OptionSlider : HSlider
         if (Options.HasDouble(optionKey))
         {
             localValue = Options.GetDouble(optionKey);
-            GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");
+            Debug.Log($"[Slider: {this.Name}] Value From Config? {Options.GetDouble(optionKey)}");
             this.SetValueNoSignal(localValue);
         }
         else
@@ -19,7 +18,7 @@ public partial class OptionSlider : HSlider
             localValue = this.Value;
             Options.SetDouble(optionKey, localValue);
         }
-	}
+    }
 
     public override void _Process(double delta)
     {
@@ -30,14 +29,14 @@ public partial class OptionSlider : HSlider
     }
     public override void _EnterTree()
     {
-        GD.Print("Option Slider _EnterTree");
+        Debug.Log("Option Slider _EnterTree");
         base._EnterTree();
         this.ValueChanged += SliderChanged;
     }
 
     public override void _ExitTree()
     {
-        GD.Print("Option Slider _ExitTree");
+        Debug.Log("Option Slider _ExitTree");
         base._ExitTree();
         this.ValueChanged -= SliderChanged;
     }

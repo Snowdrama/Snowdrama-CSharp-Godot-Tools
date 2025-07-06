@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class SendDialogText : BaseSequenceStep
 {
@@ -10,7 +9,7 @@ public partial class SendDialogText : BaseSequenceStep
     {
         if (isPlaying)
         {
-            GD.Print($"{this.Name}: {debugMessage}");
+            Debug.Log($"{this.Name}: {debugMessage}");
             isComplete = true;
             isPlaying = false;
         }
@@ -18,22 +17,22 @@ public partial class SendDialogText : BaseSequenceStep
 
     public override void FinishStep()
     {
-        GD.Print($"{this.Name}: Finishing Step");
+        Debug.Log($"{this.Name}: Finishing Step");
     }
     public override void LoadStep()
     {
-        GD.Print($"{this.Name}: Loading Step");
+        Debug.Log($"{this.Name}: Loading Step");
     }
 
     public override void StartStep()
     {
-        GD.Print($"{this.Name}: Starting Debug Step");
+        Debug.Log($"{this.Name}: Starting Debug Step");
         isComplete = false;
         isPlaying = true;
     }
 
     public override void UnloadStep()
     {
-        GD.Print($"{this.Name}: Unloading Step");
+        Debug.Log($"{this.Name}: Unloading Step");
     }
 }

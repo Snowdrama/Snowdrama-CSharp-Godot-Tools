@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using static Godot.TextServer;
 
 [GlobalClass]
 public partial class HeatDiffusionAgent : Node2D
@@ -17,7 +15,7 @@ public partial class HeatDiffusionAgent : Node2D
         body = this.GetParent<CharacterBody2D>();
         if (body == null)
         {
-            GD.PrintErr($"HeatDiffusionAgent {this.GetParent().Name} is not a CharacterBody2D");
+            Debug.LogError($"HeatDiffusionAgent {this.GetParent().Name} is not a CharacterBody2D");
         }
     }
 
@@ -43,7 +41,7 @@ public partial class HeatDiffusionAgent : Node2D
         {
             targetCell = currentPathCells[0];
         }
-        if(currentPathPositions.Length > 0)
+        if (currentPathPositions.Length > 0)
         {
             targetPosition = currentPathPositions[0];
             direction = this.GlobalPosition.DirectionTo(targetPosition);
@@ -58,7 +56,7 @@ public partial class HeatDiffusionAgent : Node2D
         {
             body.Velocity = Vector2.Zero;
         }
-        
+
 
         body.MoveAndSlide();
         QueueRedraw();

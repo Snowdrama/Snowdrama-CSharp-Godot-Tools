@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Diagnostics;
 
 
@@ -15,7 +14,7 @@ public partial class SnowFillMazeDebug : Node2D
     [Export] bool generateDebugMaze;
     Stopwatch benchmarkStopwatch = new Stopwatch();
 
-	public override void _Process(double delta)
+    public override void _Process(double delta)
     {
         if (generateDebugMaze)
         {
@@ -26,7 +25,7 @@ public partial class SnowFillMazeDebug : Node2D
             debugMaze = new SnowFillCell2D[16, 16];
             SnowFillMaze.GenerateMaze(ref debugMaze, debugMapSize, debugStartPoint);
             benchmarkStopwatch.Stop();
-            GD.Print($"Generating took {benchmarkStopwatch.Elapsed}");
+            Debug.Log($"Generating took {benchmarkStopwatch.Elapsed}");
             QueueRedraw();
         }
     }
