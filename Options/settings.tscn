@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://b716toqdqe177"]
 
-[ext_resource type="Script" path="res://Tools/Options/WindowStuff/FullScreenDropdown.cs" id="1_fxrun"]
-[ext_resource type="Script" path="res://Tools/Options/WindowStuff/OptionResolutionDropdown.cs" id="2_sgplv"]
-[ext_resource type="Script" path="res://Tools/Options/WindowStuff/VSyncDropdown.cs" id="3_44l36"]
-[ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioSlider.cs" id="4_0a1m6"]
-[ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioOutputDeviceSelection.cs" id="5_r0fq2"]
-[ext_resource type="Script" path="res://Tools/Options/AudioDeviceDropdowns/AudioInputDeviceSelection.cs" id="6_ea457"]
+[ext_resource type="Script" uid="uid://icwhmhd7crjh" path="res://Tools/Options/WindowStuff/FullScreenDropdown.cs" id="1_fxrun"]
+[ext_resource type="Script" uid="uid://bv4gqrmv0t7dq" path="res://Tools/Options/WindowStuff/OptionResolutionDropdown.cs" id="2_sgplv"]
+[ext_resource type="Script" uid="uid://bgrc08r1ddy3l" path="res://Tools/Options/WindowStuff/VSyncDropdown.cs" id="3_44l36"]
+[ext_resource type="Script" uid="uid://ch643r0c0dh6h" path="res://Tools/Options/AudioDeviceDropdowns/AudioSlider.cs" id="4_0a1m6"]
+[ext_resource type="Script" uid="uid://dvgtdb1ng1x75" path="res://Tools/Options/AudioDeviceDropdowns/AudioOutputDeviceSelection.cs" id="5_r0fq2"]
+[ext_resource type="Script" uid="uid://b07r4rb1djtd1" path="res://Tools/Options/AudioDeviceDropdowns/AudioInputDeviceSelection.cs" id="6_ea457"]
 
 [node name="Settings" type="TabContainer"]
 anchors_preset = 15
