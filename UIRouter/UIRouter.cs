@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 [GlobalClass]
@@ -174,6 +175,16 @@ public partial class UIRouter : Resource
     {
         ValidateRouter();
         return routesOpened.Count;
+    }
+    public int AllRoutesCount()
+    {
+        ValidateRouter();
+        return routes.Keys.Count;
+    }
+    public List<string> GetAllRoutes()
+    {
+        ValidateRouter();
+        return routes.Keys.ToList();
     }
 
     public void AddRouteChangedListener(Action<string> routeListener)

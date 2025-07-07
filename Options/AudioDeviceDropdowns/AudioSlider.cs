@@ -1,22 +1,25 @@
 using Godot;
-using System;
 
 public partial class AudioSlider : HSlider
 {
     [Export] string optionKey;
 
-    float normalizedLerpValue;
+    double currentValue;
     public override void _Ready()
     {
-        if (Options.HasFloat(optionKey))
+        this.MinValue = 0;
+        this.MaxValue = 1.0;
+        this.Step = 0.001;
+
+        if (Options.HasDouble(optionKey))
         {
-            normalizedLerpValue = Mathf.Clamp(Options.GetFloat(optionKey, 0.8f), 0.0f, 1.0f);
-            this.SetValueNoSignal(Mathf.Lerp(this.MinValue, this.MaxValue, normalizedLerpValue));
+            currentValue = Mathf.Clamp(Options.GetDouble(optionKey, 0.8), 0.0, 1.0);
+            this.SetValueNoSignal(Mathf.Lerp(this.MinValue, this.MaxValue, currentValue));
         }
         else
         {
-            normalizedLerpValue = (float)Mathf.InverseLerp((float)this.MinValue, (float)this.MaxValue, (float)this.Value);
-            Options.SetFloat(optionKey, normalizedLerpValue);
+            currentValue = (float)Mathf.InverseLerp((float)this.MinValue, (float)this.MaxValue, (float)this.Value);
+            Options.SetDouble(optionKey, currentValue);
         }
     }
 
@@ -36,15 +39,14 @@ public partial class AudioSlider : HSlider
 
     private void OnVisibilityChanged()
     {
-        normalizedLerpValue = Mathf.Clamp(Options.GetFloat(optionKey, 0.5f), 0.0f, 1.0f);
-        this.SetValueNoSignal(Mathf.Lerp(this.MinValue, this.MaxValue, normalizedLerpValue));
+        currentValue = Mathf.Clamp(Options.GetDouble(optionKey, 0.5), 0.0, 1.0);
+        this.SetValueNoSignal(Mathf.Lerp(this.MinValue, this.MaxValue, currentValue));
     }
 
     public void SliderChanged(double newValue)
     {
-        normalizedLerpValue = (float)Mathf.InverseLerp((float)this.MinValue, (float)this.MaxValue, newValue);
-        GD.PrintErr($"Value: {newValue} Normalized: {normalizedLerpValue}");
-        AudioManager.SetVolume(optionKey, normalizedLerpValue);
-        Options.SetFloat(optionKey, normalizedLerpValue);
+        var db = Mathf.LinearToDb(newValue);
+        AudioManager.SetVolume(optionKey, (float)db);
+        Options.SetDouble(optionKey, newValue);
     }
 }

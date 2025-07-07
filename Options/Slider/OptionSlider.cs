@@ -7,6 +7,12 @@ public partial class OptionSlider : HSlider
     double localValue;
     public override void _Ready()
     {
+        this.VisibilityChanged += ValidateSlider;
+        ValidateSlider();
+    }
+
+    private void ValidateSlider()
+    {
         if (Options.HasDouble(optionKey))
         {
             localValue = Options.GetDouble(optionKey);

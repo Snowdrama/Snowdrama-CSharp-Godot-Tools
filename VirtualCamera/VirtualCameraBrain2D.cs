@@ -1,10 +1,8 @@
 using Godot;
-using System;
-using System.Linq;
 using System.Collections.Generic;
-using static Godot.HttpRequest;
 
 //asks to be the primary camera
+[GlobalClass]
 public partial class VirtualCameraBrain2D : Camera2D
 {
     public static VirtualCameraBrain2D cameraInstance;
@@ -59,11 +57,11 @@ public partial class VirtualCameraBrain2D : Camera2D
         }
 
         //can't do anything if there's no VCams
-        if(cameras.Count == 0)
+        if (cameras.Count == 0)
         {
             return;
         }
-        
+
         //sort the cameras by their virtualCameraPriority
         cameras.Sort((x, y) =>
         {
@@ -109,9 +107,11 @@ public partial class VirtualCameraBrain2D : Camera2D
                 this.Position = currentCamera.GlobalPosition;
             }
 
+            this.IgnoreRotation = currentCamera.IgnoreRotation;
+
             if (LerpRotation)
             {
-                this.Rotation = this.Rotation.MoveTowards(currentCamera.GlobalRotation,(float)(delta * LerpRotationSpeed));
+                this.Rotation = this.Rotation.MoveTowards(currentCamera.GlobalRotation, (float)(delta * LerpRotationSpeed));
             }
             else
             {

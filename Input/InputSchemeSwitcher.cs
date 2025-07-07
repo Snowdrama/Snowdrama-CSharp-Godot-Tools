@@ -1,5 +1,3 @@
-//Comment this out if you're not using ImGui.NET for Godot
-//#define IMGUI
 using Godot;
 #if IMGUI
 using ImGuiNET;

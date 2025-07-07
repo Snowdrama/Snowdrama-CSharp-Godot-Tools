@@ -12,9 +12,9 @@ public partial class AudioManager : Node
         Options.VOICE_VOLUME_OPTION_KEY,
     };
     [Export]
-    public Godot.Collections.Array<float> DefaultVolume = new Godot.Collections.Array<float>()
+    public Godot.Collections.Array<double> DefaultVolume = new Godot.Collections.Array<double>()
     {
-        1.0f,
+        1.0,
         0.8f,
         0.8f,
         0.8f,
@@ -24,11 +24,13 @@ public partial class AudioManager : Node
     {
         for (int i = 0; i < VolumeKeys.Count; i++)
         {
-            var lerp = Mathf.Clamp(Options.GetFloat(VolumeKeys[i], DefaultVolume[i]), 0.0f, 1.0f);
+            var lerp = Mathf.Clamp(Options.GetDouble(VolumeKeys[i], DefaultVolume[i]), 0.0, 1.0);
             var index = AudioServer.GetBusIndex(VolumeKeys[i]);
+            Debug.Log($"Loading VolumeKeys[{i}]: {VolumeKeys[i]} => {lerp}");
             if (index >= 0)
             {
-                AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 0, lerp));
+                AudioServer.SetBusVolumeDb(index, (float)Mathf.LinearToDb(lerp));
+                Options.SetDouble(VolumeKeys[i], lerp);
             }
             else
             {
@@ -38,15 +40,12 @@ public partial class AudioManager : Node
     }
 
 
-    public static void SetVolume(string volumeKey, float volumeValue, float volumeMinValue = 0, float volumeMaxValue = 1)
+    public static void SetVolume(string volumeKey, double db, float volumeMinValue = 0, float volumeMaxValue = 1)
     {
         var index = AudioServer.GetBusIndex(volumeKey);
         if (index >= 0)
         {
-            var lerp = Mathf.InverseLerp(volumeMinValue, volumeMaxValue, volumeValue);
-
-
-            AudioServer.SetBusVolumeDb(index, Mathf.Lerp(-80, 0, lerp));
+            AudioServer.SetBusVolumeDb(index, (float)db);
         }
         else
         {

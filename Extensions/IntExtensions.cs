@@ -18,3 +18,11 @@ public static class IntExtensions
         return Math.Clamp(f, min, max);
     }
 }
+
+public static class UIntExtensions
+{
+    public static bool LayerMaskContains(this uint mask, uint contains)
+    {
+        return contains == (mask & contains);
+    }
+}

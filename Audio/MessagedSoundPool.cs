@@ -1,8 +1,40 @@
 using Godot;
 using Snowdrama.Core;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+
+/// <summary>
+/// Plays a message from the sound pool with a certain clip, at a certain point and with 
+/// a specific bus for volume settings like "Sounds" or "Voice"
+/// 
+/// AudioStream - The stream to play
+/// Vector2 - the position in 2D space to play the sound
+/// string - The Bus name to use, like "Sounds" or "Voice"
+/// float -  The volume to play the sound at, this does not effect the bus volume
+/// Vector2 - Pitch Ragne
+/// </summary>
+public class PlaySound2DMessage : AMessage<AudioStream, Vector2, string, float, Vector2> { }
+
+/// <summary>
+/// Plays a message from the sound pool with a certain clip, at a certain point and with 
+/// a specific bus for volume settings like "Sounds" or "Voice"
+/// 
+/// AudioStream - The stream to play
+/// Vector3 - the position in 3D space to play the sound
+/// string - The Bus name to use, like "Sounds" or "Voice"
+/// float -  The volume to play the sound at, this does not effect the bus volume
+/// </summary>
+public class PlaySoundMessage3D : AMessage<AudioStream, Vector3, string, float, Vector2> { }
+
+
+/// <summary>
+/// Plays a message from the sound pool with a certain clip and with 
+/// a specific bus for volume settings like "Sounds" or "Voice"
+/// 
+/// AudioStream - The stream to play
+/// string - The Bus name to use, like "Sounds" or "Voice"
+/// float -  The volume to play the sound at, this does not effect the bus volume
+/// </summary>
+public class PlaySoundMessage : AMessage<AudioStream, string, float, Vector2> { }
 
 public partial class MessagedSoundPool : Node
 {
@@ -20,8 +52,8 @@ public partial class MessagedSoundPool : Node
     List<AudioStreamPlayer3D> usedPlayers3D = new List<AudioStreamPlayer3D>();
 
     PlaySoundMessage playSoundMessage;
-    PlayPosiotionedSoundMessage2D playPosiotionedSoundMessage2D;
-    PlayPosiotionedSoundMessage3D playPosiotionedSoundMessage3D;
+    PlaySound2DMessage playPosiotionedSoundMessage2D;
+    PlaySoundMessage3D playPosiotionedSoundMessage3D;
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -79,9 +111,9 @@ public partial class MessagedSoundPool : Node
 
         playSoundMessage = Messages.Get<PlaySoundMessage>();
         playSoundMessage.AddListener(PlaySound);
-        playPosiotionedSoundMessage2D = Messages.Get<PlayPosiotionedSoundMessage2D>();
+        playPosiotionedSoundMessage2D = Messages.Get<PlaySound2DMessage>();
         playPosiotionedSoundMessage2D.AddListener(PlayPositionedSound2D);
-        playPosiotionedSoundMessage3D = Messages.Get<PlayPosiotionedSoundMessage3D>();
+        playPosiotionedSoundMessage3D = Messages.Get<PlaySoundMessage3D>();
         playPosiotionedSoundMessage3D.AddListener(PlayPositionedSound3D);
     }
 
@@ -94,8 +126,8 @@ public partial class MessagedSoundPool : Node
 
 
         Messages.Return<PlaySoundMessage>();
-        Messages.Return<PlayPosiotionedSoundMessage2D>();
-        Messages.Return<PlayPosiotionedSoundMessage3D>();
+        Messages.Return<PlaySound2DMessage>();
+        Messages.Return<PlaySoundMessage3D>();
     }
 
     public override void _Process(double delta)
@@ -114,7 +146,7 @@ public partial class MessagedSoundPool : Node
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlaySound(AudioStream stream, string busName, float volume, Vector2 pitchRange)
     {
-        if(stream == null)
+        if (stream == null)
         {
             Debug.LogError($"Tried to play a sound with a null stream!");
             return;
@@ -165,6 +197,7 @@ public partial class MessagedSoundPool : Node
             player.Stream = stream;
             player.Position = playPosition;
             player.PitchScale = RandomAndNoise.RandomRange(pitchRange.X, pitchRange.Y);
+            player.MaxDistance = 1_000_000;
             player.Play();
             usedPlayers2D.Add(player);
         }

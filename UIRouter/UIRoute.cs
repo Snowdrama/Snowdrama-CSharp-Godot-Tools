@@ -2,24 +2,18 @@ using Godot;
 
 
 [GlobalClass]
-public partial class UIRoute : Control
+public partial class UIRoute : Node
 {
-    [Export] private UIRoutingSystem _routingSystem;
-    [Export] private string routeSegment;
-    [Export] private Control mainContent;
-    [Export] private Control focusOnVisible;
+    [Export] private UIRouter? _router;
+    [Export] private string routeSegment = "";
+    [Export] private Control? mainContent;
+    [Export] private Control? focusOnVisible;
     [Export] private bool startEnabled = false;
     public override void _Ready()
     {
-        if(_routingSystem == null)
-        {
-            _routingSystem = this.GetParent<UIRoutingSystem>();
-        }
-
-        _routingSystem.GetRouter().RegisterRoute(routeSegment, this);
         if (startEnabled)
         {
-            _routingSystem.GetRouter().OpenRoute(routeSegment);
+            _router.OpenRoute(routeSegment);
             mainContent.Show();
         }
         else
@@ -27,22 +21,29 @@ public partial class UIRoute : Control
             mainContent.Hide();
         }
     }
+
+    public override void _EnterTree()
+    {
+        ProcessMode = Node.ProcessModeEnum.Always;
+        _router?.RegisterRoute(routeSegment, this);
+    }
+
     public override void _ExitTree()
     {
-        _routingSystem.GetRouter().UnregisterRoute(routeSegment);
+        _router.UnregisterRoute(routeSegment);
     }
     public UIRouter GetRouter()
     {
-        return _routingSystem.GetRouter();
+        return _router;
     }
     public void OpenRoute()
     {
         // TODO: Force the selection to this for gamepads.
         if (focusOnVisible != null)
         {
-            focusOnVisible.SetBlockSignals(true);
+            focusOnVisible?.SetBlockSignals(true);
             focusOnVisible?.GrabFocus();
-            focusOnVisible.SetBlockSignals(false);
+            focusOnVisible?.SetBlockSignals(false);
         }
 
         mainContent.Show();
@@ -58,7 +59,7 @@ public partial class UIRoute : Control
         if (mainContent.Visible)
         {
             //check if we have a focus, if somehow we lose that focus grab it again
-            if(GetViewport().GuiGetFocusOwner() == null)
+            if (GetViewport().GuiGetFocusOwner() == null)
             {
                 if (focusOnVisible != null)
                 {

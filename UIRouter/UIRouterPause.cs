@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class UIRouterPause : Node
 {
@@ -14,15 +13,18 @@ public partial class UIRouterPause : Node
         get => _paused;
         set
         {
-            _paused = value;
-            GetTree().Paused = _paused;
-            if (_paused)
+            Debug.Log($"Pause Chagned? {_paused} != {value}");
+            //only when changed!
+            if (_paused != value)
             {
+                _paused = value;
+                GetTree().Paused = _paused;
                 CursorManager.MenuOpen("PauseMenu");
                 if (!router.IsRouteOpen("pause"))
                 {
                     router.OpenRoute("pause");
                 }
+                PauseManager.RequestPause(this);
             }
             else
             {
@@ -31,6 +33,7 @@ public partial class UIRouterPause : Node
                 {
                     router.CloseAll();
                 }
+                PauseManager.RequestUnpause(this);
             }
         }
     }
@@ -45,12 +48,11 @@ public partial class UIRouterPause : Node
         this.Paused = false;
     }
 
-
     public override void _Process(double delta)
     {
         base._Process(delta);
 
-        if(GetTree().Paused && router.OpenRouteCount() <= 0)
+        if (GetTree().Paused && router.OpenRouteCount() <= 0)
         {
             Paused = false;
         }
@@ -63,14 +65,14 @@ public partial class UIRouterPause : Node
     public override void _Input(InputEvent @event)
     {
         base._Input(@event);
-
         if (@event.IsActionPressed(pauseEvent))
         {
+            Debug.Log("Pause Key Pressed!");
             Paused = !Paused;
         }
 
-        
-        
+
+
 
         if (@event.IsActionPressed(cancelKey))
         {

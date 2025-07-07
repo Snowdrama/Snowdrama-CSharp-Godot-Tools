@@ -55,7 +55,7 @@ public partial class Options : Node
 
             if (defaultConfigErr == Error.Ok)
             {
-                Debug.Log("Loading Success!");
+                Debug.Log("Default Loading Success!");
                 config = defaultConfig;
                 Debug.Log($"Saving To {userConfigLocation}");
                 config.Save(userConfigLocation);
@@ -63,6 +63,20 @@ public partial class Options : Node
             else
             {
                 Debug.LogError($"Loading Default Failed Somehow...");
+            }
+        }
+        else
+        {
+            Debug.Log("Options Loaded from config!");
+
+            foreach (var section in config.GetSections())
+            {
+                // Fetch the data for each section.
+                Debug.Log($"[[[{section}]]]");
+                foreach (var key in config.GetSectionKeys(section))
+                {
+                    Debug.Log($"{key}: {config.GetValue(section, key)}");
+                }
             }
         }
     }
@@ -189,6 +203,7 @@ public partial class Options : Node
     public static void SetDouble(string key, double value)
     {
         ValidateLoadConfig();
+        Debug.LogWarn($"Setting Double for key: {key} to {value}");
         config.SetValue("Options", key, value);
         var err = config.Save(userConfigLocation);
         SaveConfig();
