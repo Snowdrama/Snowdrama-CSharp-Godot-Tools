@@ -13,7 +13,7 @@ public partial class VirtualCameraBrain2D : Camera2D
 
     VirtualCamera2D currentCamera;
     [ExportGroup("Zoom")]
-    [Export] bool smoothScale;
+    [Export] bool SmoothScalingEnabled;
 
     [ExportGroup("Position")]
     [Export] bool LerpPosition;
@@ -65,6 +65,14 @@ public partial class VirtualCameraBrain2D : Camera2D
         //sort the cameras by their virtualCameraPriority
         cameras.Sort((x, y) =>
         {
+            if (x.forceActive)
+            {
+                return -1;
+            }
+            if (y.forceActive)
+            {
+                return 1;
+            }
             if (x.virtualCameraPriority > y.virtualCameraPriority)
             {
                 return -1;
@@ -84,6 +92,7 @@ public partial class VirtualCameraBrain2D : Camera2D
 
         if (currentCamera != null)
         {
+            this.SmoothScalingEnabled = currentCamera.ScaleSmoothingEnabled;
             this.PositionSmoothingEnabled = currentCamera.PositionSmoothingEnabled;
             this.PositionSmoothingSpeed = currentCamera.PositionSmoothingSpeed;
             if (LerpPosition)
@@ -118,7 +127,7 @@ public partial class VirtualCameraBrain2D : Camera2D
                 this.Rotation = currentCamera.GlobalRotation;
             }
 
-            if (smoothScale && currentCamera.cameraZoomLevel.Length() > 0.1f)
+            if (SmoothScalingEnabled && currentCamera.cameraZoomLevel.Length() > 0.1f)
             {
                 this.Zoom = Vector2Extensions.Lerp(this.Zoom, currentCamera.cameraZoomLevel, (float)delta);
             }

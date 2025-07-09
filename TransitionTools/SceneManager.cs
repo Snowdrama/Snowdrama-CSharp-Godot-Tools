@@ -15,13 +15,13 @@ public partial class SceneManager : Node
     [Export] string[] automaticScenePaths = new string[] { "res://Scenes" };
 
     [ExportCategory("Runtime Exposed Values")]
-    [Export] public Node currentScene;
-    [Export] string sceneTarget;
+    [Export] public Node? currentScene;
+    [Export] string? sceneTarget;
 
     [ExportCategory("Note: This uses the first node's name in the file, NOT the file name!")]
-    static SceneManager instance;
+    static SceneManager? instance;
     Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
-    static string previousSceneName;
+    static string? previousSceneName;
 
     bool transitioning;
     bool sceneLoaded;
@@ -143,7 +143,7 @@ public partial class SceneManager : Node
     }
 
     //Thread asyncPackedSceneLoader;
-    private void SwapScenes(Node sceneToRemove, string newSceneName)
+    private void SwapScenes(Node? sceneToRemove, string newSceneName)
     {
         if (_scenes.ContainsKey(newSceneName))
         {
@@ -177,36 +177,43 @@ public partial class SceneManager : Node
 
     public static void LoadScene(
         string sceneName,
-        string transitionName = null,
+        string? transitionName = null,
         float fakeLoadTime = 1.0f,
-        Action onStartHide = null,
-        Action onBlackout = null,
-        Action onFakeLoadComplete = null,
-        Action onStartShow = null,
-        Action onEnded = null
+        Action? onStartHide = null,
+        Action? onBlackout = null,
+        Action? onFakeLoadComplete = null,
+        Action? onStartShow = null,
+        Action? onEnded = null
         )
     {
-        instance.InstanceLoadScene(
-            sceneName,
-            transitionName,
-            fakeLoadTime,
-            onStartHide,
-            onBlackout,
-            onFakeLoadComplete,
-            onStartShow,
-            onEnded
-            );
+        if (instance != null)
+        {
+            instance.InstanceLoadScene(
+                sceneName,
+                transitionName,
+                fakeLoadTime,
+                onStartHide,
+                onBlackout,
+                onFakeLoadComplete,
+                onStartShow,
+                onEnded
+                );
+        }
+        else
+        {
+            Debug.LogError($"Scene Manager instance is null");
+        }
     }
 
     private void InstanceLoadScene(
         string sceneName,
-        string transitionName,
+        string? transitionName,
         float fakeLoadTime,
-        Action onStartHide,
-        Action onBlackout,
-        Action onFakeLoadComplete,
-        Action onStartShow,
-        Action onEnded
+        Action? onStartHide,
+        Action? onBlackout,
+        Action? onFakeLoadComplete,
+        Action? onStartShow,
+        Action? onEnded
         )
     {
         transitioning = true;
@@ -270,19 +277,42 @@ public partial class SceneManager : Node
         {
             previousSceneName = currentScene.Name;
         }
+
+        if (sceneTarget == null)
+        {
+            Debug.LogError($"Tried swapping scenes during blackout, but sceneTarget scene is null");
+            return;
+        }
+        if (currentScene == null)
+        {
+            Debug.LogWarn($"Tried swapping scenes during blackout, but current scene is null");
+        }
         SwapScenes(currentScene, sceneTarget);
+
     }
 
     public static string GetPreviousSceneName()
     {
-        return previousSceneName;
+        if (previousSceneName != null)
+        {
+            return previousSceneName;
+        }
+        Debug.LogWarn("Previous Scene Name is null returning empty");
+        return "";
     }
 
     public static void SetCurrentScene(Node currentNode)
     {
-        if (currentNode != null)
+        if (currentNode == null)
         {
-            instance.currentScene = currentNode;
+            Debug.LogError($"Tried setting the current scene but it was null!");
+            return;
         }
+        if (instance == null)
+        {
+            Debug.LogError("Tried setting the current scene but instance is null!");
+            return;
+        }
+        instance.currentScene = currentNode;
     }
 }

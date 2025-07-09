@@ -2,16 +2,18 @@ using Godot;
 public static class ColorExtensions
 {
 
-    public static Color SetHsv(this Color current, float setHue = 0.0f, float setSaturation = 1.0f, float setValue = 1.0f){
+    public static Color SetHsv(this Color current, float setHue = 0.0f, float setSaturation = 1.0f, float setValue = 1.0f)
+    {
         var newColor = current;
         newColor.H = 1.0f * setHue;
         newColor.S = 1.0f * setSaturation;
         newColor.V = 1.0f * setValue;
         return newColor;
     }
-    public static Color ShiftHsv(this Color current, float shiftHue = 0.0f, float shiftSaturation = 0.0f, float shiftValue = 0.0f){
+    public static Color ShiftHsv(this Color current, float shiftHue = 0.0f, float shiftSaturation = 0.0f, float shiftValue = 0.0f)
+    {
         var newColor = current;
-        float h,s,v;
+        float h, s, v;
         current.ToHsv(out h, out s, out v);
         h = (h + shiftHue) % 1.0001f;
         s = (s + shiftSaturation) % 1.0001f;
@@ -22,9 +24,10 @@ public static class ColorExtensions
         return newColor;
     }
     public static Gradient g;
-    public static Color GetColorFromRainbow(float t, float of = 1, Gradient gradient = null)
+    public static Color GetColorFromRainbow(float t, float of = 1, Gradient? gradient = null)
     {
-        if(g == null){
+        if (g == null)
+        {
             g = new Gradient();
             g.AddPoint(0.1f, Colors.Red);
             g.AddPoint(0.2f, Colors.Orange);

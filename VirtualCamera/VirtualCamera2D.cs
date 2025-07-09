@@ -3,6 +3,8 @@ using Godot;
 [Tool, GlobalClass]
 public partial class VirtualCamera2D : Node2D
 {
+    [Export] public bool forceActive = false;
+    [Export] public bool isActive = false;
     [Export] int activePriority = 10;
     [Export] int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
@@ -13,6 +15,9 @@ public partial class VirtualCamera2D : Node2D
     public Vector2 targetScreenSize;
     public Vector2 testScreenSize;
 
+    [Export] public bool IgnoreRotation = true;
+
+    [Export] public bool ScaleSmoothingEnabled;
     [Export] public bool PositionSmoothingEnabled;
     [Export] public float PositionSmoothingSpeed;
 
@@ -40,12 +45,26 @@ public partial class VirtualCamera2D : Node2D
     [Export] public Vector2 calculatedScaleCurrent;
     [Export] public Vector2 calculatedScaleTest;
 
-    [Export] public Vector2 relativeZoom = new Vector2(0.0f, 0.0f);
+    [Export] public Vector2 relativeZoom = new Vector2(1.0f, 1.0f);
+    [Export] public Vector2 relativeZoomRange = new Vector2(0.1f, 2.0f);
 
     public override void _Ready()
     {
         base._Ready();
         currentPosition = this.GlobalPosition;
+    }
+
+
+    public void SetZoom(Vector2 targetZoom)
+    {
+        relativeZoom = targetZoom;
+        relativeZoom = relativeZoom.Clamp(relativeZoomRange.X, relativeZoomRange.Y);
+    }
+
+    public void ChangeZoom(Vector2 changeAmount)
+    {
+        relativeZoom += changeAmount;
+        relativeZoom = relativeZoom.Clamp(relativeZoomRange.X, relativeZoomRange.Y);
     }
 
     public override void _EnterTree()
@@ -67,11 +86,20 @@ public partial class VirtualCamera2D : Node2D
         currentPosition = this.GlobalPosition;
         windowResScale = WindowSize.FindScaleFactor(GetViewportRect().Size);
 
-        cameraZoomLevel = windowResScale + relativeZoom;
+        cameraZoomLevel = windowResScale / relativeZoom;
 
         if (Engine.IsEditorHint())
         {
             QueueRedraw();
+        }
+
+        if (isActive)
+        {
+            MarkAsActive();
+        }
+        else
+        {
+            MarkAsInactive();
         }
 
         if (useCameraBounds)
@@ -81,6 +109,7 @@ public partial class VirtualCamera2D : Node2D
             this.GlobalPosition = currentPosition;
         }
     }
+
 
     public void MarkAsActive()
     {
@@ -118,16 +147,21 @@ public partial class VirtualCamera2D : Node2D
             //Debug.Log($"halfExtentsTarget {halfWindowSize}");
             //Debug.Log($"halfExtentsTest {halfExtentsTest}");
 
-            DrawLine(new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
-            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), Colors.Orange, 3.0f);
-            DrawLine(new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
-            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, 3.0f);
+            DrawLine(new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, debugBorderWidth);
+            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), Colors.Orange, debugBorderWidth);
+            DrawLine(new Vector2(halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, debugBorderWidth);
+            DrawLine(new Vector2(-halfExtentsTest.X, -halfExtentsTest.Y), new Vector2(-halfExtentsTest.X, halfExtentsTest.Y), Colors.Orange, debugBorderWidth);
 
 
-            DrawLine(new Vector2(-halfWindowSize.X, halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, -halfWindowSize.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
-            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(-halfWindowSize.X, halfWindowSize.Y), Colors.Blue, 3.0f);
+            DrawLine(new Vector2(-halfWindowSize.X, halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, debugBorderWidth);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, -halfWindowSize.Y), Colors.Blue, debugBorderWidth);
+            DrawLine(new Vector2(halfWindowSize.X, -halfWindowSize.Y), new Vector2(halfWindowSize.X, halfWindowSize.Y), Colors.Blue, debugBorderWidth);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y), new Vector2(-halfWindowSize.X, halfWindowSize.Y), Colors.Blue, debugBorderWidth);
+
+            DrawLine(new Vector2(-halfWindowSize.X, halfWindowSize.Y) * relativeZoom, new Vector2(halfWindowSize.X, halfWindowSize.Y) * relativeZoom, Colors.Magenta, debugBorderWidth);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y) * relativeZoom, new Vector2(halfWindowSize.X, -halfWindowSize.Y) * relativeZoom, Colors.Magenta, debugBorderWidth);
+            DrawLine(new Vector2(halfWindowSize.X, -halfWindowSize.Y) * relativeZoom, new Vector2(halfWindowSize.X, halfWindowSize.Y) * relativeZoom, Colors.Magenta, debugBorderWidth);
+            DrawLine(new Vector2(-halfWindowSize.X, -halfWindowSize.Y) * relativeZoom, new Vector2(-halfWindowSize.X, halfWindowSize.Y) * relativeZoom, Colors.Magenta, debugBorderWidth);
         }
     }
 }

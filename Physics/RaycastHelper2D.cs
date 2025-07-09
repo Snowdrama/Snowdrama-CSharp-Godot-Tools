@@ -1,11 +1,10 @@
 using Godot;
 using Godot.Collections;
-using System;
 
 public class RaycastHelperHit2D
 {
     public bool hit_something;
-    public Node collider;
+    public Node? collider;
     public int collider_id;
     public Vector2 normal;
     public Vector2 position;
@@ -22,20 +21,20 @@ public partial class RaycastHelper2D
     }
 
     public RaycastHelperHit2D Raycast(
-        Vector2 start, 
-        Vector2 direction, 
-        float distance, 
-        uint mask = uint.MaxValue, 
-        Array<Rid> exclusions = null,
+        Vector2 start,
+        Vector2 direction,
+        float distance,
+        uint mask = uint.MaxValue,
+        Array<Rid>? exclusions = null,
         bool collideWithBodies = true,
         bool collideWithAreas = true,
         bool hitFromInside = true
     )
     {
         return Linecast(
-            start, 
-            start + (direction.Normalized() * distance), 
-            mask, 
+            start,
+            start + (direction.Normalized() * distance),
+            mask,
             exclusions,
             collideWithBodies,
             collideWithAreas,
@@ -44,12 +43,12 @@ public partial class RaycastHelper2D
     }
 
     public RaycastHelperHit2D Linecast(
-        Vector2 from, 
-        Vector2 to, 
-        uint mask = uint.MaxValue, 
-        Array<Rid> exclusions = null, 
-        bool collideWithBodies = true, 
-        bool collideWithAreas = true, 
+        Vector2 from,
+        Vector2 to,
+        uint mask = uint.MaxValue,
+        Array<Rid>? exclusions = null,
+        bool collideWithBodies = true,
+        bool collideWithAreas = true,
         bool hitFromInside = true
     )
     {

@@ -10,9 +10,9 @@ public partial class UIRouter : Resource
     Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
     Stack<string> routesOpened = new Stack<string>();
 
-    Action OnAllRoutesClosed;
-    Action<string> OnRouteOpened;
-    Action<string> OnRouteClosed;
+    Action? OnAllRoutesClosed;
+    Action<string>? OnRouteOpened;
+    Action<string>? OnRouteClosed;
     [Signal] public delegate void OnRouteOpenedSignalEventHandler(string route);
     [Signal] public delegate void OnRouteClosedSignalEventHandler(string route);
     [Signal] public delegate void OnAllRoutesClosedSignalEventHandler();
