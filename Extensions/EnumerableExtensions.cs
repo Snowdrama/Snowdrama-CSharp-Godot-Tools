@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 public static class EnumerableExtensions
 {
     private static Random random = new Random();
@@ -25,12 +24,12 @@ public static class EnumerableExtensions
             yield return t;
     }
 
-    public static T GetLastElement<T>(this IEnumerable<T> source)
+    public static T? GetLastElement<T>(this IEnumerable<T> source)
     {
         return source.LastOrDefault();
     }
 
-    public static T GetRandom<T>(this IEnumerable<T> source)
+    public static T? GetRandom<T>(this IEnumerable<T> source)
     {
         if (source.Count() > 0)
         {
@@ -40,7 +39,7 @@ public static class EnumerableExtensions
         return default;
     }
 
-    public static T GetRandom<T>(this List<T> source)
+    public static T? GetRandom<T>(this List<T> source)
     {
         //if (source == null) throw new ArgumentNullException("source");
         //if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");

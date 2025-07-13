@@ -6,7 +6,7 @@ using Godot.Collections;
 [Tool, GlobalClass]
 public partial class UICurve : Resource
 {
-    //[Tooltip("Control points in screen percentage (0 to 1)")]
+    //[Tooltip("Control pointArr in screen percentage (0 to 1)")]
     [Export] public Array<Vector2> controlPoints = new Array<Vector2>();
 
     /// <summary>
@@ -16,7 +16,7 @@ public partial class UICurve : Resource
     {
         if (controlPoints == null || controlPoints.Count < 2)
         {
-            Debug.LogWarn("UICurve requires at least 2 control points.");
+            Debug.LogWarn("UICurve requires at least 2 control pointArr.");
             controlPoints.Add(new Vector2(0, 0));
             controlPoints.Add(new Vector2(1, 1));
             return Vector2.Zero;

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// Vector2 - Pitch Ragne
 /// </summary>
-public class PlaySound2DMessage : AMessage<AudioStream, Vector2, string, float, Vector2> { }
+public class PlaySound2DMessage : AMessage<AudioStream?, Vector2, string, float, Vector2> { }
 
 /// <summary>
 /// Plays a message from the sound pool with a certain clip, at a certain point and with 
@@ -23,7 +23,7 @@ public class PlaySound2DMessage : AMessage<AudioStream, Vector2, string, float, 
 /// string - The Bus name to use, like "Sounds" or "Voice"
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// </summary>
-public class PlaySoundMessage3D : AMessage<AudioStream, Vector3, string, float, Vector2> { }
+public class PlaySoundMessage3D : AMessage<AudioStream?, Vector3, string, float, Vector2> { }
 
 
 /// <summary>
@@ -34,7 +34,7 @@ public class PlaySoundMessage3D : AMessage<AudioStream, Vector3, string, float, 
 /// string - The Bus name to use, like "Sounds" or "Voice"
 /// float -  The volume to play the sound at, this does not effect the bus volume
 /// </summary>
-public class PlaySoundMessage : AMessage<AudioStream, string, float, Vector2> { }
+public class PlaySoundMessage : AMessage<AudioStream?, string, float, Vector2> { }
 
 public partial class MessagedSoundPool : Node
 {
@@ -110,10 +110,10 @@ public partial class MessagedSoundPool : Node
         }
 
         playSoundMessage = Messages.Get<PlaySoundMessage>();
-        playSoundMessage.AddListener(PlaySound);
         playPosiotionedSoundMessage2D = Messages.Get<PlaySound2DMessage>();
-        playPosiotionedSoundMessage2D.AddListener(PlayPositionedSound2D);
         playPosiotionedSoundMessage3D = Messages.Get<PlaySoundMessage3D>();
+        playSoundMessage.AddListener(PlaySound);
+        playPosiotionedSoundMessage2D.AddListener(PlayPositionedSound2D);
         playPosiotionedSoundMessage3D.AddListener(PlayPositionedSound3D);
     }
 
@@ -123,7 +123,6 @@ public partial class MessagedSoundPool : Node
         playSoundMessage.RemoveListener(PlaySound);
         playPosiotionedSoundMessage2D.RemoveListener(PlayPositionedSound2D);
         playPosiotionedSoundMessage3D.RemoveListener(PlayPositionedSound3D);
-
 
         Messages.Return<PlaySoundMessage>();
         Messages.Return<PlaySound2DMessage>();
@@ -144,7 +143,7 @@ public partial class MessagedSoundPool : Node
     /// <param name="stream"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlaySound(AudioStream stream, string busName, float volume, Vector2 pitchRange)
+    public void PlaySound(AudioStream? stream, string busName, float volume, Vector2 pitchRange)
     {
         if (stream == null)
         {
@@ -175,7 +174,7 @@ public partial class MessagedSoundPool : Node
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound2D(AudioStream stream, Vector2 playPosition, string busName, float volume, Vector2 pitchRange)
+    public void PlayPositionedSound2D(AudioStream? stream, Vector2 playPosition, string busName, float volume, Vector2 pitchRange)
     {
         if (stream == null)
         {
@@ -213,7 +212,7 @@ public partial class MessagedSoundPool : Node
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound3D(AudioStream stream, Vector3 playPosition, string busName, float volume, Vector2 pitchRange)
+    public void PlayPositionedSound3D(AudioStream? stream, Vector3 playPosition, string busName, float volume, Vector2 pitchRange)
     {
         if (stream == null)
         {

@@ -115,7 +115,7 @@ public partial class SnowFillMaze3D : Node
             return;
         }
 
-        //check each direction and if it points to me, then we should mark as connected
+        //check each direction and if it pointArr to me, then we should mark as connected
         var down = Vector3I.Down;
         var up = Vector3I.Up;
         var right = Vector3I.Right;

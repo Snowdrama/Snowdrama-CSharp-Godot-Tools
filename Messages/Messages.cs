@@ -1,7 +1,5 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public interface IMessage
 {
@@ -100,7 +98,7 @@ public class MessageHub
         Type messageType = typeof(SType);
         IMessage message;
 
-        if(messages.TryGetValue(messageType, out message))
+        if (messages.TryGetValue(messageType, out message))
         {
             message.AddUser();
             return (SType)message;

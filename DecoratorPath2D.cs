@@ -6,7 +6,7 @@ using Snowdrama.Core;
 public partial class DecoratorPath2D : Path2D
 {
     [Export] Array<PackedScene> decorations = new Array<PackedScene>();
-    [Export] float distance = 1.0f;
+    [Export] Vector2 distanceRange = new Vector2(250.0f, 500.0f);
 
     [ExportToolButton("Decorate Path!")] Callable OnDecorate => Callable.From(Decorate);
 
@@ -20,6 +20,9 @@ public partial class DecoratorPath2D : Path2D
 
     [ExportGroup("Debug")]
     [Export] Array<Node2D> spawnedDecoations = new Array<Node2D>();
+
+    bool internalWarn = false;
+    int lastCount = 0;
     public void Decorate()
     {
         foreach (var node in spawnedDecoations)
@@ -29,7 +32,17 @@ public partial class DecoratorPath2D : Path2D
 
         spawnedDecoations.Clear();
 
-        for (float i = 0; i < this.Curve.GetBakedLength(); i += distance)
+        int count = Mathf.FloorToInt(this.Curve.GetBakedLength() / distanceRange.X);
+
+        if (count > 1500 && (count != lastCount || !internalWarn))
+        {
+            lastCount = count;
+            internalWarn = true;
+            Debug.LogError($"Trying to decorate and generating {count} objects, are you sure you want to do that? If this is intentional, press decorate again!");
+            return;
+        }
+
+        for (float i = 0; i < this.Curve.GetBakedLength(); i += distanceRange.RandomBetweenXY())
         {
             var pos = this.Curve.SampleBaked(i);
             var rot = RandomAndNoise.RandomRange(angleRange.X, angleRange.Y);
@@ -49,6 +62,8 @@ public partial class DecoratorPath2D : Path2D
             this.AddChild(newNode, true);
             spawnedDecoations.Add(newNode);
             newNode.Owner = this.Owner;
+            lastCount = 0;
+            internalWarn = false;
         }
     }
 }

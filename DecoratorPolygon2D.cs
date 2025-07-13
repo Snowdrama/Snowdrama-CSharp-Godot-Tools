@@ -7,7 +7,7 @@ using System.Linq;
 public partial class DecoratorPolygon2D : Polygon2D
 {
     [Export] Array<PackedScene> decorations = new Array<PackedScene>();
-    [Export] Vector2 decorationDistance = new Vector2(1, 1);
+    [Export] Vector2 decorationDistance = new Vector2(200.0f, 200.0f);
     [Export] Vector2 decorationOffsetRange = new Vector2(1, 1);
     [Export] Vector2 angleRange = new Vector2(0, 360);
     [Export] Vector2 scaleRange = new Vector2(0.5f, 1.5f);
@@ -43,9 +43,9 @@ public partial class DecoratorPolygon2D : Polygon2D
 
 
         int targetCount = Mathf.FloorToInt((bounds.Size.X / decorationDistance.X) * (bounds.Size.Y / decorationDistance.Y));
-        if (targetCount > 1_000)
+        if (targetCount > 6_000)
         {
-            Debug.LogError($"Trying to spawn {targetCount} do you actually want to do that?");
+            Debug.LogError($"Trying to spawn {targetCount} do you actually want to do that? That's over 6,000");
             return;
         }
         else

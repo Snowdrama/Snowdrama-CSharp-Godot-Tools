@@ -23,22 +23,40 @@ public static class ColorExtensions
         newColor.V = v;
         return newColor;
     }
-    public static Gradient g;
-    public static Color GetColorFromRainbow(float t, float of = 1, Gradient? gradient = null)
+    public static Gradient g = new Gradient()
     {
-        if (g == null)
+        Colors = new Color[]
+                {
+                    Colors.Red,
+                    Colors.Orange,
+                    Colors.Yellow,
+                    Colors.Green,
+                    Colors.Teal,
+                    Colors.Blue,
+                    Colors.BlueViolet,
+                    Colors.Violet,
+                    Colors.Purple,
+                    Colors.Magenta,
+                },
+        Offsets = new float[]
+                {
+                    0.1f,
+                    0.2f,
+                    0.3f,
+                    0.4f,
+                    0.5f,
+                    0.6f,
+                    0.7f,
+                    0.8f,
+                    0.9f,
+                    1.0f,
+                },
+    };
+    public static Color GetColorFromRainbow(float t, Gradient? gradient = null)
+    {
+        if (gradient != null)
         {
-            g = new Gradient();
-            g.AddPoint(0.1f, Colors.Red);
-            g.AddPoint(0.2f, Colors.Orange);
-            g.AddPoint(0.3f, Colors.Yellow);
-            g.AddPoint(0.4f, Colors.Green);
-            g.AddPoint(0.5f, Colors.Teal);
-            g.AddPoint(0.6f, Colors.Blue);
-            g.AddPoint(0.7f, Colors.BlueViolet);
-            g.AddPoint(0.8f, Colors.Violet);
-            g.AddPoint(0.9f, Colors.Purple);
-            g.AddPoint(1.0f, Colors.Magenta);
+            return gradient.Sample(t % 1.0f);
         }
         return g.Sample(t % 1.0f);
     }

@@ -154,7 +154,7 @@ public class SnowFillMaze
             return;
         }
 
-        //check each direction and if it points to me, then we should mark as connected
+        //check each direction and if it pointArr to me, then we should mark as connected
         var down = new Vector2I(0, 1);
         var up = new Vector2I(0, -1);
         var right = new Vector2I(1, 0);

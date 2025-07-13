@@ -62,14 +62,14 @@ public class LineRenderer
     //}
 
     ///// <summary>
-    ///// Line should have at least 3 points.
+    ///// Line should have at least 3 pointArr.
     ///// </summary>
-    //public void Update(Vector3[] points)
+    //public void Update(Vector3[] pointArr)
     //{
-    //    if (points.Length < 3)
+    //    if (pointArr.Length < 3)
     //        return;
 
-    //    progressStep = 1.0f / points.Length;
+    //    progressStep = 1.0f / pointArr.Length;
     //    progress = 0;
     //    thickness = Lerp(startThickness, endThickness, progress);
     //    nextThickness = Lerp(startThickness, endThickness, progress + progressStep);
@@ -78,21 +78,21 @@ public class LineRenderer
     //    geometry.Begin(Mesh.PrimitiveType.Triangles);
     //    Last[0] = Last[1] = ZERO;
 
-    //    Corner(points[0], points[1]);
-    //    for (int i = 1; i < points.Length - 1; i++)
+    //    Corner(pointArr[0], pointArr[1]);
+    //    for (int i = 1; i < pointArr.Length - 1; i++)
     //    {
-    //        Joint(new Vector3[] { points[i - 1], points[i], points[i + 1] }, i, points.Length);
+    //        Joint(new Vector3[] { pointArr[i - 1], pointArr[i], pointArr[i + 1] }, i, pointArr.Length);
     //        thickness = Lerp(startThickness, endThickness, progress);
     //        nextThickness = Lerp(startThickness, endThickness, progress + progressStep);
     //        progress += progressStep;
     //    }
-    //    Corner(points[points.Length - 1], points[points.Length - 2]);
+    //    Corner(pointArr[pointArr.Length - 1], pointArr[pointArr.Length - 2]);
 
     //    geometry.End();
     //}
 
     ///// <summary>
-    ///// Use this if the line has only 2 points.
+    ///// Use this if the line has only 2 pointArr.
     ///// </summary>
     //public void SimpleUpdate(Vector3 A, Vector3 B)
     //{

@@ -19,7 +19,7 @@ public partial class FadePanelTransition : Transition
     }
     public override void SetTransitionValue(float transitionAmount)
     {
-        if(transitionAmount > 0)
+        if (transitionAmount > 0)
         {
             panel.Visible = true;
         }

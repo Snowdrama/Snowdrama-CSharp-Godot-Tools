@@ -1,0 +1,25 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dawo7x2o44myt"]
+
+[ext_resource type="Shader" uid="uid://c54diw7p4h83s" path="res://Tools/TransitionTools/UniversalTransition/UniversalTransition.gdshader" id="1_we0o3"]
+
+[resource]
+shader = ExtResource("1_we0o3")
+shader_parameter/use_sprite_alpha = true
+shader_parameter/use_transition_texture = false
+shader_parameter/transition_type = 0
+shader_parameter/invert = true
+shader_parameter/from_center = true
+shader_parameter/grid_size = Vector2(4, 4)
+shader_parameter/rotation_angle = 45.0
+shader_parameter/stagger = Vector2(1, 1)
+shader_parameter/stagger_frequency = Vector2i(2, 2)
+shader_parameter/flip_frequency = Vector2i(1, 1)
+shader_parameter/basic_feather = 0.0
+shader_parameter/use_mask_size = false
+shader_parameter/mask_size = Vector2(100, 100)
+shader_parameter/edges = 6
+shader_parameter/shape_feather = 0.1
+shader_parameter/sectors = 1
+shader_parameter/clock_feather = 0.0
+shader_parameter/progress = 0.0
+shader_parameter/progress_bias = Vector2(0, 0)

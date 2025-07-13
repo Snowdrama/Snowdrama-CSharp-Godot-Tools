@@ -1,11 +1,9 @@
 using Godot;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 public partial class VirtualCameraBrain3D : Camera3D
 {
-    public static VirtualCameraBrain3D cameraInstance;
+    public static VirtualCameraBrain3D? cameraInstance;
     public static List<VirtualCamera3D> cameras;
     public Transform3D cameraTransform = Transform3D.Identity;
     public static Vector3 cameraPosition;

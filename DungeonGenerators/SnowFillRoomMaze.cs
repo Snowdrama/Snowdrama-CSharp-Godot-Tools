@@ -171,7 +171,7 @@ public partial class SnowFillRoomMaze : Node2D
                     var rightConnects = CheckConnection(map, rightCell, left);
                     if (!upConnects && !downConnects && !leftConnects && !rightConnects)
                     {
-                        //nothing points to us!
+                        //nothing pointArr to us!
                         map[currentPosition.X, currentPosition.Y].removeCell = true;
                     }
                 }

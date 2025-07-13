@@ -16,12 +16,12 @@ public partial class SceneManager : Node
 
     [ExportCategory("Runtime Exposed Values")]
     [Export] public Node? currentScene;
-    [Export] string? sceneTarget;
+    [Export] string sceneTarget;
 
     [ExportCategory("Note: This uses the first node's name in the file, NOT the file name!")]
-    static SceneManager? instance;
+    static SceneManager instance;
     Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
-    static string? previousSceneName;
+    static string previousSceneName;
 
     bool transitioning;
     bool sceneLoaded;

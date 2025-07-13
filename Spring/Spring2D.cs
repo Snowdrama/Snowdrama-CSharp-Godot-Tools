@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
 //Min 2D representation of a spring
 namespace Snowdrama.Spring
 {
@@ -56,6 +54,21 @@ namespace Snowdrama.Spring
             }
         }
 
+        public Spring2D(Vector2 initialValue = default)
+        {
+            SpringConfiguration defaultConfig = new SpringConfiguration()
+            {
+                Mass = 1f,
+                Tension = 170.0f,
+                Friction = 26.0f,
+                Precision = 0.01f,
+                Clamp = false,
+                ClampRange = new Vector2(),
+            };
+            springCollection = new SpringList();
+            xID = springCollection.Add(initialValue.X, defaultConfig);
+            yID = springCollection.Add(initialValue.Y, defaultConfig);
+        }
         public Spring2D(SpringConfiguration config, Vector2 initialValue = default)
         {
             springCollection = new SpringList();

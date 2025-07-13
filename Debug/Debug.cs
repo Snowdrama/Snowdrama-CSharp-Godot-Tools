@@ -2,6 +2,19 @@ using Godot;
 
 public class Debug
 {
+    public static bool Assert(bool assert,
+        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+    {
+        if (assert)
+        {
+            //we're valid!
+            return true;
+        }
+        var path = sourceFilePath.Split("\\");
+        GD.PrintErr($"{path[path.Length - 1]}[{sourceLineNumber}]:Assertion failed!");
+        return false;
+    }
     public static void Log(string message,
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)

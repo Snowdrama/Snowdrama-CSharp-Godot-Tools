@@ -228,7 +228,7 @@ public partial class CommandConsole : Node
             switch (command)
             {
                 case "help":
-                    CommandConsole_RichTextLabel.PrintText("Check what commands are available with:");
+                    CommandConsole_RichTextLabel.PrintText("NotValid what commands are available with:");
                     CommandConsole_RichTextLabel.PrintText("list_commands");
                     CommandConsole_RichTextLabel.PrintText("list_command_targets");
                     return true;

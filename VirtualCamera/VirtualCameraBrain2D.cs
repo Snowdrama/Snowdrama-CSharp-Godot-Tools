@@ -1,17 +1,18 @@
 using Godot;
+using Snowdrama.Spring;
 using System.Collections.Generic;
 
 //asks to be the primary camera
 [GlobalClass]
 public partial class VirtualCameraBrain2D : Camera2D
 {
-    public static VirtualCameraBrain2D cameraInstance;
-    public static List<VirtualCamera2D> cameras;
+    public static VirtualCameraBrain2D? cameraInstance;
+    public static List<VirtualCamera2D> cameras = new List<VirtualCamera2D>();
     public Transform2D cameraTransform = Transform2D.Identity;
     public static Vector2 cameraPosition;
     public static Vector2 cameraSize;
 
-    VirtualCamera2D currentCamera;
+    VirtualCamera2D? currentCamera;
     [ExportGroup("Zoom")]
     [Export] bool SmoothScalingEnabled;
 
@@ -28,18 +29,29 @@ public partial class VirtualCameraBrain2D : Camera2D
     [Export] bool LerpRotation;
     [Export] double LerpRotationSpeed = 10.0;
 
+    bool isShakingScreen = false;
+    float screenShakeTime = 0.0f;
+    float screenShakeIntensity = 1.0f;
+    Spring2D screenShakeSpring;
+    VirtualCameraBrain2D()
+    {
+        screenShakeSpring = new Spring2D();
+        ScreenShake = Messages.Get<ScreenShakeMessage2D>();
+        ScreenShake.AddListener(ShakeScreen);
+    }
+    ~VirtualCameraBrain2D()
+    {
+        ScreenShake.RemoveListener(ShakeScreen);
+        Messages.Return<ScreenShakeMessage2D>();
+    }
     public override void _EnterTree()
     {
         base._EnterTree();
         cameraInstance = this;
-
-
-
     }
 
     public override void _ExitTree()
     {
-
         base._ExitTree();
         cameraInstance = null;
     }
@@ -47,7 +59,7 @@ public partial class VirtualCameraBrain2D : Camera2D
     public override void _Process(double delta)
     {
         base._Process(delta);
-        VirtualCameraBrain2D.cameraPosition = this.Position;
+        VirtualCameraBrain2D.cameraPosition = this.GlobalPosition;
         cameraTransform = GetCanvasTransform();
 
         //if the list is null...then there's no VCams
@@ -61,6 +73,22 @@ public partial class VirtualCameraBrain2D : Camera2D
         {
             return;
         }
+
+        if (isShakingScreen)
+        {
+            screenShakeSpring.Velocity = Vector2Extensions.RandomDirection() * screenShakeIntensity;
+            if (screenShakeTime > 0)
+            {
+                screenShakeTime -= (float)delta;
+            }
+            else
+            {
+                screenShakeTime = 0;
+                screenShakeIntensity = 0;
+                isShakingScreen = false;
+            }
+        }
+        screenShakeSpring.Update(delta);
 
         //sort the cameras by their virtualCameraPriority
         cameras.Sort((x, y) =>
@@ -99,22 +127,24 @@ public partial class VirtualCameraBrain2D : Camera2D
             {
                 if (LerpPositionByDistance)
                 {
-                    var distance = this.Position.DistanceTo(currentCamera.GlobalPosition);
+                    var distance = this.GlobalPosition.DistanceTo(currentCamera.GlobalPosition);
                     var currentDelta = (delta * LerpPositionLinearSpeed) + (delta * LerpPositionDistanceSpeed * distance);
                     var clampedDelta = Mathf.Clamp(currentDelta, 0, maxSpeed);
-                    this.Position = this.Position.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
+                    this.GlobalPosition = this.GlobalPosition.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
                 }
                 else
                 {
                     var currentDelta = (float)(delta * LerpPositionLinearSpeed);
                     var clampedDelta = Mathf.Clamp(currentDelta, 0, maxSpeed);
-                    this.Position = this.Position.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
+                    this.GlobalPosition = this.GlobalPosition.MoveToward(currentCamera.GlobalPosition, (float)clampedDelta);
                 }
+                this.GlobalPosition += screenShakeSpring.Value;
             }
             else
             {
-                this.Position = currentCamera.GlobalPosition;
+                this.GlobalPosition = currentCamera.GlobalPosition + screenShakeSpring.Value;
             }
+
 
             this.IgnoreRotation = currentCamera.IgnoreRotation;
 
@@ -162,4 +192,15 @@ public partial class VirtualCameraBrain2D : Camera2D
             cameras = new List<VirtualCamera2D>();
         }
     }
+
+    ScreenShakeMessage2D ScreenShake;
+    private void ShakeScreen(float intensity, float duration = 0.1f, Vector2 biasDirection = new Vector2())
+    {
+        //Debug.Log($"Shaking Screen! intensity[{intensity}] duration[{duration}], biasDirection[{biasDirection}]");
+        isShakingScreen = true;
+        screenShakeIntensity = Mathf.Max(screenShakeIntensity, intensity);
+        screenShakeTime = Mathf.Max(screenShakeTime, duration);
+    }
 }
+
+public class ScreenShakeMessage2D : AMessage<float, float, Vector2> { }

@@ -12,7 +12,7 @@ using System.Diagnostics;
 /// 
 /// 
 /// This is essentially a layered gradient descent algorithm, or something like an implementation of flowfields
-/// Creating a graph of weights that moves towards some points.
+/// Creating a graph of weights that moves towards some pointArr.
 /// 
 /// This implementation I'm calling Heat Diffusion as you can define some constant of flow
 /// and the heat transfer will take some percentage of the adjacent tiles and average them together
