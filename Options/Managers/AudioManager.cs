@@ -52,4 +52,18 @@ public partial class AudioManager : Node
             Debug.LogError($"The key {volumeKey} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
         }
     }
+
+    public static float GetVolume(string volumeKey, float volumeMinValue = 0, float volumeMaxValue = 1)
+    {
+        var index = AudioServer.GetBusIndex(volumeKey);
+        if (index >= 0)
+        {
+            return AudioServer.GetBusVolumeDb(index);
+        }
+        else
+        {
+            GD.PrintErr($"The key {volumeKey} isn't listed as a bus. Please check the audio options to ensure only the keys listen in the audio bus resource");
+        }
+        return 0;
+    }
 }

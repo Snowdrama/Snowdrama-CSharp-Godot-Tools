@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0sop8iwb7cbd"]
+
+[sub_resource type="Resource" id="Resource_cmnqi"]
+metadata/__load_path__ = "res://Tools/Options/AudioManager.cs"
+
+[node name="AudioManager" type="Node"]
+script = SubResource("Resource_cmnqi")
+VolumeKeys = ["Master", "Music", "Sounds", "Voices"]

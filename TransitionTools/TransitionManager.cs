@@ -59,7 +59,7 @@ public partial class TransitionManager : Node
         switch (state)
         {
             case TransitionState.Waiting:
-                //do nothing we're waiting for something to happen
+                //do nothing we're playing for something to happen
                 break;
             case TransitionState.HideScreen:
                 transitionValue += (float)delta;

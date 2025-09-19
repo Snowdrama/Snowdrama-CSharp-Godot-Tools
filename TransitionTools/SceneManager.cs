@@ -96,6 +96,13 @@ public partial class SceneManager : Node
             if (possiblePath.Contains(".remap"))
             {
                 possiblePath = possiblePath.Replace(".remap", "");
+                Debug.LogWarn("Resource is a remap file!");
+            }
+
+            if (!possiblePath.Contains(".tscn"))
+            {
+                Debug.LogError("Resource is not a scene file!");
+                return;
             }
 
             if (!ResourceLoader.Exists(possiblePath))
@@ -109,7 +116,6 @@ public partial class SceneManager : Node
                 Debug.LogWarn($"Path {possiblePath} is not a scene so skipping");
                 continue;
             }
-
             var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
             if (possiblyAScene == null)
             {
