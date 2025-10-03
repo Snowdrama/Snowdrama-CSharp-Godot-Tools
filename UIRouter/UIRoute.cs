@@ -11,6 +11,12 @@ public partial class UIRoute : Node
     [Export] private bool startEnabled = false;
     public override void _Ready()
     {
+
+        if (mainContent == null)
+        {
+            Debug.LogError($"UIRoute {this.Name} doesn't have main content!");
+        }
+
         if (startEnabled)
         {
             _router.OpenRoute(routeSegment);
@@ -56,7 +62,7 @@ public partial class UIRoute : Node
 
     public override void _Process(double delta)
     {
-        if (mainContent.Visible)
+        if (mainContent != null && mainContent.Visible)
         {
             //check if we have a focus, if somehow we lose that focus grab it again
             if (GetViewport().GuiGetFocusOwner() == null)

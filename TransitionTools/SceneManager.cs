@@ -9,23 +9,23 @@ using System.Collections.Generic;
 public partial class SceneManager : Node
 {
     [ExportCategory("Manual Assignment")]
-    [Export] PackedScene[] packedScenes = new PackedScene[0];
+    [Export] private PackedScene[] packedScenes = new PackedScene[0];
 
     [ExportCategory("Automatic Assignment (no final slash example: res://Scenes)")]
-    [Export] string[] automaticScenePaths = new string[] { "res://Scenes" };
+    [Export] private string[] automaticScenePaths = new string[] { "res://Scenes" };
 
     [ExportCategory("Runtime Exposed Values")]
     [Export] public Node? currentScene;
-    [Export] string sceneTarget;
+    [Export] private string sceneTarget;
 
     [ExportCategory("Note: This uses the first node's name in the file, NOT the file name!")]
-    static SceneManager instance;
-    Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
-    static string previousSceneName;
+    private static SceneManager instance;
+    private Dictionary<string, PackedScene> _scenes = new Dictionary<string, PackedScene>();
+    private static string previousSceneName;
 
-    bool transitioning;
-    bool sceneLoaded;
-    bool fakeLoadComplete;
+    private bool transitioning;
+    private bool sceneLoaded;
+    private bool fakeLoadComplete;
 
     private static bool _isTransitioningScenes = false;
     public static bool IsTransitioning
@@ -37,7 +37,7 @@ public partial class SceneManager : Node
     }
 
     [ExportCategory("Debug")]
-    [Export] bool pulPackedScenesFromAutoPath;
+    [Export] private bool pulPackedScenesFromAutoPath;
     public override void _EnterTree()
     {
         Debug.LogRich("[wave amp=25.0 freq=10.0][color=#0080FF]Reminder the SceneManager uses the first node's name in the file, NOT THE SCENES FILE NAME!!!![/color][/wave]");
@@ -111,11 +111,12 @@ public partial class SceneManager : Node
                 continue;
             }
 
-            if (!possiblePath.Contains(".tscn"))
+            if (!ResourceLoader.Exists(possiblePath))
             {
-                Debug.LogWarn($"Path {possiblePath} is not a scene so skipping");
+                Debug.LogError($"Path {possiblePath} doesn't point to a path the resource loader can load");
                 continue;
             }
+
             var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
             if (possiblyAScene == null)
             {
