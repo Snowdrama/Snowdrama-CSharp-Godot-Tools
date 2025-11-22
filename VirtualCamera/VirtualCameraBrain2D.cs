@@ -12,28 +12,28 @@ public partial class VirtualCameraBrain2D : Camera2D
     public static Vector2 cameraPosition;
     public static Vector2 cameraSize;
 
-    VirtualCamera2D? currentCamera;
+    private VirtualCamera2D? currentCamera;
     [ExportGroup("Zoom")]
-    [Export] bool SmoothScalingEnabled;
+    [Export] private bool SmoothScalingEnabled;
 
     [ExportGroup("Position")]
-    [Export] bool LerpPosition;
-    [Export] double LerpPositionLinearSpeed = 10.0;
-    [Export] bool LerpPositionByDistance;
-    [Export] double LerpPositionDistanceSpeed = 10.0;
+    [Export] private bool LerpPosition;
+    [Export] private double LerpPositionLinearSpeed = 10.0;
+    [Export] private bool LerpPositionByDistance;
+    [Export] private double LerpPositionDistanceSpeed = 10.0;
 
-    [Export] double maxSpeed = 100;
+    [Export] private double maxSpeed = 100;
 
 
     [ExportGroup("Rotation")]
-    [Export] bool LerpRotation;
-    [Export] double LerpRotationSpeed = 10.0;
+    [Export] private bool LerpRotation;
+    [Export] private double LerpRotationSpeed = 10.0;
 
-    bool isShakingScreen = false;
-    float screenShakeTime = 0.0f;
-    float screenShakeIntensity = 1.0f;
-    Spring2D screenShakeSpring;
-    VirtualCameraBrain2D()
+    private bool isShakingScreen = false;
+    private float screenShakeTime = 0.0f;
+    private float screenShakeIntensity = 1.0f;
+    private Spring2D screenShakeSpring;
+    private VirtualCameraBrain2D()
     {
         screenShakeSpring = new Spring2D();
         ScreenShake = Messages.Get<ScreenShakeMessage2D>();
@@ -43,6 +43,11 @@ public partial class VirtualCameraBrain2D : Camera2D
     {
         ScreenShake.RemoveListener(ShakeScreen);
         Messages.Return<ScreenShakeMessage2D>();
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
     }
     public override void _EnterTree()
     {
@@ -193,7 +198,7 @@ public partial class VirtualCameraBrain2D : Camera2D
         }
     }
 
-    ScreenShakeMessage2D ScreenShake;
+    private ScreenShakeMessage2D ScreenShake;
     private void ShakeScreen(float intensity, float duration = 0.1f, Vector2 biasDirection = new Vector2())
     {
         //Debug.Log($"Shaking Screen! intensity[{intensity}] duration[{duration}], biasDirection[{biasDirection}]");

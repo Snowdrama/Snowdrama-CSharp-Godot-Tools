@@ -1,36 +1,43 @@
 using Godot;
 using System;
 
+[Tool, GlobalClass]
 public partial class DebugCamera2D : VirtualCamera2D
 {
     [Export]
-    float speed = 5;
+    private float speed = 5;
 
     [Export]
-    float zoomSpeed = 0.1f;
-    float zoom = 1.0f;
+    private float zoomSpeed = 0.1f;
+    private float zoom = 1.0f;
 
 
     [Export]
-    float zoomMax = 5;
+    private float zoomMax = 5;
     [Export]
-    float zoomMin = 0.5f;
+    private float zoomMin = 0.5f;
 
     [ExportGroup("Game Input Names")]
-    [Export] string Left = "MoveCameraLeft";
-    [Export] string Right = "MoveCameraRight";
-    [Export] string Up = "MoveCameraUp";
-    [Export] string Down = "MoveCameraDown";
-    [Export] string ZoomIn = "CameraZoomIn";
-    [Export] string ZoomOut = "CameraZoomOut";
+    [Export] private string Left = "MoveCameraLeft";
+    [Export] private string Right = "MoveCameraRight";
+    [Export] private string Up = "MoveCameraUp";
+    [Export] private string Down = "MoveCameraDown";
+    [Export] private string ZoomIn = "ZoomCameraIn";
+    [Export] private string ZoomOut = "ZoomCameraOut";
     public override void _Ready()
     {
+        base._Ready();
         this.PositionSmoothingEnabled = true;
         this.PositionSmoothingSpeed = 10.0f;
     }
     public override void _Process(double delta)
     {
         base._Process(delta);
+
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
         var direction = Input.GetVector(Left, Right, Up, Down);
         this.Position += direction * speed;
 

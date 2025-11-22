@@ -5,13 +5,13 @@ public partial class VirtualCamera2D : Node2D
 {
     [Export] public bool forceActive = false;
     [Export] public bool isActive = false;
-    [Export] int activePriority = 10;
-    [Export] int inactivePriority = 0;
+    [Export] private int activePriority = 10;
+    [Export] private int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
 
-    [Export] Vector2 WindowSize = new Vector2(1920, 1080);
+    [Export] private Vector2 WindowSize = new Vector2(1920, 1080);
     //[Export] float orthographicSize;
-    [Export] bool clampToIntegerScale;
+    [Export] private bool clampToIntegerScale;
     public Vector2 targetScreenSize;
     public Vector2 testScreenSize;
 
@@ -22,13 +22,12 @@ public partial class VirtualCamera2D : Node2D
     [Export] public float PositionSmoothingSpeed;
 
     [ExportGroup("Camera Bounds")]
-    Vector2 currentPosition;
-    [Export] bool useCameraBounds;
-    [Export] Rect2 cameraBounds;
+    [Export] private bool useCameraBounds;
+    [Export] private Rect2 cameraBounds;
 
     //DEBUG ONLY
     [ExportCategory("Debug")]
-    [Export] Vector2 TestScreenResolution = new Vector2(1920, 1080);
+    [Export] private Vector2 TestScreenResolution = new Vector2(1920, 1080);
     [ExportGroup("Settings")]
     [Export] private float debugBorderWidth = 30.0f;
     [Export] private Color debugVirtualBorderColor = Color.FromHtml($"FF8000");
@@ -40,6 +39,8 @@ public partial class VirtualCamera2D : Node2D
 
 
     [ExportGroup("Read Only")]
+    [Export] private Vector2 currentPosition;
+    [Export] private Vector2 halfExtents;
     [Export] public Vector2 cameraZoomLevel = new Vector2(1.0f, 1.0f);
     [Export] public Vector2 windowResScale;
     [Export] public Vector2 calculatedScaleCurrent;
@@ -91,6 +92,7 @@ public partial class VirtualCamera2D : Node2D
         if (Engine.IsEditorHint())
         {
             QueueRedraw();
+            return;
         }
 
         if (isActive)
@@ -104,8 +106,16 @@ public partial class VirtualCamera2D : Node2D
 
         if (useCameraBounds)
         {
-            currentPosition.X = currentPosition.X.Clamp(cameraBounds.Position.X, cameraBounds.End.X);
-            currentPosition.Y = currentPosition.Y.Clamp(cameraBounds.Position.Y, cameraBounds.End.Y);
+            var cam = GetViewport().GetCamera2D();
+            halfExtents = cam.GetViewportRect().Size / cam.Zoom * 0.5f;
+            currentPosition.X = currentPosition.X.Clamp(
+                cameraBounds.Position.X + halfExtents.X,
+                cameraBounds.Size.X - halfExtents.X
+            );
+            currentPosition.Y = currentPosition.Y.Clamp(
+                cameraBounds.Position.Y + halfExtents.Y,
+                cameraBounds.Size.Y - halfExtents.Y
+            );
             this.GlobalPosition = currentPosition;
         }
     }
