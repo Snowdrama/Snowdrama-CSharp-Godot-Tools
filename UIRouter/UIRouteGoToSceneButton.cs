@@ -8,7 +8,7 @@ public partial class UIRouteGoToSceneButton : UIBaseRouterButton
     {
         base._Ready();
         this.Connect(SignalName.Pressed, Callable.From(() => {
-            Debug.LogWarn($"Loading Scene:{sceneName}");
+            Debug.LogWarning($"Loading Scene:{sceneName}");
             SceneManager.LoadScene(sceneName);
         }));
 

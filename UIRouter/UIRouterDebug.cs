@@ -17,7 +17,7 @@ public partial class UIRouterDebug : Node
 
     private void PrintRoutes(params string[] args)
     {
-        Debug.LogWarn("Printing Routes!");
+        Debug.LogWarning("Printing Routes!");
         var routes = router.GetAllRoutes();
         for (int i = 0; i < routes.Count; i++)
         {

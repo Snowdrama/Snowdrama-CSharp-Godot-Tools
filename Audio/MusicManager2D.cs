@@ -3,26 +3,25 @@ using Godot.Collections;
 
 public partial class MusicManager2D : Node
 {
-    [Export]
-    Options? options;
-    enum MusicManagerChannel
+    [Export] private Options options;
+    private enum MusicManagerChannel
     {
         Music1,
         Music2,
     }
-    MusicManagerChannel channel = MusicManagerChannel.Music1;
-    float musicChannelLerp = 0;
-    [Export] AudioStreamPlayer2D? music1;
-    [Export] AudioStreamPlayer2D? music2;
-    [Export] AudioStream? stream1;
-    [Export] AudioStream? stream2;
+    private MusicManagerChannel channel = MusicManagerChannel.Music1;
+    private float musicChannelLerp = 0;
+    [Export] private AudioStreamPlayer2D music1;
+    [Export] private AudioStreamPlayer2D music2;
+    [Export] private AudioStream stream1;
+    [Export] private AudioStream stream2;
 
-    [Export] Array<AudioStream> songs = new Array<AudioStream>();
-    [Export] float targetFadeTime = 5;
-    [Export] int musicLoopCountMax = 3;
+    [Export] private Array<AudioStream> songs = new Array<AudioStream>();
+    [Export] private float targetFadeTime = 5;
+    [Export] private int musicLoopCountMax = 3;
 
-    int music1LoopCount;
-    int music2LoopCount;
+    private int music1LoopCount;
+    private int music2LoopCount;
     // Called when the node enters the scene tree for the first lerpAmount.
     public override void _Ready()
     {

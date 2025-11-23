@@ -72,7 +72,7 @@ public static class ContentFitterTools
             case LayoutPreset.FullRect:
                 return offsetSize * 0.5f;
             default:
-                Debug.LogWarn("Content fitter is using default center offset! Preset Used: {layoutPreset}");
+                Debug.LogWarning("Content fitter is using default center offset! Preset Used: {layoutPreset}");
                 return offsetSize * 0.5f;
         }
     }
@@ -113,7 +113,7 @@ public static class ContentFitterTools
             case LayoutPreset.FullRect:
                 return currentSize * 0.5f;
             default:
-                Debug.LogWarn("Using Default Center offset!");
+                Debug.LogWarning("Using Default Center offset!");
                 return currentSize * 0.5f;
         }
     }

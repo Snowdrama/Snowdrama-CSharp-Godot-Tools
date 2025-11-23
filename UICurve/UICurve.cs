@@ -16,7 +16,7 @@ public partial class UICurve : Resource
     {
         if (controlPoints == null || controlPoints.Count < 2)
         {
-            Debug.LogWarn("UICurve requires at least 2 control pointArr.");
+            Debug.LogWarning("UICurve requires at least 2 control pointArr.");
             controlPoints.Add(new Vector2(0, 0));
             controlPoints.Add(new Vector2(1, 1));
             return Vector2.Zero;

@@ -20,7 +20,7 @@ public partial class FullScreenDropdown : OptionButton
 
     private void OnItemSelected(long selected)
     {
-        Debug.Log($"Selecting index {selected} which is id: {this.GetItemId((int)selected)} or {(DisplayServer.WindowMode)this.GetItemId((int)selected)}");
+        Debug.Log($"Selecting index {selected} which is Id: {this.GetItemId((int)selected)} or {(DisplayServer.WindowMode)this.GetItemId((int)selected)}");
         switch (this.GetItemId((int)selected))
         {
             case 0:

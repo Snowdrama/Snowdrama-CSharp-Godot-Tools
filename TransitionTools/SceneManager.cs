@@ -96,7 +96,7 @@ public partial class SceneManager : Node
             if (possiblePath.Contains(".remap"))
             {
                 possiblePath = possiblePath.Replace(".remap", "");
-                Debug.LogWarn("Resource is a remap file!");
+                Debug.LogWarning("Resource is a remap file!");
             }
 
             if (!possiblePath.Contains(".tscn"))
@@ -120,7 +120,7 @@ public partial class SceneManager : Node
             var possiblyAScene = ResourceLoader.Load<PackedScene>(possiblePath);
             if (possiblyAScene == null)
             {
-                Debug.LogWarn($"Path {possiblePath} loaded but is null for some reason, skipping");
+                Debug.LogWarning($"Path {possiblePath} loaded but is null for some reason, skipping");
                 continue;
             }
 
@@ -292,7 +292,7 @@ public partial class SceneManager : Node
         }
         if (currentScene == null)
         {
-            Debug.LogWarn($"Tried swapping scenes during blackout, but current scene is null");
+            Debug.LogWarning($"Tried swapping scenes during blackout, but current scene is null");
         }
         SwapScenes(currentScene, sceneTarget);
 
@@ -304,7 +304,7 @@ public partial class SceneManager : Node
         {
             return previousSceneName;
         }
-        Debug.LogWarn("Previous Scene Name is null returning empty");
+        Debug.LogWarning("Previous Scene Name is null returning empty");
         return "";
     }
 

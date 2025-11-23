@@ -7,14 +7,14 @@ public class PlayParticle2DMessage : AMessage<string, Vector2, Vector2> { }
 
 public partial class ParticlePool2D : Node
 {
-    PlayParticle2DMessage? playParticle2DMessage;
+    private PlayParticle2DMessage playParticle2DMessage;
 
-    [Export] string particleName = "Explosion1";
-    Array<GpuParticles2D> particles = new Array<GpuParticles2D>();
-    Stack<GpuParticles2D> particlesStack = new Stack<GpuParticles2D>();
+    [Export] private string particleName = "Explosion1";
+    private Array<GpuParticles2D> particles = new Array<GpuParticles2D>();
+    private Stack<GpuParticles2D> particlesStack = new Stack<GpuParticles2D>();
 
-    [Export] int particleCount = 16;
-    [Export] PackedScene particlePrefab = null!;
+    [Export] private int particleCount = 16;
+    [Export] private PackedScene particlePrefab = null!;
 
     public override void _Ready()
     {

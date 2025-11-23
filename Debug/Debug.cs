@@ -29,7 +29,7 @@ public class Debug
         var path = sourceFilePath.Split("\\");
         GD.PrintRich($"[{path[path.Length - 1]}:{sourceLineNumber}]:[{message}]");
     }
-    public static void LogWarn(string message,
+    public static void LogWarning(string message,
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
     {

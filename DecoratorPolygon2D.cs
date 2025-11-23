@@ -36,7 +36,7 @@ public partial class DecoratorPolygon2D : Polygon2D
         }
         var bounds = new Rect2(min, max - min);
 
-        Debug.LogWarn($"Bounds! {bounds}");
+        Debug.LogWarning($"Bounds! {bounds}");
 
         //make sure it's not 0 or it will be an infinite loop
         decorationDistance = decorationDistance.Clamp(0.1f, Mathf.Inf);
@@ -50,7 +50,7 @@ public partial class DecoratorPolygon2D : Polygon2D
         }
         else
         {
-            Debug.LogWarn($"Starting to spawn {targetCount}");
+            Debug.LogWarning($"Starting to spawn {targetCount}");
         }
         for (float y = 0; y < bounds.Size.Y; y += decorationDistance.Y)
         {

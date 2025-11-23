@@ -203,7 +203,7 @@ public partial class Options : Node
     public static void SetDouble(string key, double value)
     {
         ValidateLoadConfig();
-        Debug.LogWarn($"Setting Double for key: {key} to {value}");
+        Debug.LogWarning($"Setting Double for key: {key} to {value}");
         config.SetValue("Options", key, value);
         var err = config.Save(userConfigLocation);
         SaveConfig();

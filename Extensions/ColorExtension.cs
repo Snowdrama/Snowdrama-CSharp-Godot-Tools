@@ -52,7 +52,7 @@ public static class ColorExtensions
                     1.0f,
                 },
     };
-    public static Color GetColorFromRainbow(float t, Gradient? gradient = null)
+    public static Color GetColorFromRainbow(float t, Gradient gradient = null)
     {
         if (gradient != null)
         {
