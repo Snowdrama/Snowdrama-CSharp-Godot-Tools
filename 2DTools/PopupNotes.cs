@@ -9,7 +9,7 @@ public class ShowPopupNotesMessage : AMessage<Vector2, string> { }
 public class UpdatePopupNotesPositionMessage : AMessage<Vector2> { }
 public class HidePopupNotesMessage : AMessage { }
 public class PopupNotesClosedMessage : AMessage { }
-public partial class PopupNotes : Control, IInteractable
+public partial class PopupNotes : Control, IInteractableUI
 {
     [Export] private float paddingSize = 64.0f;
     [Export] private TextEdit TextEdit { get; set; }
