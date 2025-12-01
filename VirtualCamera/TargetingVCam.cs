@@ -31,7 +31,7 @@ public partial class TargetingVCam : VirtualCamera2D
         }
         else
         {
-            Debug.LogError($"target in VCam is null");
+            Debug.LogError($"_target in VCam is null");
         }
     }
 

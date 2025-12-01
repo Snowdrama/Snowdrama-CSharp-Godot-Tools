@@ -206,7 +206,7 @@ public partial class CommandConsole : Node
                 }
                 else
                 {
-                    CommandConsole_RichTextLabel.PrintText($"Command {command} has no target {target} in it's command list.");
+                    CommandConsole_RichTextLabel.PrintText($"Command {command} has no _target {target} in it's command list.");
                     return false;
                 }
             }
