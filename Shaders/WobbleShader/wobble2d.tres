@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c4shpdcb6s723"]
+
+[ext_resource type="Shader" uid="uid://brmocm0xouywh" path="res://Tools/Shaders/WobbleShader/wobble2d.gdshader" id="1_8i1vw"]
+
+[resource]
+shader = ExtResource("1_8i1vw")
+shader_parameter/normal_offset = 0.2
+shader_parameter/time_influence = 3.0
+shader_parameter/y_div = 10.0

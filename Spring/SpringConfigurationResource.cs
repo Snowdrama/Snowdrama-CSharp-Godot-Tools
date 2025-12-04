@@ -11,8 +11,10 @@ namespace Snowdrama.Spring
         [Export] public float Friction = 26;
         [Export] public float Precision = 0.01f;
         [Export] public bool Clamp;
-        [Export] public Vector2 ClampRange;
-
+        [Export] public Vector2 ClampRangeX = new Vector2(-1.0f, 1.0f);
+        [Export] public Vector2 ClampRangeY = new Vector2(-1.0f, 1.0f);
+        [Export] public Vector2 ClampRangeZ = new Vector2(-1.0f, 1.0f);
+        [Export] public Vector2 ClampRangeW = new Vector2(-1.0f, 1.0f);
         private SpringConfiguration _config;
         private bool init = false;
         public SpringConfiguration Config
@@ -28,7 +30,10 @@ namespace Snowdrama.Spring
                     _config.Friction = Friction;
                     _config.Precision = Precision;
                     _config.Clamp = Clamp;
-                    _config.ClampRange = ClampRange;
+                    _config.ClampRangeX = ClampRangeX;
+                    _config.ClampRangeY = ClampRangeY;
+                    _config.ClampRangeZ = ClampRangeZ;
+                    _config.ClampRangeW = ClampRangeW;
                 }
                 return _config;
             }

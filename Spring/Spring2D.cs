@@ -4,9 +4,9 @@ namespace Snowdrama.Spring
 {
     public class Spring2D
     {
-        SpringList springCollection;
-        int xID;
-        int yID;
+        private SpringList springCollection;
+        private int xID;
+        private int yID;
 
         public Vector2 Value
         {
@@ -63,17 +63,16 @@ namespace Snowdrama.Spring
                 Friction = 26.0f,
                 Precision = 0.01f,
                 Clamp = false,
-                ClampRange = new Vector2(),
             };
             springCollection = new SpringList();
-            xID = springCollection.Add(initialValue.X, defaultConfig);
-            yID = springCollection.Add(initialValue.Y, defaultConfig);
+            xID = springCollection.Add(initialValue.X, defaultConfig, new Vector2(-1, 1));
+            yID = springCollection.Add(initialValue.Y, defaultConfig, new Vector2(-1, 1));
         }
         public Spring2D(SpringConfiguration config, Vector2 initialValue = default)
         {
             springCollection = new SpringList();
-            xID = springCollection.Add(initialValue.X, config);
-            yID = springCollection.Add(initialValue.Y, config);
+            xID = springCollection.Add(initialValue.X, config, config.ClampRangeX);
+            yID = springCollection.Add(initialValue.Y, config, config.ClampRangeY);
         }
 
         public void Update(float deltaTime)

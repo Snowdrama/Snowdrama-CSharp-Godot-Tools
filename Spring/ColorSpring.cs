@@ -7,11 +7,11 @@ namespace Snowdrama.Spring
 {
     public class SpringColor
     {
-        SpringList springCollection;
-        int rID;
-        int gID;
-        int bID;
-        int aID;
+        private SpringList springCollection;
+        private int rID;
+        private int gID;
+        private int bID;
+        private int aID;
 
         public Color Value
         {
@@ -70,10 +70,10 @@ namespace Snowdrama.Spring
         public SpringColor(SpringConfiguration config, Color initialValue = default)
         {
             springCollection = new SpringList(4);
-            rID = springCollection.Add(initialValue.R, config);
-            gID = springCollection.Add(initialValue.G, config);
-            bID = springCollection.Add(initialValue.B, config);
-            aID = springCollection.Add(initialValue.A, config);
+            rID = springCollection.Add(initialValue.R, config, config.ClampRangeX);
+            gID = springCollection.Add(initialValue.G, config, config.ClampRangeY);
+            bID = springCollection.Add(initialValue.B, config, config.ClampRangeZ);
+            aID = springCollection.Add(initialValue.A, config, config.ClampRangeW);
         }
 
         public void Update(float deltaTime)

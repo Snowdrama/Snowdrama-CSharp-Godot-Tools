@@ -6,8 +6,8 @@ namespace Snowdrama.Spring
 {
     public class Spring
     {
-        SpringList springCollection;
-        int ID;
+        private SpringList springCollection;
+        private int ID;
 
         public float Value
         {
@@ -54,14 +54,14 @@ namespace Snowdrama.Spring
         public Spring(SpringConfiguration config, float initialValue = default)
         {
             springCollection = new SpringList(1);
-            ID = springCollection.Add(initialValue, config);
+            ID = springCollection.Add(initialValue, config, config.ClampRangeX);
         }
 
         public void Update(float deltaTime)
         {
             springCollection.Update(deltaTime);
         }
-       
+
         public void Update(double deltaTime)
         {
             Update((float)deltaTime);

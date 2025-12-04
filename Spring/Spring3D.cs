@@ -7,10 +7,10 @@ namespace Snowdrama.Spring
 {
     public class Spring3D
     {
-        SpringList springCollection;
-        int xID;
-        int yID;
-        int zID;
+        private SpringList springCollection;
+        private int xID;
+        private int yID;
+        private int zID;
 
         public Vector3 Value
         {
@@ -65,9 +65,9 @@ namespace Snowdrama.Spring
         public Spring3D(SpringConfiguration config, Vector3 initialValue = default)
         {
             springCollection = new SpringList(3);
-            xID = springCollection.Add(initialValue.X, config);
-            yID = springCollection.Add(initialValue.Y, config);
-            zID = springCollection.Add(initialValue.Z, config);
+            xID = springCollection.Add(initialValue.X, config, config.ClampRangeX);
+            yID = springCollection.Add(initialValue.Y, config, config.ClampRangeY);
+            zID = springCollection.Add(initialValue.Z, config, config.ClampRangeZ);
         }
 
         public void Update(float deltaTime)

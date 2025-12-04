@@ -9,6 +9,7 @@ namespace Snowdrama.Spring
 
         private List<SpringConfiguration> _springConfigs;
         private List<SpringState> _states;
+        private List<Vector2> _clamps;
 
         public SpringList()
         {
@@ -22,10 +23,10 @@ namespace Snowdrama.Spring
             _states = new List<SpringState>(capacity);
         }
 
-        public int Add(float initialValue, SpringConfiguration springConfig)
+        public int Add(float initialValue, SpringConfiguration springConfig, Vector2 clamp)
         {
             var id = Count;
-            var state = new SpringState(initialValue, initialValue, 0f);
+            var state = new SpringState(initialValue, initialValue, 0f, clamp);
             _springConfigs.Add(springConfig);
             _states.Add(state);
 
@@ -40,7 +41,7 @@ namespace Snowdrama.Spring
         {
             if (_springConfigs[id].Clamp)
             {
-                return Mathf.Clamp(_states[id].Current, _springConfigs[id].ClampRange.X, _springConfigs[id].ClampRange.Y);
+                return Mathf.Clamp(_states[id].Current, _states[id].Clamp.X, _states[id].Clamp.Y);
             }
             return _states[id].Current;
         }
