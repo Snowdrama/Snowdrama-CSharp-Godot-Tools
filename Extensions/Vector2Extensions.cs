@@ -114,6 +114,34 @@ public static class Vector2Extensions
         return new Vector2(Mathf.Max(A.X, B.X), Mathf.Max(A.Y, B.Y));
     }
 
+
+    public static bool InBounds(this Vector2 pos, Vector2 TopLeftPos, Vector2 BottomRightPos)
+    {
+        if (pos.X >= TopLeftPos.X &&
+            pos.X < BottomRightPos.X &&
+            pos.Y >= TopLeftPos.Y &&
+            pos.Y < BottomRightPos.Y)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool InBounds(this Vector2I pos, Vector2I TopLeftPos, Vector2I BottomRightPos)
+    {
+        if (pos.X >= TopLeftPos.X &&
+            pos.X < BottomRightPos.X &&
+            pos.Y >= TopLeftPos.Y &&
+            pos.Y < BottomRightPos.Y)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool InBounds(this Vector2I pos, Vector2 TopLeftPos, Vector2 BottomRightPos)
+    {
+        return InBounds(pos, TopLeftPos.RoundToInt(), BottomRightPos.RoundToInt());
+    }
+
     public static float AngleFromVectorDegrees(this Vector2 dir)
     {
         return Rad2Deg * dir.AngleFromVectorRads();

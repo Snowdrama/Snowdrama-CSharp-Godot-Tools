@@ -72,11 +72,11 @@ public partial class OptionResolutionDropdown : OptionButton
         {
             if (i == 0)
             {
-                this.AddItem($"{GameWindowResolutions.resolutions[i].X} x {GameWindowResolutions.resolutions[i].Y} (Default)");
+                this.AddItem($"{GameWindowResolutions.resolutions[i].X} posX {GameWindowResolutions.resolutions[i].Y} (Default)");
             }
             else
             {
-                this.AddItem($"{GameWindowResolutions.resolutions[i].X} x {GameWindowResolutions.resolutions[i].Y}");
+                this.AddItem($"{GameWindowResolutions.resolutions[i].X} posX {GameWindowResolutions.resolutions[i].Y}");
             }
         }
     }
