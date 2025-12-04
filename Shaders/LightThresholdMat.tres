@@ -1,8 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://t3ebobmosg8y"]
-
-[ext_resource type="Shader" uid="uid://dlcg6loxtigl" path="res://Tools/Shaders/LightThreshold.gdshader" id="1_m2y0t"]
-
-[resource]
-shader = ExtResource("1_m2y0t")
-shader_parameter/amount = 1.0
-shader_parameter/levels = 4.0
