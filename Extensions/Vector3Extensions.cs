@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using Godot;
 
 public static class Vector3Extensions
@@ -80,11 +79,9 @@ public static class Vector3Extensions
     public static Vector3 MoveTowardsAngle(this Vector3 from, Vector3 to, float delta)
     {
         Vector3 newVector = new Vector3();
-
-        GD.Print(from.Y);
-        newVector.X = Mathf.LerpAngle(from.X, to.X, delta);
-        newVector.Y = Mathf.LerpAngle(from.Y, to.Y, delta);
-        newVector.Z = Mathf.LerpAngle(from.Z, to.Z, delta);
+        newVector.X = Mathf.RotateToward(from.X, to.X, delta);
+        newVector.Y = Mathf.RotateToward(from.Y, to.Y, delta);
+        newVector.Z = Mathf.RotateToward(from.Z, to.Z, delta);
 
         return newVector;
     }

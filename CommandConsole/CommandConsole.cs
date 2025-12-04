@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Collections.Specialized.BitVector32;
 
 /// <summary>
 /// An implementation of a command console found in many games. 
@@ -32,40 +31,66 @@ using static System.Collections.Specialized.BitVector32;
 /// 
 /// these are just references to functions 
 /// </summary>
+public delegate void GameCommandAction(params string[] args);
 public partial class CommandConsole : Node
 {
-
+    [Export] bool pauseOnOpen;
     [Export] CanvasLayer consoleCanvas;
 
     public override void _Ready()
     {
         base._Ready();
         consoleCanvas.Hide();
+        consoleCanvas.Layer = 128;
+        this.ProcessMode = ProcessModeEnum.Always;
+        consoleCanvas.ProcessMode = ProcessModeEnum.Always;
 
-        CommandConsoleTextBox.PrintText("=================");
-        CommandConsoleTextBox.PrintText("'help' for commands");
-        CommandConsoleTextBox.PrintText("=================");
+        CommandConsole_RichTextLabel.PrintText("=================");
+        CommandConsole_RichTextLabel.PrintText("'help' for commands");
+        CommandConsole_RichTextLabel.PrintText("=================");
+
+
+        //if (!InputMap.HasAction("OpenConsole"))
+        //{
+        //    InputMap.AddAction("OpenConsole");
+        //    InputMap.ActionAddEvent("OpenConsole", new InputEventKey()
+        //    {
+        //        Keycode = Key.Quoteleft,
+        //        CtrlPressed = true,
+        //    });
+        //}
+        //if (!InputMap.HasAction("ConsoleTryAutocomplete"))
+        //{
+        //    InputMap.AddAction("ConsoleTryAutocomplete");
+        //    InputMap.ActionAddEvent("ConsoleTryAutocomplete", new InputEventKey()
+        //    {
+        //        Keycode = Key.Tab
+        //    });
+        //}
     }
 
     public override void _Input(InputEvent @event)
     {
         base._Input(@event);
+
         if (Input.IsActionJustPressed("OpenConsole"))
         {
-            if(consoleCanvas.Visible)
+            if (consoleCanvas.Visible)
             {
                 consoleCanvas.Hide();
+                GetTree().Paused = false;
             }
             else
             {
                 consoleCanvas.Show();
+                GetTree().Paused = true;
             }
         }
     }
 
     //a dictionary of command names that point to a dictionary of targets and their targets.
     static Dictionary<string, Dictionary<string, GameCommand>> targetedCommands = new Dictionary<string, Dictionary<string, GameCommand>>();
-	static Dictionary<string, GameCommand> globalCommands = new Dictionary<string, GameCommand>();
+    static Dictionary<string, GameCommand> globalCommands = new Dictionary<string, GameCommand>();
 
     //targeted commands can have targets such as "player->addGold" or "npc1->addGold"
     public static void AddTargetedAction(string targetName, string commandName, GameCommandAction action, string tooltip = "")
@@ -90,7 +115,7 @@ public partial class CommandConsole : Node
         }
 
         targetedCommands[commandName][targetName].RegisterCommand(action);
-        if(!string.IsNullOrEmpty(tooltip))
+        if (!string.IsNullOrEmpty(tooltip))
         {
             targetedCommands[commandName][targetName].Tooltip = tooltip;
         }
@@ -100,8 +125,6 @@ public partial class CommandConsole : Node
     //   {
     //       targetedCommands[actionName][targetName] -= action;
     //   }
-
-
     /// <summary>
     /// Adds a gloabal command for use
     /// 
@@ -148,10 +171,6 @@ public partial class CommandConsole : Node
     //public static (bool, string) AutoFill(string attemptText)
     //{
     //    //check if it's
-
-
-
-
     //    //we failed to find something better, so just return the original text
     //    return (false, attemptText);
     //}
@@ -160,20 +179,22 @@ public partial class CommandConsole : Node
     {
         //TODO: parse command string
         //check if it's targeted
-        GD.Print($"Running Command: {input}");
+        Debug.Log($"Running Command: {input}");
+
+        //player->add_item gold_001 10000
         if (input.Contains("->"))
         {
-            GD.Print("Command is Targeted!");
-            string[] segments = input.Split(new string[]{"->", " "}, StringSplitOptions.TrimEntries);
+            Debug.Log("Command is Targeted!");
+            string[] segments = input.Split(new string[] { "->", " " }, StringSplitOptions.TrimEntries);
             string target = segments[0];
             string command = segments[1];
 
             string[] args = segments[2..segments.Length];
 
-            GD.Print($"Command has {args.Length} segments");
+            Debug.Log($"Command has {args.Length} segments");
             for (int i = 0; i < args.Length; i++)
             {
-                GD.Print($"{i}: {args[i]}");
+                Debug.Log($"{i}: {args[i]}");
             }
 
             if (targetedCommands.ContainsKey(command))
@@ -185,13 +206,13 @@ public partial class CommandConsole : Node
                 }
                 else
                 {
-                    CommandConsoleTextBox.PrintText($"Command {command} has no target {target} in it's command list.");
+                    CommandConsole_RichTextLabel.PrintText($"Command {command} has no _target {target} in it's command list.");
                     return false;
                 }
             }
             else
             {
-                CommandConsoleTextBox.PrintText($"[color=#999]Command [color=#F00]{command}[/color]not found in command list." +
+                CommandConsole_RichTextLabel.PrintText($"[color=#999]Command [color=#F00]{command}[/color]not found in command list." +
                     $"check to make sure that an entity with the command is loaded.[/color]");
                 return false;
             }
@@ -207,51 +228,58 @@ public partial class CommandConsole : Node
             switch (command)
             {
                 case "help":
-                    CommandConsoleTextBox.PrintText("Check what commands are available with:");
-                    CommandConsoleTextBox.PrintText("list_commands");
-                    CommandConsoleTextBox.PrintText("list_command_targets");
+                    CommandConsole_RichTextLabel.PrintText("NotValid what commands are available with:");
+                    CommandConsole_RichTextLabel.PrintText("list_commands");
+                    CommandConsole_RichTextLabel.PrintText("list_command_targets");
                     return true;
                 case "list_commands":
-                    CommandConsoleTextBox.PrintText("=================");
-                    CommandConsoleTextBox.PrintText("Listing Commands:");
-                    CommandConsoleTextBox.PrintText("=================");
+                    CommandConsole_RichTextLabel.PrintText("=================");
+                    CommandConsole_RichTextLabel.PrintText("Listing Commands:");
+                    CommandConsole_RichTextLabel.PrintText("=================");
 
 
-
-                    CommandConsoleTextBox.PrintText("[color=#00F]================= Global Commands =================[/color]");
+                    CommandConsole_RichTextLabel.PrintText("[color=#00F]================= Global Commands =================[/color]");
                     foreach (var item in globalCommands)
                     {
                         var tt = (!string.IsNullOrEmpty(item.Value.Tooltip)) ? $"- {item.Value.Tooltip}" : "";
-                        CommandConsoleTextBox.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
+                        CommandConsole_RichTextLabel.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
                     }
-                    CommandConsoleTextBox.PrintText("[color=#00F]================= Targeted Commands =================[/color]");
+                    CommandConsole_RichTextLabel.PrintText("[color=#00F]================= Targeted Commands =================[/color]");
                     foreach (var item in targetedCommands)
                     {
                         var tt = (!string.IsNullOrEmpty(item.Value.First().Value.Tooltip)) ? $"- {item.Value.First().Value.Tooltip}" : "";
-                        CommandConsoleTextBox.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
+                        CommandConsole_RichTextLabel.PrintText($"{item.Key} [color=#33A]{tt}[/color]");
                     }
-                    CommandConsoleTextBox.PrintText("");
+                    CommandConsole_RichTextLabel.PrintText("");
                     return true;
                 case "list_command_targets":
 
-                    if(args.Length > 0)
+                    if (args.Length > 0)
                     {
-                        CommandConsoleTextBox.PrintText("=======================================");
-                        CommandConsoleTextBox.PrintText($"Listing Allowed Targets for {args[0]}:");
-                        CommandConsoleTextBox.PrintText("=======================================");
+                        CommandConsole_RichTextLabel.PrintText("=======================================");
+                        CommandConsole_RichTextLabel.PrintText($"Listing Allowed Targets for {args[0]}:");
+                        CommandConsole_RichTextLabel.PrintText("=======================================");
                         foreach (var item in targetedCommands[args[0]])
                         {
                             var tt = (!string.IsNullOrEmpty(item.Value.Tooltip)) ? $"- {item.Value.Tooltip}" : "";
-                            CommandConsoleTextBox.PrintText($"{args[0]} -> {item.Key} [color=#33A]{tt}[/color]");
+                            CommandConsole_RichTextLabel.PrintText($"{args[0]} -> {item.Key} [color=#33A]{tt}[/color]");
                         }
-                        CommandConsoleTextBox.PrintText("");
+                        CommandConsole_RichTextLabel.PrintText("");
                     }
                     return true;
                 default:
+
+                    if (globalCommands.ContainsKey(command))
+                    {
+
+                    }
+                    else
+                    {
+                        CommandConsole_RichTextLabel.PrintText($"[color=#A66][color=#F00]Error:[/color] Command [color=#F00]{command}[/color] not found in list of global commands[/color]");
+                    }
                     return false;
             }
         }
-        return true;
     }
 
     private void ListCommands()
@@ -260,23 +288,3 @@ public partial class CommandConsole : Node
     }
 }
 
-public delegate void GameCommandAction(params string[] args);
-public class GameCommand
-{
-    GameCommandAction command;
-    public string Tooltip;
-    
-    public void Invoke(params string[] args)
-    {
-        command.Invoke(args);
-    }
-
-    public void RegisterCommand(GameCommandAction addCommand)
-    {
-        command += addCommand;
-    }
-    public void UnrgisterCommand(GameCommandAction removeCommand)
-    {
-        command -= removeCommand;
-    }
-}

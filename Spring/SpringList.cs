@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 
 namespace Snowdrama.Spring
@@ -39,9 +38,13 @@ namespace Snowdrama.Spring
 
         public float GetValue(int id)
         {
+            if (_springConfigs[id].Clamp)
+            {
+                return Mathf.Clamp(_states[id].Current, _springConfigs[id].ClampRange.X, _springConfigs[id].ClampRange.Y);
+            }
             return _states[id].Current;
         }
-        
+
         public float GetTarget(int id)
         {
             return _states[id].Target;
@@ -86,9 +89,9 @@ namespace Snowdrama.Spring
 
             while (deltaTime >= Mathf.Epsilon)
             {
-                // GD.Print($"config.Tension {config.Tension}");
-                // GD.Print($"config.Damping {config.Damping}");
-                // GD.Print($"config.Mass {config.Mass}");
+                // Debug.Log($"config.Tension {config.Tension}");
+                // Debug.Log($"config.Damping {config.Damping}");
+                // Debug.Log($"config.Mass {config.Mass}");
                 var dt = Mathf.Min(deltaTime, 0.016f);
                 var force = -config.Tension * (state.Current - state.Target);
                 var damping = -config.Friction * state.Velocity;
@@ -96,9 +99,9 @@ namespace Snowdrama.Spring
                 state.Velocity = state.Velocity + (acceleration * dt);
                 state.Current = state.Current + (state.Velocity * dt);
 
-                // GD.Print($"state.Target {state.Target}");
-                // GD.Print($"state.Current {state.Current}");
-                // GD.Print($"state.Current {state.Velocity}");
+                // Debug.Log($"state.Target {state.Target}");
+                // Debug.Log($"state.Current {state.Current}");
+                // Debug.Log($"state.Current {state.Velocity}");
                 if (Mathf.Abs(state.Velocity) < config.Precision && Mathf.Abs(state.Current - state.Target) < config.Precision)
                 {
                     state.Current = state.Target;
@@ -112,10 +115,10 @@ namespace Snowdrama.Spring
                     state.Resting = false;
                 }
 
-                if (config.Clamp)
-                {
-                    state.Current = Mathf.Clamp(state.Current, config.ClampRange.X, config.ClampRange.Y);
-                }
+                //if (config.Clamp)
+                //{
+                //    state.Current = Mathf.Clamp(state.Current, config.ClampRange.X, config.ClampRange.Y);
+                //}
 
                 deltaTime -= dt;
             }

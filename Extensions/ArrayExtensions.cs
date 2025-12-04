@@ -1,5 +1,5 @@
+using Godot;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 public static class ArrayExtensions
@@ -10,6 +10,20 @@ public static class ArrayExtensions
         if (source == null) throw new ArgumentNullException("source");
         if (source.Length == 0) throw new Exception("GetRandom can't be called since list has no values");
         return source[random.Next(0, source.Length)];
+    }
+    public static T? GetRandomNoRepeat<T>(this T[] source, T last)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Length == 0) throw new Exception("GetRandomNoRepeat can't be called since list has no values");
+        if (source.Length == 1) throw new Exception("GetRandomNoRepeat can't be called since to not repeat it needs at least 2 values");
+
+        var next = source[random.Next(0, source.Length)];
+        while (next != null && next.Equals(last))
+        {
+            next = source[random.Next(0, source.Length)];
+        }
+
+        return next;
     }
 
     public static T[] Shuffle<T>(this T[] sourceList)
@@ -66,5 +80,40 @@ public static class ArrayExtensions
         }
 
         return newList.ToArray();
+    }
+
+    public static bool TryGetValue<T>(this T[] values, int index, out T? result)
+    {
+        if (index >= 0 && index < values.Length)
+        {
+            result = values[index];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this T[,] values, Vector2I index, out T? result)
+    {
+        if (values.IsIndexInBounds(index))
+        {
+            result = values[index.X, index.Y];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool IsIndexInBounds<T>(this T[,] values, Vector2I index)
+    {
+        if (index.X >= 0 &&
+            index.Y >= 0 &&
+            index.X < values.GetLength(0) &&
+            index.Y < values.GetLength(1)
+            )
+        {
+            return true;
+        }
+        return false;
     }
 }

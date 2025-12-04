@@ -1,20 +1,24 @@
 
 using Godot;
-using Godot.Collections;
-using Newtonsoft.Json.Linq;
 
 
 //Make this an auto load in the settings! 
+[GlobalClass]
 public partial class Options : Node
 {
     public static Options instance;
     public const string MASTER_VOLUME_OPTION_KEY = "Master";
-    public const string MUSIC_VOLUME_OPTION_KEY = "MusicVolume";
-    public const string SOUND_VOLUME_OPTION_KEY = "SoundVolume";
-    public const string VOICE_VOLUME_OPTION_KEY = "VoiceVolume";
+    public const string MUSIC_VOLUME_OPTION_KEY = "Music";
+    public const string SOUND_VOLUME_OPTION_KEY = "Sounds";
+    public const string VOICE_VOLUME_OPTION_KEY = "Voices";
     public const string DISPLAY_MODE_OPTION_KEY = "WindowMode";
+
+    public const string WINDOW_MODE_OPTION_KEY = "WindowMode";
     public const string WINDOWED_RESOLUTION_OPTION_KEY = "WindowResolution";
     public const string VSYNC_OPTION_KEY = "VSync";
+    public const string LANUGAGE_OPTION_KEY = "Language";
+    public const string LANUGAGE_OPTION_STRING_KEY = "LanguageString";
+
 
     public static readonly Vector2I DEFAULT_WINDOW_RESOLUTION = new Vector2I(1280, 720);
 
@@ -23,44 +27,69 @@ public partial class Options : Node
 
     public static ConfigFile config;
 
+
+    //loads the config ONLY if the config hasn't ben loaded already
+    //used to validate that the config has been loaded
     private static void ValidateLoadConfig()
     {
-        if(config == null)
+        if (config == null)
         {
-            config = new ConfigFile();
-            Error configErr = config.Load(userConfigLocation);
-            GD.Print($"Loading Config From {userConfigLocation}");
-            if (configErr != Error.Ok)
+            LoadConfig();
+        }
+    }
+
+
+    //forces a reload of the config, it does not check if the config has been loaded
+    private static void LoadConfig()
+    {
+        config = new ConfigFile();
+        Error configErr = config.Load(userConfigLocation);
+        Debug.Log($"Loading Config From {userConfigLocation}");
+        if (configErr != Error.Ok)
+        {
+            Debug.Log($"Loading Failed, Loading Default From {defaultConfigLocation}");
+            //load from the default cfg
+            var defaultConfig = new ConfigFile();
+            Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
+
+
+            if (defaultConfigErr == Error.Ok)
             {
-                GD.Print($"Loading Failed, Loading Default From {defaultConfigLocation}");
-                //load from the default cfg
-                var defaultConfig = new ConfigFile();
-                Error defaultConfigErr = defaultConfig.Load(defaultConfigLocation);
+                Debug.Log("Default Loading Success!");
+                config = defaultConfig;
+                Debug.Log($"Saving To {userConfigLocation}");
+                config.Save(userConfigLocation);
+            }
+            else
+            {
+                Debug.LogError($"Loading Default Failed Somehow...");
+            }
+        }
+        else
+        {
+            Debug.Log("Options Loaded from config!");
 
-
-                if (defaultConfigErr == Error.Ok)
+            foreach (var section in config.GetSections())
+            {
+                // Fetch the data for each section.
+                Debug.Log($"[[[{section}]]]");
+                foreach (var key in config.GetSectionKeys(section))
                 {
-                    GD.Print("Loading Success!");
-                    config = defaultConfig;
-                    GD.Print($"Saving To {userConfigLocation}");
-                    config.Save(userConfigLocation);
-                }
-                else
-                {
-                    GD.PrintErr($"Loading Default Failed Somehow...");
+                    Debug.Log($"{key}: {config.GetValue(section, key)}");
                 }
             }
         }
     }
+
     private static void SaveConfig()
     {
-        if(config != null)
+        if (config != null)
         {
             config.Save(userConfigLocation);
         }
         else
         {
-            GD.PrintErr("Couldn't save config because config is null");
+            Debug.LogError("Couldn't save config because config is null");
         }
     }
     public static Vector2I GetVector2I(string key, Vector2I defaultValue = new Vector2I())
@@ -69,7 +98,7 @@ public partial class Options : Node
         var value = config.GetValue("Options", key, defaultValue);
         var hasSection = config.HasSection("Options");
         var hasSectionKey = config.HasSectionKey("Options", key);
-        if(hasSection && hasSectionKey)
+        if (hasSection && hasSectionKey)
         {
             if (value.VariantType == Variant.Type.Vector2I)
             {
@@ -174,6 +203,7 @@ public partial class Options : Node
     public static void SetDouble(string key, double value)
     {
         ValidateLoadConfig();
+        Debug.LogWarning($"Setting Double for key: {key} to {value}");
         config.SetValue("Options", key, value);
         var err = config.Save(userConfigLocation);
         SaveConfig();
@@ -215,7 +245,7 @@ public partial class Options : Node
     public static bool HasBool(string key)
     {
         ValidateLoadConfig();
-        if(config.HasSectionKey("Options", key))
+        if (config.HasSectionKey("Options", key))
         {
             var value = config.GetValue("Options", key);
             if (value.VariantType == Variant.Type.Bool)

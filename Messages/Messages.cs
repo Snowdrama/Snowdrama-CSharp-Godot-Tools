@@ -1,7 +1,5 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public interface IMessage
 {
@@ -71,10 +69,8 @@ public class Messages
     {
         if (messageHubs.ContainsKey(hubName))
         {
-            Debug.Log($"Using Hub {hubName}");
             return messageHubs[hubName];
         }
-        Debug.Log($"Creating Hub {hubName}");
         var newHub = new MessageHub();
         messageHubs.Add(hubName, newHub);
         return newHub;
@@ -102,7 +98,7 @@ public class MessageHub
         Type messageType = typeof(SType);
         IMessage message;
 
-        if(messages.TryGetValue(messageType, out message))
+        if (messages.TryGetValue(messageType, out message))
         {
             message.AddUser();
             return (SType)message;
@@ -275,5 +271,44 @@ public abstract class AMessage<T, U, V> : ABaseMessage
     public void Dispatch(T arg1, U arg2, V arg3)
     {
         callback?.Invoke(arg1, arg2, arg3);
+    }
+}
+
+public abstract class AMessage<T, U, V, W> : ABaseMessage
+{
+    private Action<T, U, V, W> callback;
+
+    public void AddListener(Action<T, U, V, W> handler)
+    {
+        callback += handler;
+    }
+
+    public void RemoveListener(Action<T, U, V, W> handler)
+    {
+        callback -= handler;
+    }
+
+    public void Dispatch(T arg1, U arg2, V arg3, W arg4)
+    {
+        callback?.Invoke(arg1, arg2, arg3, arg4);
+    }
+}
+public abstract class AMessage<T1, T2, T3, T4, T5> : ABaseMessage
+{
+    private Action<T1, T2, T3, T4, T5> callback;
+
+    public void AddListener(Action<T1, T2, T3, T4, T5> handler)
+    {
+        callback += handler;
+    }
+
+    public void RemoveListener(Action<T1, T2, T3, T4, T5> handler)
+    {
+        callback -= handler;
+    }
+
+    public void Dispatch(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+    {
+        callback?.Invoke(arg1, arg2, arg3, arg4, arg5);
     }
 }

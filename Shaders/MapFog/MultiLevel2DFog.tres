@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cw7h8dm4ih1ww"]
+
+[ext_resource type="Shader" uid="uid://b4m6kq6j6rgc4" path="res://Tools/Shaders/LightTest2.gdshader" id="1_7m2t8"]
+
+[resource]
+shader = ExtResource("1_7m2t8")
+shader_parameter/step_posterize = 20
+shader_parameter/step_pixelated = 720
+shader_parameter/useBayer2 = false
+shader_parameter/rim_light_color = Color(0, 0, 0.1, 1)
+shader_parameter/darkness_color_1 = Color(0, 0, 0, 1)
+shader_parameter/darkness_color_2 = Color(0, 0, 0.1, 1)
+shader_parameter/threshold_1 = 0.125
+shader_parameter/threshold_2 = 1.0
+shader_parameter/darkness_scale = 1.0
+shader_parameter/darkness_adjust_plus = 1.0
+shader_parameter/dither_scale = 0.9999999747
+shader_parameter/levels = 4.0

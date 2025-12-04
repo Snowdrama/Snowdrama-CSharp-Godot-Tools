@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 
 [Tool]
 public partial class SnowFillRoomMaze : Node2D
@@ -9,7 +8,7 @@ public partial class SnowFillRoomMaze : Node2D
     [Export] int debugScale = 100;
     [Export] float debugLineWidth = 3.0f;
     [Export] bool useArrows = false;
-    SnowFillCell[,] debugMaze = new SnowFillCell[16, 16];
+    SnowFillCell2D[,] debugMaze = new SnowFillCell2D[16, 16];
     [Export] Vector2I debugMapSize = new Vector2I(16, 16);
     [Export] Vector2I debugRoomSizeMin = new Vector2I(2, 2);
     [Export] Vector2I debugRoomSizeMax = new Vector2I(5, 5);
@@ -19,17 +18,19 @@ public partial class SnowFillRoomMaze : Node2D
     [Export] bool generateDebugMaze;
     Stopwatch benchmarkStopwatch = new Stopwatch();
 
+    [Export] bool debugShowDeadEnds;
+    [Export] bool drawRoomsOnTop;
 
     public override void _Process(double delta)
     {
         if (generateDebugMaze)
         {
-            GD.Print("Generazing Maze");
+            Debug.Log("Generazing Maze");
             generateDebugMaze = false;
             benchmarkStopwatch.Reset();
             benchmarkStopwatch.Start();
 
-            debugMaze = new SnowFillCell[debugMapSize.X, debugMapSize.Y];
+            debugMaze = new SnowFillCell2D[debugMapSize.X, debugMapSize.Y];
             SnowFillMaze.GenerateMaze(ref debugMaze, debugMapSize, debugStartPoint);
             GenerateRooms(ref debugMaze, debugRoomSizeMin, debugRoomSizeMax, debugRoomGapSizeMin, debugRoomGapSizeMax);
 
@@ -40,13 +41,13 @@ public partial class SnowFillRoomMaze : Node2D
             }
 
             benchmarkStopwatch.Stop();
-            GD.Print($"Generating took {benchmarkStopwatch.Elapsed}");
+            Debug.Log($"Generating took {benchmarkStopwatch.Elapsed}");
 
             QueueRedraw();
         }
     }
     Random rand = new Random();
-    public void GenerateRooms(ref SnowFillCell[,] map, Vector2I roomSizeSettingMin, Vector2I roomSizeSettingMax, Vector2I roomGapSizeSettingMin, Vector2I roomGapSizeSettingMax)
+    public void GenerateRooms(ref SnowFillCell2D[,] map, Vector2I roomSizeSettingMin, Vector2I roomSizeSettingMax, Vector2I roomGapSizeSettingMin, Vector2I roomGapSizeSettingMax)
     {
 
         int stepCount = 0;
@@ -69,7 +70,7 @@ public partial class SnowFillRoomMaze : Node2D
             {
                 if (!OverlappingRoom(map, roomPosition, roomSize))
                 {
-                    GD.Print($"Creating room {roomIndex} at: {roomPosition} sized: {roomSize}");
+                    Debug.Log($"Creating room {roomIndex} at: {roomPosition} sized: {roomSize}");
                     SetRoom(ref map, roomPosition, roomSize, roomGap, roomIndex);
                     roomIndex++;
                 }
@@ -78,7 +79,7 @@ public partial class SnowFillRoomMaze : Node2D
         }
 
     }
-    private static void SetRoom(ref SnowFillCell[,] map, Vector2I roomPosition, Vector2I roomSize, Vector2I gapSetting, int roomId)
+    private static void SetRoom(ref SnowFillCell2D[,] map, Vector2I roomPosition, Vector2I roomSize, Vector2I gapSetting, int roomId)
     {
         for (int y = -gapSetting.Y; y < roomSize.Y + gapSetting.Y; y++)
         {
@@ -105,7 +106,7 @@ public partial class SnowFillRoomMaze : Node2D
             }
         }
     }
-    private static bool OverlappingRoom(SnowFillCell[,] map, Vector2I roomPosition, Vector2I roomSize)
+    private static bool OverlappingRoom(SnowFillCell2D[,] map, Vector2I roomPosition, Vector2I roomSize)
     {
         for (int y = 0; y < roomSize.Y; y++)
         {
@@ -122,7 +123,7 @@ public partial class SnowFillRoomMaze : Node2D
         return false;
     }
 
-    private static bool IsRoomInBound(SnowFillCell[,] map, Vector2I roomPosition, Vector2I roomSize)
+    private static bool IsRoomInBound(SnowFillCell2D[,] map, Vector2I roomPosition, Vector2I roomSize)
     {
         if (
             roomPosition.X < 0 ||
@@ -135,7 +136,7 @@ public partial class SnowFillRoomMaze : Node2D
         }
         return true;
     }
-    private static bool IsPointInBounds(SnowFillCell[,] map, Vector2I point)
+    private static bool IsPointInBounds(SnowFillCell2D[,] map, Vector2I point)
     {
         if (point.X < 0 || point.Y < 0 || point.X >= map.GetLength(0) || point.Y >= map.GetLength(1))
         {
@@ -144,7 +145,7 @@ public partial class SnowFillRoomMaze : Node2D
         return true;
     }
 
-    private static void RemoveDeadEndRoutine(ref SnowFillCell[,] map)
+    private static void RemoveDeadEndRoutine(ref SnowFillCell2D[,] map)
     {
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -168,9 +169,9 @@ public partial class SnowFillRoomMaze : Node2D
                     var downConnects = CheckConnection(map, downCell, up);
                     var leftConnects = CheckConnection(map, leftCell, right);
                     var rightConnects = CheckConnection(map, rightCell, left);
-                    if(!upConnects && !downConnects && !leftConnects && !rightConnects)
+                    if (!upConnects && !downConnects && !leftConnects && !rightConnects)
                     {
-                        //nothing points to us!
+                        //nothing pointArr to us!
                         map[currentPosition.X, currentPosition.Y].removeCell = true;
                     }
                 }
@@ -179,13 +180,13 @@ public partial class SnowFillRoomMaze : Node2D
     }
 
 
-    private static bool CheckConnection(SnowFillCell[,] map, Vector2I testCell, Vector2I testDirection)
+    private static bool CheckConnection(SnowFillCell2D[,] map, Vector2I testCell, Vector2I testDirection)
     {
         if (
             //make sure it's in bounds
             IsPointInBounds(map, testCell) &&
             //if the cell isn't removed
-            !map[testCell.X, testCell.Y].removeCell && 
+            !map[testCell.X, testCell.Y].removeCell &&
             //if it's pointing towards us
             map[testCell.X, testCell.Y].direction == testDirection
         )
@@ -199,7 +200,74 @@ public partial class SnowFillRoomMaze : Node2D
     public override void _Draw()
     {
         //DrawCircle(cursorPosition * debugScale, 10, Colors.Red, true);
+        if (!drawRoomsOnTop)
+        {
+            DrawRooms();
+        }
+        if (useArrows)
+        {
+            DrawArrowPaths();
+        }
+        else
+        {
+            DrawLinePaths();
+        }
+        if (drawRoomsOnTop)
+        {
+            DrawRooms();
+        }
+    }
 
+    private void DrawArrowPaths()
+    {
+        for (int y = 0; y < debugMaze.GetLength(1); y++)
+        {
+            for (int x = 0; x < debugMaze.GetLength(0); x++)
+            {
+                var mazeCell = debugMaze[x, y];
+                var from = mazeCell.position * debugScale;
+                var to = mazeCell.position * debugScale + mazeCell.direction * debugScale;
+
+                if (mazeCell.removeCell)
+                {
+                    if (debugShowDeadEnds)
+                    {
+                        DrawArrow(from, to, Colors.Blue, debugLineWidth);
+                    }
+                }
+                else if (mazeCell.isConnected)
+                {
+                    DrawArrow(from, to, Colors.Green, debugLineWidth);
+                }
+            }
+        }
+    }
+    private void DrawLinePaths()
+    {
+        for (int y = 0; y < debugMaze.GetLength(1); y++)
+        {
+            for (int x = 0; x < debugMaze.GetLength(0); x++)
+            {
+                var mazeCell = debugMaze[x, y];
+                var from = mazeCell.position * debugScale;
+                var to = mazeCell.position * debugScale + mazeCell.direction * debugScale;
+
+                if (mazeCell.removeCell)
+                {
+                    if (debugShowDeadEnds)
+                    {
+                        DrawLine(from, to, Colors.Blue, debugLineWidth);
+                    }
+                }
+                else if (mazeCell.isConnected)
+                {
+                    DrawLine(from, to, Colors.Green, debugLineWidth);
+                }
+            }
+        }
+    }
+    public void DrawRooms()
+    {
         for (int y = 0; y < debugMaze.GetLength(1); y++)
         {
             for (int x = 0; x < debugMaze.GetLength(0); x++)
@@ -214,55 +282,7 @@ public partial class SnowFillRoomMaze : Node2D
                 }
             }
         }
-
-        for (int y = 0; y < debugMaze.GetLength(1); y++)
-        {
-            for (int x = 0; x < debugMaze.GetLength(0); x++)
-            {
-                var mazeCell = debugMaze[x, y];
-                var from = mazeCell.position * debugScale;
-                var to = mazeCell.position * debugScale + mazeCell.direction * debugScale;
-
-                if (mazeCell.removeCell)
-                {
-                    if (useArrows)
-                    {
-                        DrawArrow(from, to, Colors.Blue, debugLineWidth);
-                    }
-                    else
-                    {
-                        DrawLine(from, to, Colors.Blue, debugLineWidth);
-                    }
-                }
-                else
-                {
-                    if (useArrows)
-                    {
-                        if (mazeCell.isConnected)
-                        {
-                            DrawArrow(from, to, Colors.Green, debugLineWidth);
-                        }
-                        else
-                        {
-                            DrawArrow(from, to, Colors.Blue, debugLineWidth);
-                        }
-                    }
-                    else
-                    {
-                        if (mazeCell.isConnected)
-                        {
-                            DrawLine(from, to, Colors.Green, debugLineWidth);
-                        }
-                        else
-                        {
-                            DrawLine(from, to, Colors.Blue, debugLineWidth);
-                        }
-                    }
-                }
-            }
-        }
     }
-
     private void DrawArrow(Vector2 from, Vector2 to, Color color, float width = 1.0f)
     {
         var direction = from.DirectionTo(to) * 100;
@@ -280,16 +300,16 @@ public partial class SnowFillRoomMaze : Node2D
 //public struct SnowFillRoom
 //{
 //    public Vector2I position;
-//    public Vector2I size;
+//    public Vector2I mapSize;
 
 //    public bool Intersects(SnowFillRoom room)
 //    {
 //        if(
-//            room.position.X <= this.position.X + this.size.X &&
-//            room.position.Y <= this.position.Y + this.size.Y &&
+//            room.position.X <= this.position.X + this.mapSize.X &&
+//            room.position.Y <= this.position.Y + this.mapSize.Y &&
 
-//            this.position.X <= room.position.X + room.size.X &&
-//            this.position.Y <= room.position.Y + room.size.Y)
+//            this.position.X <= room.position.X + room.mapSize.X &&
+//            this.position.Y <= room.position.Y + room.mapSize.Y)
 //        {
 //            return true;
 //        }
@@ -302,13 +322,13 @@ public partial class SnowFillRoomMaze : Node2D
 //        switch (index)
 //        {
 //            case 0:
-//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y));
+//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y));
 //            case 1:
-//                return (new Vector2I(this.position.X + this.size.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y + this.size.Y));
+//                return (new Vector2I(this.position.X + this.mapSize.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y + this.mapSize.Y));
 //            case 2:
-//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.size.X, this.position.Y));
+//                return (new Vector2I(this.position.X, this.position.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y));
 //            case 3:
-//                return (new Vector2I(this.position.X, this.position.Y + this.size.Y), new Vector2I(this.position.X + this.size.X, this.position.Y + this.size.Y));
+//                return (new Vector2I(this.position.X, this.position.Y + this.mapSize.Y), new Vector2I(this.position.X + this.mapSize.X, this.position.Y + this.mapSize.Y));
 //        }
 //        return (new Vector2I(), new Vector2I());
 //    }

@@ -1,12 +1,13 @@
 using Godot;
-using Godot.Collections;
 using System;
 using System.Linq;
 
+[GlobalClass]
 public partial class TransitionManager : Node
 {
     static TransitionManager instance;
-    private enum TransitionState{
+    private enum TransitionState
+    {
         Waiting,
         HideScreen,
         FakeLoad,
@@ -20,16 +21,16 @@ public partial class TransitionManager : Node
     [Signal] public delegate void FakeLoadCompleteEventHandler();
     [Signal] public delegate void EndedEventHandler();
 
-    private Action startHide;
-    private Action blackout; //the scene can no longer be seen. 
-    private Action fakeLoadComplete;
-    private Action startShow;
-    private Action ended;
+    private Action? startHide;
+    private Action? blackout; //the scene can no longer be seen. 
+    private Action? fakeLoadComplete;
+    private Action? startShow;
+    private Action? ended;
 
-    [Export(PropertyHint.NodeType, "Transition")] Transition[] transitions = new Transition[0];
+    [Export] Transition[] transitions = new Transition[0];
 
-    string targetTransitionName;
-    Transition currentTransition;
+    string? targetTransitionName;
+    Transition? currentTransition;
 
     //fake Time
     bool automaticallyStartFakeTime;
@@ -38,7 +39,7 @@ public partial class TransitionManager : Node
     float currentFakeLoadTime;
     public override void _EnterTree()
     {
-        if(instance != null)
+        if (instance != null)
         {
             instance.QueueFree();
         }
@@ -50,7 +51,7 @@ public partial class TransitionManager : Node
     {
 
         //if we don't have a transition here we should get one or we'll break!
-        if(currentTransition == null)
+        if (currentTransition == null)
         {
             currentTransition = transitions.GetRandom();
         }
@@ -58,7 +59,7 @@ public partial class TransitionManager : Node
         switch (state)
         {
             case TransitionState.Waiting:
-                //do nothing we're waiting for something to happen
+                //do nothing we're playing for something to happen
                 break;
             case TransitionState.HideScreen:
                 transitionValue += (float)delta;
@@ -88,7 +89,7 @@ public partial class TransitionManager : Node
             case TransitionState.ShowScreen:
                 transitionValue -= (float)delta;
                 currentTransition.SetTransitionValue(transitionValue);
-                if(transitionValue < 0.0f)
+                if (transitionValue < 0.0f)
                 {
                     state = TransitionState.Waiting;
                     ended?.Invoke();
@@ -98,6 +99,9 @@ public partial class TransitionManager : Node
         }
     }
 
+
+
+
     public static void StartShowingScreen()
     {
         instance.StartInstanceShow();
@@ -106,6 +110,10 @@ public partial class TransitionManager : Node
     public static void StartFakeLoad()
     {
         instance.StartInstanceFakeLoad();
+    }
+    public static string[] GetAvailableTransitions()
+    {
+        return instance.transitions.Select(x => x.TransitionName).ToArray();
     }
 
     public void StartInstanceFakeLoad()
@@ -125,7 +133,7 @@ public partial class TransitionManager : Node
             }
             else
             {
-                GD.PrintErr($"No Transition Found named: {targetTransitionName}");
+                GD.PrintErr($"No Transition Found named: {targetTransitionName} Using Random Transition");
                 //we didn't find a transition so random
                 currentTransition = transitions.GetRandom();
             }
@@ -173,15 +181,15 @@ public partial class TransitionManager : Node
     /// <param name="onStartShow">The callback used the frame that we start revealing the new scene.</param>
     /// <param name="onEnded">The callback used the frame after the transition has fully ended</param>
     /// <param name="transitionName">the name of the transition to use, if left null it will choose one at random</param>
-    /// <param name="fakeLoadTime">the time of how long the fake load should wait before calling complete</param>
+    /// <param name="fakeLoadTime">the UpdateTimeMax of how long the fake load should wait before calling complete</param>
     /// <param name="automaticallyStartFakeTime">Should it automatically go to the fakeLoad on blackout?</param>
     public static void StartTransition(
-        Action onStartHide, 
-        Action onBlackout, 
-        Action onFakeLoadComplete, 
-        Action onStartShow, 
+        Action onStartHide,
+        Action onBlackout,
+        Action onFakeLoadComplete,
+        Action onStartShow,
         Action onEnded,
-        string transitionName = null,
+        string? transitionName = null,
         float fakeLoadTime = 1.0f,
         bool automaticallyStartFakeTime = true
         )
@@ -191,7 +199,8 @@ public partial class TransitionManager : Node
         instance.fakeLoadComplete = onFakeLoadComplete;
         instance.startShow = onStartShow;
         instance.ended = onEnded;
-        instance.targetTransitionName = transitionName;
+        if (transitionName != null)
+            instance.targetTransitionName = transitionName;
         instance.fakeLoadTime = fakeLoadTime;
         instance.automaticallyStartFakeTime = automaticallyStartFakeTime;
         instance.StartInstanceHide();

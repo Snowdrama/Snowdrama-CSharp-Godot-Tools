@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class AudioOutputDeviceSelection : OptionButton
 {
@@ -9,7 +8,7 @@ public partial class AudioOutputDeviceSelection : OptionButton
         this.ItemSelected += AudioDeviceSelection_ItemSelected;
 
         var outputDeviceLoad = Options.GetString("OutputDevice", "Default");
-        GD.Print($"Output Device Loaded: {outputDeviceLoad}");
+        Debug.Log($"Output Device Loaded: {outputDeviceLoad}");
         AudioServer.OutputDevice = outputDeviceLoad;
         UpdateDeviceList();
         UpdateOptionToValue(outputDeviceLoad);
@@ -18,7 +17,7 @@ public partial class AudioOutputDeviceSelection : OptionButton
     private void AudioDeviceSelection_ItemSelected(long index)
     {
         var device = AudioServer.GetOutputDeviceList()[index];
-        GD.Print($"Output Device Saved: {device}");
+        Debug.Log($"Output Device Saved: {device}");
         AudioServer.OutputDevice = device;
         Options.SetString("OutputDevice", device);
     }
@@ -43,7 +42,7 @@ public partial class AudioOutputDeviceSelection : OptionButton
     public void UpdateOptionToValue(string deviceName)
     {
         var outputDeviceList = AudioServer.GetOutputDeviceList();
-        GD.Print($"Changing Output Device Option To: {deviceName}");
+        Debug.Log($"Changing Output Device Option To: {deviceName}");
         for (int i = 0; i < outputDeviceList.Length; i++)
         {
             if (outputDeviceList[i] == deviceName)

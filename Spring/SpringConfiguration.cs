@@ -1,7 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Snowdrama.Spring
 {
@@ -15,7 +12,8 @@ namespace Snowdrama.Spring
         public bool Clamp;
         public Vector2 ClampRange;
 
-        public SpringConfiguration(){
+        public SpringConfiguration()
+        {
             Mass = 1f;
             Tension = 170.0f;
             Friction = 26.0f;
@@ -25,9 +23,9 @@ namespace Snowdrama.Spring
         }
         public SpringConfiguration(float Mass = 1f, float Tension = 170.0f, float Friction = 26.0f, float Precision = 0.01f, bool Clamp = false, Vector2 ClampRange = new Vector2())
         {
-            GD.Print(Mass);
-            GD.Print(Tension);
-            GD.Print(Friction);
+            //Debug.Log($"{Mass}");
+            //Debug.Log($"{Tension}");
+            //Debug.Log($"{Friction}");
             this.Mass = Mass;
             this.Tension = Tension;
             this.Friction = Friction;

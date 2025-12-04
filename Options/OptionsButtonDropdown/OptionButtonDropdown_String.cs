@@ -18,7 +18,7 @@ public partial class OptionButtonDropdown_String : OptionButton
 
     private void OnItemSelected(long index)
     {
-        Options.SetString(optionKey, options.optionsData[(int)index].data);
+        Options.SetString(optionKey, options.optionsData[(int)index].Data);
     }
     private void OnVisibilityChanged()
     {
@@ -34,7 +34,7 @@ public partial class OptionButtonDropdown_String : OptionButton
 		{
             for (int i = 0; i < options.optionsData.Count; i++)
             {
-                if (options.optionsData[i].data == loadedValue)
+                if (options.optionsData[i].Data == loadedValue)
                 {
                     this.Select(i);
                 }
@@ -47,19 +47,19 @@ public partial class OptionButtonDropdown_String : OptionButton
     {
         for(int i = 0;i < options.optionsData.Count;i++)
         {
-            if (options.optionsData[i].separator)
+            if (options.optionsData[i].Separator)
             {
-                this.AddSeparator(options.optionsData[i].text);
+                this.AddSeparator(options.optionsData[i].Text);
             }
             else
             {
-                if (options.optionsData[i].icon == null)
+                if (options.optionsData[i].Icon == null)
                 {
-                    this.AddItem(options.optionsData[i].text, options.optionsData[i].id);
+                    this.AddItem(options.optionsData[i].Text, options.optionsData[i].Id);
                 }
                 else
                 {
-                    this.AddIconItem(options.optionsData[i].icon, options.optionsData[i].text, options.optionsData[i].id);
+                    this.AddIconItem(options.optionsData[i].Icon, options.optionsData[i].Text, options.optionsData[i].Id);
                 }
             }
         }

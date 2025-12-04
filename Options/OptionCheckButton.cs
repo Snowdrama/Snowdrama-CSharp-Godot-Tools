@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class OptionCheckButton : CheckButton
 {
@@ -11,7 +10,7 @@ public partial class OptionCheckButton : CheckButton
         if (Options.HasBool(optionKey))
         {
             localValue = Options.GetBool(optionKey);
-            GD.Print($"[Slider: {this.Name}] Value From Config? {Options.GetBool(optionKey)}");
+            Debug.Log($"[CheckButton: {this.Name}] Value From Config? {Options.GetBool(optionKey)}");
             this.ButtonPressed = localValue;
         }
         else
@@ -32,14 +31,14 @@ public partial class OptionCheckButton : CheckButton
     }
     public override void _EnterTree()
     {
-        GD.Print("Option Slider _EnterTree");
+        Debug.Log("Option Slider _EnterTree");
         base._EnterTree();
         this.Toggled += ToggleButton;
     }
 
     public override void _ExitTree()
     {
-        GD.Print("Option Slider _ExitTree");
+        Debug.Log("Option Slider _ExitTree");
         base._ExitTree();
         this.Toggled -= ToggleButton;
     }

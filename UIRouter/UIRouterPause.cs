@@ -1,10 +1,10 @@
 using Godot;
-using System;
 
 public partial class UIRouterPause : Node
 {
 
-    [Export] string pauseKey = "Pause_0";
+    [Export] string pauseEvent = "Pause";
+    [Export] string cancelKey = "Cancel";
     [Export] UIRouter router;
 
     bool _paused = false;
@@ -13,57 +13,70 @@ public partial class UIRouterPause : Node
         get => _paused;
         set
         {
-            _paused = value;
-            GetTree().Paused = _paused;
-            if (_paused)
+            Debug.Log($"Pause Chagned? {_paused} != {value}");
+            //only when changed!
+            if (_paused != value)
             {
+                _paused = value;
+                GetTree().Paused = _paused;
+                CursorManager.MenuOpen("PauseMenu");
                 if (!router.IsRouteOpen("pause"))
                 {
                     router.OpenRoute("pause");
                 }
+                PauseManager.RequestPause(this);
             }
             else
             {
+                CursorManager.MenuClose("PauseMenu");
                 if (router.OpenRouteCount() > 0)
                 {
                     router.CloseAll();
                 }
+                PauseManager.RequestUnpause(this);
             }
         }
     }
 
-    public override void _Ready()
+    public override void _EnterTree()
     {
         ProcessMode = Node.ProcessModeEnum.Always;
     }
+
+    public override void _ExitTree()
+    {
+        this.Paused = false;
+    }
+
     public override void _Process(double delta)
     {
         base._Process(delta);
 
-        if(GetTree().Paused && router.OpenRouteCount() <= 0)
+        if (GetTree().Paused && router.OpenRouteCount() <= 0)
         {
-            GetTree().Paused = false;
+            Paused = false;
         }
 
         if (!Paused && GetTree().Paused)
         {
-            GetTree().Paused = false;
+            Paused = false;
         }
     }
     public override void _Input(InputEvent @event)
     {
         base._Input(@event);
-
-        if (@event.IsActionPressed(pauseKey))
+        if (@event.IsActionPressed(pauseEvent))
         {
+            Debug.Log("Pause Key Pressed!");
             Paused = !Paused;
         }
-        else if (@event is InputEventKey eventKey)
+
+
+
+
+        if (@event.IsActionPressed(cancelKey))
         {
-            if(eventKey.Pressed && eventKey.Keycode == Key.Escape)
-            {
-                Paused = !Paused;
-            }
+            router.Back();
         }
     }
 }

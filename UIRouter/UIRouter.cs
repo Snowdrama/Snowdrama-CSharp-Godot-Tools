@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 [GlobalClass]
@@ -9,13 +10,13 @@ public partial class UIRouter : Resource
     Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
     Stack<string> routesOpened = new Stack<string>();
 
-    Action OnAllRoutesClosed;
-    Action<string> OnRouteOpened;
-    Action<string> OnRouteClosed;
+    Action? OnAllRoutesClosed;
+    Action<string>? OnRouteOpened;
+    Action<string>? OnRouteClosed;
     [Signal] public delegate void OnRouteOpenedSignalEventHandler(string route);
     [Signal] public delegate void OnRouteClosedSignalEventHandler(string route);
     [Signal] public delegate void OnAllRoutesClosedSignalEventHandler();
-    
+
     public bool IsRouteOpen(string routeSegment)
     {
         ValidateRouter();
@@ -50,7 +51,7 @@ public partial class UIRouter : Resource
     public void RegisterRoute(string routeSegment, UIRoute reference)
     {
         ValidateRouter();
-        GD.Print(routeSegment);
+        Debug.Log(routeSegment);
         if (routes.ContainsKey(routeSegment.ToLower()))
         {
             routes[routeSegment.ToLower()] = reference;
@@ -116,9 +117,12 @@ public partial class UIRouter : Resource
         if (routesOpened.Count > 0)
         {
             var rs = routesOpened.Peek();
-            routes[rs].CloseRoute();
-            OnRouteClosed?.Invoke(rs);
-            EmitSignal(SignalName.OnRouteClosedSignal, rs);
+            if (rs != null && routes != null && routes.ContainsKey(rs))
+            {
+                routes[rs].CloseRoute();
+                OnRouteClosed?.Invoke(rs);
+                EmitSignal(SignalName.OnRouteClosedSignal, rs);
+            }
         }
         OnAllRoutesClosed?.Invoke();
         EmitSignal(SignalName.OnAllRoutesClosedSignal);
@@ -171,6 +175,16 @@ public partial class UIRouter : Resource
     {
         ValidateRouter();
         return routesOpened.Count;
+    }
+    public int AllRoutesCount()
+    {
+        ValidateRouter();
+        return routes.Keys.Count;
+    }
+    public List<string> GetAllRoutes()
+    {
+        ValidateRouter();
+        return routes.Keys.ToList();
     }
 
     public void AddRouteChangedListener(Action<string> routeListener)

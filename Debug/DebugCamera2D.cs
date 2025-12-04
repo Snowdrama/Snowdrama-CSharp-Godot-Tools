@@ -1,29 +1,49 @@
 using Godot;
 using System;
 
-public partial class DebugCamera2D : Node2D
+[Tool, GlobalClass]
+public partial class DebugCamera2D : VirtualCamera2D
 {
-    [Export] Camera2D camera;
+    [Export]
+    private float speed = 5;
 
     [Export]
-    float speed = 5;
+    private float zoomSpeed = 0.1f;
+    private float zoom = 1.0f;
+
 
     [Export]
-    float zoomSpeed = 0.1f;
-    float zoom = 1.0f;
+    private float zoomMax = 5;
+    [Export]
+    private float zoomMin = 0.5f;
+
+    [ExportGroup("Game Input Names")]
+    [Export] private string Left = "MoveCameraLeft";
+    [Export] private string Right = "MoveCameraRight";
+    [Export] private string Up = "MoveCameraUp";
+    [Export] private string Down = "MoveCameraDown";
+    [Export] private string ZoomIn = "ZoomCameraIn";
+    [Export] private string ZoomOut = "ZoomCameraOut";
     public override void _Ready()
     {
-        camera.PositionSmoothingEnabled = true;
-        camera.PositionSmoothingSpeed = 10.0f;
+        base._Ready();
+        this.PositionSmoothingEnabled = true;
+        this.PositionSmoothingSpeed = 10.0f;
     }
     public override void _Process(double delta)
     {
-        var direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
+        base._Process(delta);
+
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        var direction = Input.GetVector(Left, Right, Up, Down);
         this.Position += direction * speed;
 
-        var zoomAxis = Input.GetAxis("ZoomOut", "ZoomIn");
-        zoom += zoomAxis * zoomSpeed;
-        zoom = Mathf.Clamp(zoom, 0.01f, 1000);
-        camera.Zoom = new Vector2(zoom, zoom);
+        var zoomAxis = Input.GetAxis(ZoomOut, ZoomIn);
+        zoom += zoomAxis * zoomSpeed * (float)delta;
+        zoom = Mathf.Clamp(zoom, zoomMin, zoomMax);
+        this.relativeZoom = new Vector2(zoom, zoom);
     }
 }

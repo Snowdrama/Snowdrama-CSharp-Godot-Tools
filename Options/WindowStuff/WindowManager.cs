@@ -89,10 +89,9 @@ public partial class WindowManager : Node
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
                 Messages.GetOnce<ScreenModeChangedMessage>().Dispatch(DisplayServer.WindowMode.Fullscreen);
                 break;
-            //case DisplayServer.WindowMode.ExclusiveFullscreen:
-            //    DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
-            //    SetWindowResolution(DisplayServer.ScreenGetSize());
-            //    break;
+            case DisplayServer.WindowMode.ExclusiveFullscreen:
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
+                break;
         }
         Options.SetInt(Options.DISPLAY_MODE_OPTION_KEY, (int)mode);
     }

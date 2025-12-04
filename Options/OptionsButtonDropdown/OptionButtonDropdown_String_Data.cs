@@ -1,13 +1,13 @@
-﻿using Godot;
+using Godot;
 
 [GlobalClass]
 public partial class OptionButtonDropdown_String_Data : Resource
 {
-	[Export] public string text = "";
-	[Export] public Texture2D icon = null;
-	[Export] public int id = -1;
-	[Export] public bool disabled = false;
-	[Export] public bool separator = false;
+    [Export] public string Text = "";
+    [Export] public Texture2D Icon = null;
+    [Export] public int Id = -1;
+    [Export] public bool Disabled = false;
+    [Export] public bool Separator = false;
 
-	[Export] public string data = null; //the data behind the option
+    [Export] public string Data = null; //the data behind the option
 }

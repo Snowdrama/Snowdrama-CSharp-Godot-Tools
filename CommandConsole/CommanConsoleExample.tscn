@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://vaifd2ubyx67"]
+
+[ext_resource type="Script" uid="uid://d2tasmdvenqnf" path="res://Tools/CommandConsole/CommandConsole.cs" id="1_55ibw"]
+
+[node name="Node" type="Node" node_paths=PackedStringArray("consoleCanvas")]
+script = ExtResource("1_55ibw")
+consoleCanvas = NodePath("CanvasLayer")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.9
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.9
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

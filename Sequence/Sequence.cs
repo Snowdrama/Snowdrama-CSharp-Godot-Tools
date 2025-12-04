@@ -1,121 +1,168 @@
 using Godot;
-using System;
-using System.Collections.Generic;
+using Godot.Collections;
+
 public partial class Sequence : Node
 {
-    [Export]Godot.Collections.Array<Control> usedContainers = new Godot.Collections.Array<Control>();
-    [Export]Godot.Collections.Array<Node2D> usedNode2Ds = new Godot.Collections.Array<Node2D>();
+    [Export(PropertyHint.NodeType, "BaseSequenceStep")] Array<BaseSequenceStep> sequenceStepList = new Array<BaseSequenceStep>();
+    bool isPlaying;
+    int currentStepIndex = -1;
 
-    List<SequenceNode> sequenceNodes = new List<SequenceNode>();
-    SequenceNode currentStep;
-    int currentStepIndex = 0;
+    [Export] bool playOnStart = false;
+    [Export] bool autoPlay = false;
+    [Export] float autoPlayWaitTimeMax = 1.0f;
+    float autoPlayWaitTime = 1.0f;
 
-
-
-    public SequenceState State { get; private set; }
-    [Export] bool AutoAdvance = false;
-    [Export] bool CanPlayMoreThanOnce = false; 
-    public override void _Ready()
-	{
-		for (int i = 0; i < this.GetChildCount(); i++)
-		{
-			var child = this.GetChild(i);
-			if(child is SequenceNode sn)
-			{
-				sequenceNodes.Add(sn);
-			}
-        }
-    }
-
-    private void GetAllChildren(Node node, ref List<Node> allChildren)
+    public override void _EnterTree()
     {
-        foreach (var child in node.GetChildren())
+        for (int i = 0; i < this.GetChildCount(); i++)
         {
-            allChildren.Add(child);
-            if(child.GetChildCount() > 0)
+            var child = this.GetChild(i);
+
+            if (child is BaseSequenceStep step)
             {
-                GetAllChildren(child, ref allChildren);
+                if (!sequenceStepList.Contains(step))
+                {
+                    sequenceStepList.Add(step);
+                }
             }
         }
-    }
-
-    public void PlaySequence(bool autoAdvance = false)
-    {
-        if(State == SequenceState.Stopped)
+        if (!InputMap.HasAction("NextSequenceStep"))
         {
-            //we are starting so the index is -1
-            currentStepIndex = -1;
-            LoadNextStep();
-        }
-    }
-
-    /// <summary>
-    /// Go to the next step
-    /// </summary>
-    public void AdvanceSequence()
-    {
-        //we've interacted with the game so we want to advance the sequence
-        if (currentStep != null)
-        {
-            //Are we already waiting for input? if so load the next step
-            if (currentStep.State == SequenceState.Completed)
+            InputMap.AddAction("NextSequenceStep");
+            InputMap.ActionAddEvent("NextSequenceStep", new InputEventKey()
             {
-                LoadNextStep();
-            }
-            //We're still running so we're going to force complete skipping the animations or dialog
-            else
-            {
-                currentStep.ForceComplete();
-            }
+                Keycode = Key.F5,
+                PhysicalKeycode = Key.F5,
+                KeyLabel = Key.F5,
+            });
         }
-    }
-
-    public void LoadNextStep()
-    {
-        if(currentStep != null)
+        if (playOnStart)
         {
-            //make sure the animations are done and everything
-            //is at the target
-            currentStep.ForceComplete();
-
-            //unload anything that needs unloading
-            currentStep.UnloadSequence();
-            State = SequenceState.Stopped;
+            StartSequence();
         }
-        //were going to the next step
-        currentStepIndex++;
-
-        //make sure we have a step available
-        if(currentStepIndex >= sequenceNodes.Count)
+    }
+    public void StartSequence()
+    {
+        if (sequenceStepList.Count <= 0)
         {
-            //we're out of steps!
-            GD.PrintErr("Out of steps!");
-            State = SequenceState.Stopped;
+            Debug.LogError($"Hey you forgot to put any sequence steps in {this.Name}");
+            return;
         }
-        else
+
+        Debug.Log($"Loading the sequence steps for {this.Name}");
+        foreach (var item in sequenceStepList)
         {
-            //we have a step to process
-            currentStep = sequenceNodes[currentStepIndex];
+            item.LoadStep();
+        }
 
-            //load stuff before starting
-            currentStep.LoadSequence();
+        isPlaying = true;
+        currentStepIndex = 0;
+        currentStep = sequenceStepList[currentStepIndex];
+        currentStepState = SequenceStepState.StartStep;
+    }
 
-            //then start playing the sequence
-            currentStep.PlaySequence(() => { });
-            State = SequenceState.Playing;
+    public void FinishSequence()
+    {
+        Debug.Log($"Unloading the sequence steps for {this.Name}");
+        foreach (var item in sequenceStepList)
+        {
+            item.UnloadStep();
         }
     }
 
-    public void GoToStep(int stepIndex)
+    public BaseSequenceStep currentStep;
+    public SequenceStepState currentStepState;
+    public override void _Process(double delta)
     {
+        if (!isPlaying)
+        {
+            //Debug.Log($"{this.Name}: Not Playing");
+            return;
+        }
 
-    }
+        if (currentStepIndex < 0)
+        {
+            //Debug.Log($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
+            return;
+        }
 
-    public void PauseSequence()
-    {
-    }
+        if (currentStepIndex >= sequenceStepList.Count)
+        {
+            //Debug.Log($"{this.Name}: CurrentStep not valid: {currentStepIndex}");
+            return;
+        }
 
-    public void StopSequence()
-    {
+        if (currentStep == null)
+        {
+            //Debug.Log($"{this.Name}: CurrentStep not set");
+            return;
+        }
+
+        switch (currentStepState)
+        {
+            case SequenceStepState.None:
+                break;
+            case SequenceStepState.StartStep:
+                currentStep.StartStep();
+                currentStepState = SequenceStepState.PlayingStep;
+                autoPlayWaitTime = autoPlayWaitTimeMax;
+                break;
+            case SequenceStepState.PlayingStep:
+                if (currentStep.IsComplete())
+                {
+                    currentStepState = SequenceStepState.FinishStep;
+                }
+
+
+                if (Input.IsActionJustPressed("NextSequenceStep"))
+                {
+                    currentStepState = SequenceStepState.FinishStep;
+                }
+                break;
+            case SequenceStepState.FinishStep:
+                currentStep.FinishStep();
+                currentStepState = SequenceStepState.WaitingForInput;
+                break;
+            case SequenceStepState.WaitingForInput:
+                if (autoPlay)
+                {
+                    autoPlayWaitTime -= (float)delta;
+                    if (autoPlayWaitTime <= 0)
+                    {
+                        autoPlayWaitTime = autoPlayWaitTimeMax;
+                        currentStepState = SequenceStepState.TryLoadNextStep;
+                    }
+
+                    if (Input.IsActionJustPressed("NextSequenceStep"))
+                    {
+                        currentStepState = SequenceStepState.TryLoadNextStep;
+                    }
+                }
+                else
+                {
+                    if (Input.IsActionJustPressed("NextSequenceStep"))
+                    {
+                        currentStepState = SequenceStepState.TryLoadNextStep;
+                    }
+                }
+                break;
+            case SequenceStepState.TryLoadNextStep:
+                currentStepIndex++;
+                if (currentStepIndex >= sequenceStepList.Count)
+                {
+                    //there's no next step so we stop playing
+                    isPlaying = false;
+                    currentStepState = SequenceStepState.None;
+                    currentStep = null;
+                }
+                else
+                {
+                    //there is a next step and we go to that one
+                    isPlaying = true;
+                    currentStepState = SequenceStepState.StartStep;
+                    currentStep = sequenceStepList[currentStepIndex];
+                }
+                break;
+        }
     }
 }

@@ -1,9 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Godot;
-public static class Vector2Extensions{
-
+using Snowdrama.Core;
+using System;
+public static class Vector2Extensions
+{
     private static Random rand = new Random();
     private static float PI = 3.14159265358979f;
     private static float Deg2Rad = PI / 180;
@@ -15,10 +14,9 @@ public static class Vector2Extensions{
         V.Y = Mathf.Sin(angle);
         return V.Normalized();
     }
-    public static Vector2 VectorFromAngle(float angle)
+    public static Vector2 VectorFromAngleDegrees(float angle)
     {
-        angle = Deg2Rad * angle;
-        return VectorFromAngleRads(angle).Normalized();
+        return VectorFromAngleRads(Deg2Rad * angle);
     }
 
     public static Vector2I FloorToInt(this Vector2 dir)
@@ -60,52 +58,98 @@ public static class Vector2Extensions{
         return new Vector2(Mathf.Clamp(val.X, min.X, max.X), Mathf.Clamp(val.Y, min.Y, max.Y));
     }
 
-
-    public static Vector2 Random(float minX, float maxX, float minY, float maxY)
+    public static float RandomBetweenXY(this Vector2 val)
     {
+        return RandomAndNoise.RandomRange(val.X, val.Y);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="val">The current position</param>
+    /// <param name="magnitude">the distance from the original position that you want the point</param>
+    /// <returns>A new position some distance away from the original position</returns>
+    public static Vector2 RandomDirectionOffset(this Vector2 val, float magnitude = 1.0f)
+    {
+        return val + (RandomDirection() * magnitude);
+    }
+
+    public static Vector2 RandomDirection()
+    {
+        return Vector2.Right.Rotated(RandomAndNoise.RandomAngle()).Normalized();
+    }
+
+    public static Vector2 Random(float minX, float maxX, float minY, float maxY, bool normalized = true)
+    {
+        if (normalized)
+        {
+            return new Vector2((float)Mathf.Lerp(minX, maxX, rand.NextDouble()), (float)Mathf.Lerp(minY, maxY, rand.NextDouble())).Normalized();
+        }
         return new Vector2((float)Mathf.Lerp(minX, maxX, rand.NextDouble()), (float)Mathf.Lerp(minY, maxY, rand.NextDouble()));
     }
 
     /// <summary>
-    /// Gets a point that is the combination of the smallest value of both points 
+    /// Gets a point that is the combination of the smallest value of both pointArr 
     /// 
-    /// For example if you have the points (3,5) and (2,9) the result would be (2, 5)
+    /// For example if you have the pointArr (3,5) and (2,9) the result would be (2, 5)
     /// </summary>
     /// <param name="A"></param>
     /// <param name="B"></param>
-    /// <returns>a new vector that has the smallest value of both points</returns>
+    /// <returns>a new vector that has the smallest value of both pointArr</returns>
     public static Vector2 Min(Vector2 A, Vector2 B)
     {
         return new Vector2(Mathf.Min(A.X, B.X), Mathf.Min(A.Y, B.Y));
     }
 
-
     /// <summary>
-    /// Gets a point that is the combination of the largest value of both points 
+    /// Gets a point that is the combination of the largest value of both pointArr 
     /// 
-    /// For example if you have the points (3,5) and (2,9) the result would be (3, 9)
+    /// For example if you have the pointArr (3,5) and (2,9) the result would be (3, 9)
     /// </summary>
     /// <param name="A"></param>
     /// <param name="B"></param>
-    /// <returns>a new vector that has the largest value of both points</returns>
+    /// <returns>a new vector that has the largest value of both pointArr</returns>
     public static Vector2 Max(Vector2 A, Vector2 B)
     {
         return new Vector2(Mathf.Max(A.X, B.X), Mathf.Max(A.Y, B.Y));
     }
 
-    public static float AngleFromVector(this Vector2 dir)
+
+    public static bool InBounds(this Vector2 pos, Vector2 TopLeftPos, Vector2 BottomRightPos)
     {
-        float angle = Rad2Deg * Mathf.Atan2(dir.Y, dir.X);
-        if (angle < 0)
+        if (pos.X >= TopLeftPos.X &&
+            pos.X < BottomRightPos.X &&
+            pos.Y >= TopLeftPos.Y &&
+            pos.Y < BottomRightPos.Y)
         {
-            angle += 360;
+            return true;
         }
-        return angle;
+        return false;
+    }
+    public static bool InBounds(this Vector2I pos, Vector2I TopLeftPos, Vector2I BottomRightPos)
+    {
+        if (pos.X >= TopLeftPos.X &&
+            pos.X < BottomRightPos.X &&
+            pos.Y >= TopLeftPos.Y &&
+            pos.Y < BottomRightPos.Y)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool InBounds(this Vector2I pos, Vector2 TopLeftPos, Vector2 BottomRightPos)
+    {
+        return InBounds(pos, TopLeftPos.RoundToInt(), BottomRightPos.RoundToInt());
+    }
+
+    public static float AngleFromVectorDegrees(this Vector2 dir)
+    {
+        return Rad2Deg * dir.AngleFromVectorRads();
     }
 
     public static float AngleFromVectorRads(this Vector2 dir)
     {
-        var angle = Mathf.Atan2(dir.Y , dir.X);
+        var angle = Mathf.Atan2(dir.Y, dir.X);
         if (angle < 0)
         {
             angle += 2 * PI;
@@ -144,5 +188,15 @@ public static class Vector2Extensions{
         Vector2 newVector = from + (translation.Normalized() * scale);
 
         return newVector;
+    }
+    public static Vector2 FindScaleFactor(this Vector2 size, Vector2 targetSize, bool stretchToFit = false)
+    {
+        if (!stretchToFit)
+        {
+            var fullScale = targetSize / size;
+            var minimumNeededToFit = Mathf.Min(fullScale.X, fullScale.Y);
+            return new Vector2(minimumNeededToFit, minimumNeededToFit);
+        }
+        return targetSize / size;
     }
 }

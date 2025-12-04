@@ -1,22 +1,31 @@
 using Godot;
 using Godot.Collections;
-using System;
-using System.Diagnostics;
-using System.Transactions;
 
-public class SnowFillMaze
+public class Directions2D
 {
     private static Vector2I[] directions = new Vector2I[]
     {
-        new Vector2I(1, 0),
-        new Vector2I(0, 1),
-        new Vector2I(-1, 0),
-        new Vector2I(0, -1),
+        Vector2I.Left,
+        Vector2I.Right,
+        Vector2I.Up,
+        Vector2I.Down,
     };
-
-    public static void GenerateMaze(ref SnowFillCell[,] maze, Vector2I size, Vector2I startPoint)
+    public static Vector2I GetRandomDirection()
     {
-        maze = new SnowFillCell[size.X, size.Y];
+        return directions.GetRandom();
+    }
+}
+
+public class SnowFillMaze
+{
+    public static readonly Vector2I DOWN = new Vector2I(0, 1);
+    public static readonly Vector2I UP = new Vector2I(0, -1);
+    public static readonly Vector2I RIGHT = new Vector2I(1, 0);
+    public static readonly Vector2I LEFT = new Vector2I(-1, 0);
+
+    public static void GenerateMaze(ref SnowFillCell2D[,] maze, Vector2I size, Vector2I startPoint)
+    {
+        maze = new SnowFillCell2D[size.X, size.Y];
 
         var filledCount = 0;
         var cellCount = size.X * size.Y;
@@ -38,22 +47,60 @@ public class SnowFillMaze
             }
             stepCount++;
         }
-        GD.Print($"Finshed in {stepCount} steps");
+
+        //finally hook up all directions
+        for (int y = 0; y < maze.GetLength(1); y++)
+        {
+            for (int x = 0; x < maze.GetLength(0); x++)
+            {
+                Vector2I currentPosition = new Vector2I(x, y);
+                bool connecedUp = CheckValidPathInDirection(maze, currentPosition, UP);
+                bool connecedDown = CheckValidPathInDirection(maze, currentPosition, DOWN);
+                bool connecedLeft = CheckValidPathInDirection(maze, currentPosition, LEFT);
+                bool connecedRight = CheckValidPathInDirection(maze, currentPosition, RIGHT);
+
+                if (connecedUp)
+                {
+                    maze[currentPosition.X, currentPosition.Y].connectedDirections.Add(UP);
+                }
+                if (connecedDown)
+                {
+                    maze[currentPosition.X, currentPosition.Y].connectedDirections.Add(DOWN);
+                }
+                if (connecedLeft)
+                {
+                    maze[currentPosition.X, currentPosition.Y].connectedDirections.Add(LEFT);
+                }
+                if (connecedRight)
+                {
+                    maze[currentPosition.X, currentPosition.Y].connectedDirections.Add(RIGHT);
+                }
+            }
+        }
+
+
+        Debug.Log($"Finshed in {stepCount} steps");
     }
 
-    private static void CreateMaze(ref SnowFillCell[,] map, Vector2I size, Vector2I start)
+    private static void CreateMaze(ref SnowFillCell2D[,] map, Vector2I size, Vector2I start)
     {
-        map = new SnowFillCell[size.X, size.Y];
-        GD.Print($"Starting Maze of size {new Vector2(map.GetLength(0), map.GetLength(1))} ");
+        map = new SnowFillCell2D[size.X, size.Y];
+        Debug.Log($"Starting Maze of mapSize {new Vector2(map.GetLength(0), map.GetLength(1))} ");
         for (int y = 0; y < map.GetLength(1); y++)
         {
             for (int x = 0; x < map.GetLength(0); x++)
             {
+                map[x, y].connectedDirections = new Array<Vector2I>();
+                map[x, y].extraProperties_int = new Dictionary<string, int>();
+                map[x, y].extraProperties_float = new Dictionary<string, float>();
+                map[x, y].extraProperties_bool = new Dictionary<string, bool>();
+                map[x, y].extraProperties_string = new Dictionary<string, string>();
+
                 map[x, y].position = new Vector2I(x, y);
-                map[x, y].direction = directions.GetRandom();
+                map[x, y].direction = Directions2D.GetRandomDirection();
                 if (map[x, y].position == start)
                 {
-                    GD.Print($"Starting Cell is {start}");
+                    Debug.Log($"Starting Cell is {start}");
                     map[x, y].isConnected = true;
                 }
                 else
@@ -64,7 +111,7 @@ public class SnowFillMaze
         }
     }
 
-    private static void RandomizeDisconnectedCells(ref SnowFillCell[,] map)
+    private static void RandomizeDisconnectedCells(ref SnowFillCell2D[,] map)
     {
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -72,13 +119,13 @@ public class SnowFillMaze
             {
                 if (map[x, y].isConnected == false)
                 {
-                    map[x, y].direction = directions.GetRandom();
+                    map[x, y].direction = Directions2D.GetRandomDirection();
                 }
             }
         }
     }
 
-    private static void FloodFillRoutine(ref SnowFillCell[,] map)
+    private static void FloodFillRoutine(ref SnowFillCell2D[,] map)
     {
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -92,11 +139,11 @@ public class SnowFillMaze
     }
 
 
-    private static void FloodFill(SnowFillCell[,] map, Vector2I currentPosition, int depth)
+    private static void FloodFill(SnowFillCell2D[,] map, Vector2I currentPosition, int depth)
     {
         //prevent going super deep
-        //TODO: This really should be like size.X * size.Y?
-        if(depth > 100)
+        //TODO: This really should be like mapSize.X * mapSize.Y?
+        if (depth > 100)
         {
             return;
         }
@@ -107,7 +154,7 @@ public class SnowFillMaze
             return;
         }
 
-        //check each direction and if it points to me, then we should mark as connected
+        //check each direction and if it pointArr to me, then we should mark as connected
         var down = new Vector2I(0, 1);
         var up = new Vector2I(0, -1);
         var right = new Vector2I(1, 0);
@@ -125,7 +172,7 @@ public class SnowFillMaze
         CheckConnection(map, rightCell, left, depth);
     }
 
-    private static void CheckConnection(SnowFillCell[,] map, Vector2I testCell, Vector2I testDirection, int depth)
+    private static void CheckConnection(SnowFillCell2D[,] map, Vector2I testCell, Vector2I testDirection, int depth)
     {
         if (IsInBounds(map, testCell) && !map[testCell.X, testCell.Y].isConnected && map[testCell.X, testCell.Y].direction == testDirection)
         {
@@ -134,7 +181,26 @@ public class SnowFillMaze
         }
     }
 
-    private static int CountFilled(SnowFillCell[,] map)
+    private static bool CheckValidPathInDirection(SnowFillCell2D[,] map, Vector2I testCell, Vector2I testDirection)
+    {
+        //are we both in bounds?
+        if (IsInBounds(map, testCell) && IsInBounds(map, testCell + testDirection))
+        {
+            //do we point to them?
+            if (map[testCell.X, testCell.Y].direction == testDirection)
+            {
+                return true;
+            }
+            //or do they point to us
+            if (map[testCell.X + testDirection.X, testCell.Y + testDirection.Y].direction == -testDirection)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int CountFilled(SnowFillCell2D[,] map)
     {
         int count = 0;
         for (int y = 0; y < map.GetLength(1); y++)
@@ -150,7 +216,7 @@ public class SnowFillMaze
         return count;
     }
 
-    private static bool IsInBounds(SnowFillCell[,] map, Vector2I point)
+    private static bool IsInBounds(SnowFillCell2D[,] map, Vector2I point)
     {
         if (point.X < 0 || point.Y < 0 || point.X >= map.GetLength(0) || point.Y >= map.GetLength(1))
         {
@@ -159,9 +225,9 @@ public class SnowFillMaze
         return true;
     }
 
-}
 
-public struct SnowFillCell
+}
+public struct SnowFillCell2D
 {
     public bool removeCell;
 
@@ -173,4 +239,11 @@ public struct SnowFillCell
     public bool isIsPartOfRoom;
     public bool isRoomGap;
     public int roomId;
+
+    public Array<Vector2I> connectedDirections;
+
+    public Dictionary<string, int> extraProperties_int;
+    public Dictionary<string, float> extraProperties_float;
+    public Dictionary<string, bool> extraProperties_bool;
+    public Dictionary<string, string> extraProperties_string;
 }

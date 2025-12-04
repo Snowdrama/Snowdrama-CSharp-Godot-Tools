@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cvvkxrg15rdqc"]
+
+[ext_resource type="Shader" uid="uid://csidq5ggmujto" path="res://Tools/Shaders/SpriteAdd.gdshader" id="1_rc4ud"]
+
+[resource]
+shader = ExtResource("1_rc4ud")
+shader_parameter/alpha_scale = 0.499999988824
