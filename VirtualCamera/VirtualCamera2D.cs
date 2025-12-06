@@ -9,7 +9,9 @@ public partial class VirtualCamera2D : Node2D
     [Export] private int inactivePriority = 0;
     [Export] public int virtualCameraPriority;
 
-    [Export] private Vector2 WindowSize = new Vector2(1920, 1080);
+    private Vector2 WindowSize = new Vector2(1920, 1080);
+    [Export(PropertyHint.Range, "320, 4096, 1")] private float WindowSizeX = 1920;
+    [Export(PropertyHint.Range, "180, 2160, 1")] private float WindowSizeY = 1080;
     //[Export] float orthographicSize;
     [Export] private bool clampToIntegerScale;
     public Vector2 targetScreenSize;
@@ -84,6 +86,8 @@ public partial class VirtualCamera2D : Node2D
     public override void _Process(double delta)
     {
         base._Process(delta);
+        WindowSize = new Vector2(WindowSizeX, WindowSizeY);
+
         currentPosition = this.GlobalPosition;
         windowResScale = WindowSize.FindScaleFactor(GetViewportRect().Size);
 

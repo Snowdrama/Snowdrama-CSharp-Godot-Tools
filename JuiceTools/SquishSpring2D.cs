@@ -30,6 +30,6 @@ public partial class SquishSpring2D : Node2D
     {
         base._Process(delta);
         squishSpring.Update(delta);
-        this.Scale = squishSpring.Value;
+        this.GlobalScale = squishSpring.Value;
     }
 }
